@@ -12,4 +12,8 @@
     <artifactId>tinyrpc-codec</artifactId>
     <packaging>pom</packaging>
 
+    <modules>
+        <module>tinyrpc-serialization-fastjson</module>
+    </modules>
+
 </project>
