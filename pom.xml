@@ -15,6 +15,7 @@
         <module>codec</module>
         <module>proxy</module>
         <module>remoting</module>
+        <module>registry</module>
         <module>example</module>
     </modules>
 
