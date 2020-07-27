@@ -11,10 +11,11 @@
 
     <modules>
         <module>all</module>
-        <module>proxy</module>
-        <module>codec</module>
-        <module>example</module>
         <module>core</module>
+        <module>codec</module>
+        <module>proxy</module>
+        <module>remoting</module>
+        <module>example</module>
     </modules>
 
     <properties>
