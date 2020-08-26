@@ -15,6 +15,7 @@
         <module>codec</module>
         <module>proxy</module>
         <module>remoting</module>
+        <module>transport</module>
         <module>registry</module>
         <module>example</module>
     </modules>
@@ -26,11 +27,17 @@
         <maven.compiler.source>${jdk.version}</maven.compiler.source>
         <maven.compiler.target>${jdk.version}</maven.compiler.target>
 
+        <slf4j.version>1.7.30</slf4j.version>
         <fastjson.version>1.2.73</fastjson.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>fastjson</artifactId>
