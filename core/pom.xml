@@ -11,5 +11,15 @@
 
     <artifactId>tinyrpc-core</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.caucho</groupId>
+            <artifactId>hessian</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xerial.snappy</groupId>
+            <artifactId>snappy-java</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>
