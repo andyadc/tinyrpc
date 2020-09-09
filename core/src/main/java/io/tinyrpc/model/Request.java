@@ -1,6 +1,7 @@
 package io.tinyrpc.model;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 public class Request implements Serializable {
 
@@ -8,6 +9,19 @@ public class Request implements Serializable {
     private String methodName; // 请求的方法名称
     private Class[] argTypes; // 请求方法的参数类型
     private Object[] args; // 请求方法的参数
+
+    public Request() {
+    }
+
+    public Request(String serviceName, String methodName, Object[] args) {
+        this.serviceName = serviceName;
+        this.methodName = methodName;
+        this.args = args;
+        this.argTypes = new Class[args.length];
+        for (int i = 0; i < args.length; i++) {
+            argTypes[i] = args[i].getClass();
+        }
+    }
 
     public String getServiceName() {
         return serviceName;
@@ -39,5 +53,14 @@ public class Request implements Serializable {
 
     public void setArgs(Object[] args) {
         this.args = args;
+    }
+
+    @Override
+    public String toString() {
+        return "Request{" +
+                "serviceName=" + serviceName +
+                ", methodName=" + methodName +
+                ", args=" + Arrays.toString(args) +
+                '}';
     }
 }
