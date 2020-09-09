@@ -1,14 +1,15 @@
 package io.tinyrpc.model;
 
-public class Message<R> {
+import java.io.Serializable;
+
+public class Message<T> implements Serializable {
 
     private Header header;
-    private Request request;
-    private Object content;
+    private T content;
 
-    public Message(Header header, Request request) {
+    public Message(Header header, T content) {
         this.header = header;
-        this.request = request;
+        this.content = content;
     }
 
     public Header getHeader() {
@@ -19,19 +20,11 @@ public class Message<R> {
         this.header = header;
     }
 
-    public Request getRequest() {
-        return request;
-    }
-
-    public void setRequest(Request request) {
-        this.request = request;
-    }
-
-    public Object getContent() {
+    public T getContent() {
         return content;
     }
 
-    public void setContent(Object content) {
+    public void setContent(T content) {
         this.content = content;
     }
 }

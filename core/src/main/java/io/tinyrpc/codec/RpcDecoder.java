@@ -1,13 +1,15 @@
-package io.tinyrpc.rpc;
+package io.tinyrpc.codec;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
+import io.tinyrpc.Constants;
 import io.tinyrpc.compressor.Compressor;
 import io.tinyrpc.compressor.CompressorFactory;
 import io.tinyrpc.model.Header;
 import io.tinyrpc.model.Message;
 import io.tinyrpc.model.Request;
+import io.tinyrpc.model.Response;
 import io.tinyrpc.serialization.Serialization;
 import io.tinyrpc.serialization.SerializationFactory;
 
@@ -34,9 +36,9 @@ public class RpcDecoder extends ByteToMessageDecoder {
         long messageId = byteBuf.readLong();
         int size = byteBuf.readInt();
 
-        Request request = null;
+        Object body = null;
         // 心跳消息是没有消息体的，无须读取
-        if (!isHeartBeat(extraInfo)) {
+        if (Constants.isHeartBeat(extraInfo)) {
             // 对于非心跳消息，没有积累到足够的数据是无法进行反序列化的
             if (byteBuf.readableBytes() < size) {
                 byteBuf.resetReaderIndex();
@@ -45,18 +47,19 @@ public class RpcDecoder extends ByteToMessageDecoder {
             // 读取消息体并进行反序列化
             byte[] payload = new byte[size];
             byteBuf.readBytes(payload);
+            // 这里根据消息头中的extraInfo部分选择相应的序列化和压缩方式
+            Serialization serialization = SerializationFactory.get(extraInfo);
+            Compressor compressor = CompressorFactory.get(extraInfo);
 
-            Serialization serialization = SerializationFactory.getSerialization(extraInfo);
-            Compressor compressor = CompressorFactory.getCompressor(extraInfo);
-            request = serialization.deserialize(compressor.uncompress(payload), Request.class);
+            if (Constants.isRequest(extraInfo)) {
+                body = serialization.deserialize(compressor.uncompress(payload), Request.class);
+            } else {
+                body = serialization.deserialize(compressor.uncompress(payload), Response.class);
+            }
         }
 
         Header header = new Header(magic, version, extraInfo, messageId, size);
-        Message<R> message = new Message<R>(header, request);
+        Message<Object> message = new Message<>(header, body);
         list.add(message);
-    }
-
-    private boolean isHeartBeat(short ext) {
-        return ext == 999;
     }
 }
