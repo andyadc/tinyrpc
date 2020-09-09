@@ -8,6 +8,19 @@ public class Header {
     private Long messageId; // 消息ID
     private Integer size; // 消息体长度
 
+    public Header(short magic, byte version) {
+        this.magic = magic;
+        this.version = version;
+    }
+
+    public Header(short magic, byte version, byte extraInfo, Long messageId, Integer size) {
+        this.magic = magic;
+        this.version = version;
+        this.extraInfo = extraInfo;
+        this.messageId = messageId;
+        this.size = size;
+    }
+
     public short getMagic() {
         return magic;
     }
