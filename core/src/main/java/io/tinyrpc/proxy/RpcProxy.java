@@ -11,20 +11,21 @@ import io.tinyrpc.transport.Connection;
 import io.tinyrpc.transport.NettyResponseFuture;
 import io.tinyrpc.transport.RpcClient;
 import io.tinyrpc.util.ClassLoaderUtil;
-import org.apache.curator.x.discovery.ServiceInstance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 import static io.tinyrpc.Constants.*;
 
 public class RpcProxy implements InvocationHandler {
+
+    private static final Logger logger = LoggerFactory.getLogger(RpcProxy.class);
 
     public Map<Method, Header> headerCache = new ConcurrentHashMap<>();
     private String serviceName; // 需要代理的服务(接口)名称
@@ -36,24 +37,29 @@ public class RpcProxy implements InvocationHandler {
         this.registry = registry;
     }
 
+    @SuppressWarnings({"unchecked"})
     public static <T> T newInstance(Class<T> clazz, Registry<ServerInfo> registry) throws Exception {
         // 创建代理对象
         return (T) Proxy.newProxyInstance(ClassLoaderUtil.getCurrentClassLoader(),
                 new Class[]{clazz},
-                new RpcProxy("demoService", registry));
+                new RpcProxy(clazz.getSimpleName(), registry));
     }
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         // 从Zookeeper缓存中获取可用的Server地址,并随机从中选择一个
-        List<ServiceInstance<ServerInfo>> serviceInstances = registry.queryForInstances(serviceName);
-        ServiceInstance<ServerInfo> serviceInstance = serviceInstances.get(ThreadLocalRandom.current().nextInt(serviceInstances.size()));
+//        List<ServiceInstance<ServerInfo>> serviceInstances = registry.queryForInstances(serviceName);
+//        ServiceInstance<ServerInfo> serviceInstance = serviceInstances.get(ThreadLocalRandom.current().nextInt(serviceInstances.size()));
 
         // 创建请求消息，然后调用remoteCall()方法请求上面选定的Server端
         String methodName = method.getName();
         Header header = headerCache.computeIfAbsent(method, h -> new Header(MAGIC, VERSION_1));
         Message<Request> message = new Message<>(header, new Request(serviceName, methodName, args));
-        return remoteCall(serviceInstance.getPayload(), message);
+        logger.info("{}", message);
+
+        ServerInfo serverInfo = new ServerInfo("127.0.0.1", 20880);
+        return remoteCall(serverInfo, message);
+//        return remoteCall(serviceInstance.getPayload(), message);
     }
 
     private Object remoteCall(ServerInfo serverInfo, Message<Request> message) throws Exception {
@@ -70,8 +76,10 @@ public class RpcProxy implements InvocationHandler {
             Connection connection = new Connection(channelFuture, true);
             NettyResponseFuture<Response> responseFuture = connection.request(message, CONNECTION_TIMEOUT);
             // 等待请求对应的响应
-            result = responseFuture.getPromise().get(DEFAULT_TIMEOUT, TimeUnit.MICROSECONDS);
+            result = responseFuture.getPromise().get(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
+            connection.close();
         } catch (Exception e) {
+            e.printStackTrace();
             throw e;
         }
         return result;

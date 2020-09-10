@@ -14,8 +14,12 @@ public class Consumer {
 
         // 创建代理对象，通过代理调用远端Server
         HelloService helloService = RpcProxy.newInstance(HelloService.class, registry);
-        String message = helloService.hello("World");
 
-        System.out.println(message);
+        String message;
+        for (int i = 0; i < 100; i++) {
+            message = helloService.hello("World");
+            System.out.println(message);
+        }
+
     }
 }
