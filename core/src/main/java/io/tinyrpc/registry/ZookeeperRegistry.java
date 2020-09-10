@@ -74,4 +74,12 @@ public class ZookeeperRegistry<T> implements Registry<T> {
                 .filter(s -> s.getName().equalsIgnoreCase(name))
                 .collect(Collectors.toList());
     }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
 }

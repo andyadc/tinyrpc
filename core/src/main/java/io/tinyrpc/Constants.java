@@ -9,9 +9,9 @@ public class Constants {
 
     public static final byte VERSION_1 = 1;
 
-    public static final int DEFAULT_TIMEOUT = 30_000;
+    public static final int DEFAULT_TIMEOUT = 5000;
 
-    public static final int CONNECTION_TIMEOUT = 2_000;
+    public static final int CONNECTION_TIMEOUT = 2000;
 
     public static final int DEF_PORT = 9999;
 

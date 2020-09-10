@@ -47,7 +47,7 @@ public class Connection implements Closeable {
         IN_FLIGHT_REQUEST_MAP.put(messageId, responseFuture);
 
         try {
-            future.channel().write(message); // 发送请求
+            future.channel().writeAndFlush(message); // 发送请求
         } catch (Exception e) {
             // 发送请求异常时，删除对应的Future
             IN_FLIGHT_REQUEST_MAP.remove(messageId);

@@ -19,16 +19,16 @@ public class RpcDecoder extends ByteToMessageDecoder {
 
     @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) throws Exception {
-        if (byteBuf.readableBytes() < 16) {
-            return;
+        if (byteBuf.readableBytes() < Constants.HEADER_SIZE) {
+            return; // 不到16字节的话无法解析消息头，暂不读取
         }
         // 记录当前readIndex指针的位置，方便重置
         byteBuf.markReaderIndex();
         // 尝试读取消息头的魔数部分
         short magic = byteBuf.readShort();
-        if (magic != 666) {
+        if (magic != Constants.MAGIC) {
             byteBuf.resetReaderIndex();
-            throw new RuntimeException("magic number error:" + magic);
+            throw new RuntimeException("Error magic number: " + magic);
         }
         // 依次读取消息版本、附加信息、消息ID以及消息体长度四部分
         byte version = byteBuf.readByte();
@@ -38,7 +38,7 @@ public class RpcDecoder extends ByteToMessageDecoder {
 
         Object body = null;
         // 心跳消息是没有消息体的，无须读取
-        if (Constants.isHeartBeat(extraInfo)) {
+        if (!Constants.isHeartBeat(extraInfo)) {
             // 对于非心跳消息，没有积累到足够的数据是无法进行反序列化的
             if (byteBuf.readableBytes() < size) {
                 byteBuf.resetReaderIndex();

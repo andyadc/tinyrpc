@@ -27,4 +27,12 @@ public class Message<T> implements Serializable {
     public void setContent(T content) {
         this.content = content;
     }
+
+    @Override
+    public String toString() {
+        return "Message{" +
+                "header=" + header +
+                ", content=" + content +
+                '}';
+    }
 }

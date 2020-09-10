@@ -9,6 +9,7 @@ public class Consumer {
     public static void main(String[] args) throws Exception {
         // 创建ZookeeperRegistr对象
         ZookeeperRegistry<ServerInfo> registry = new ZookeeperRegistry<>();
+        registry.setAddress("www.qq-server.com:2181");
         registry.start();
 
         // 创建代理对象，通过代理调用远端Server

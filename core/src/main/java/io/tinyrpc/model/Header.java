@@ -60,4 +60,15 @@ public class Header {
     public void setSize(Integer size) {
         this.size = size;
     }
+
+    @Override
+    public String toString() {
+        return "Header{" +
+                "magic=" + magic +
+                ", version=" + version +
+                ", extraInfo=" + extraInfo +
+                ", messageId=" + messageId +
+                ", size=" + size +
+                '}';
+    }
 }

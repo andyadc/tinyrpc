@@ -33,6 +33,7 @@
         <hessian.version>4.0.63</hessian.version>
         <snappy.version>1.1.7.7</snappy.version>
         <fastjson.version>1.2.73</fastjson.version>
+        <logback.version>1.2.3</logback.version>
     </properties>
 
     <dependencyManagement>
@@ -66,6 +67,11 @@
                 <groupId>com.alibaba</groupId>
                 <artifactId>fastjson</artifactId>
                 <version>${fastjson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
