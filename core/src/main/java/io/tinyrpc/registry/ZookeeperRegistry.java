@@ -10,12 +10,16 @@ import org.apache.curator.x.discovery.ServiceDiscoveryBuilder;
 import org.apache.curator.x.discovery.ServiceInstance;
 import org.apache.curator.x.discovery.details.InstanceSerializer;
 import org.apache.curator.x.discovery.details.JsonInstanceSerializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ZookeeperRegistry<T> implements Registry<T> {
+
+    private static final Logger logger = LoggerFactory.getLogger(ZookeeperRegistry.class);
 
     private Map<String, List<ServiceInstanceListener<T>>> listeners = Maps.newConcurrentMap();
 
@@ -35,25 +39,24 @@ public class ZookeeperRegistry<T> implements Registry<T> {
     public void start() throws Exception {
         String root = "/tinyrpc/rpc";
         // 初始化CuratorFramework
-        CuratorFramework client = CuratorFrameworkFactory.newClient(address,
+        CuratorFramework client = CuratorFrameworkFactory.newClient(
+                address,
                 new ExponentialBackoffRetry(1000, 3));
         client.start();  // 启动Curator客户端
+        client.blockUntilConnected();  // 阻塞当前线程，等待连接成功
 
         // 初始化ServiceDiscovery
         serviceDiscovery = ServiceDiscoveryBuilder.builder(ServerInfo.class)
-                .client(client).basePath(root)
+                .client(client)
+                .basePath(root)
                 .serializer(serializer)
                 .build();
-
         serviceDiscovery.start(); // 启动ServiceDiscovery
 
         // 创建ServiceCache，监Zookeeper相应节点的变化，也方便后续的读取
         serviceCache = serviceDiscovery.serviceCacheBuilder()
-                .name("/services")
+                .name(root)
                 .build();
-
-        client.blockUntilConnected();  // 阻塞当前线程，等待连接成功
-        serviceDiscovery.start(); // 启动ServiceDiscovery
         serviceCache.start(); // 启动ServiceCache
     }
 
@@ -69,8 +72,19 @@ public class ZookeeperRegistry<T> implements Registry<T> {
 
     @Override
     public List<ServiceInstance<T>> queryForInstances(String name) throws Exception {
-        // 直接根据name进行过滤ServiceCache中的缓存数据
-        return serviceCache.getInstances().stream()
+
+        List<ServiceInstance<T>> all = serviceCache.getInstances();
+        System.out.println("serviceCache all >>>" + all);
+
+        List<ServiceInstance<T>> serviceInstances = serviceCache.getInstances()
+                .stream()
+                .filter(s -> s.getName().equalsIgnoreCase(name))
+                .collect(Collectors.toList());
+
+        System.out.println("serviceCache serviceInstances >>>" + serviceInstances);
+
+        return serviceDiscovery.queryForInstances(name)
+                .stream()
                 .filter(s -> s.getName().equalsIgnoreCase(name))
                 .collect(Collectors.toList());
     }
