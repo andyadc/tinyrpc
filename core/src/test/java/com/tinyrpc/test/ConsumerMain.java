@@ -4,7 +4,7 @@ import io.tinyrpc.proxy.RpcProxy;
 import io.tinyrpc.registry.ServerInfo;
 import io.tinyrpc.registry.ZookeeperRegistry;
 
-public class Consumer {
+public class ConsumerMain {
 
     public static void main(String[] args) throws Exception {
         // 创建ZookeeperRegistr对象

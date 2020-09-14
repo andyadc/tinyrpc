@@ -6,7 +6,7 @@ import io.tinyrpc.service.BeanManager;
 import io.tinyrpc.transport.RpcServer;
 import org.apache.curator.x.discovery.ServiceInstance;
 
-public class Provider {
+public class ProviderMain {
 
     public static void main(String[] args) throws Exception {
         BeanManager.registerBean("helloService", new HelloServiceImpl());

@@ -4,16 +4,17 @@ import java.io.Serializable;
 
 public final class URL implements Serializable {
 
+    // 协议
     private final String protocol;
-
+    // 名称
     private final String username;
-
+    // 密码
     private final String password;
-
+    // 主机
     private final String host;
-
+    // 端口
     private final int port;
-
+    // 路径
     private final String path;
 
     public URL() {

@@ -49,6 +49,7 @@ public class ZookeeperRegistry<T> implements Registry<T> {
         serviceDiscovery = ServiceDiscoveryBuilder.builder(ServerInfo.class)
                 .client(client)
                 .basePath(root)
+                .watchInstances(true)
                 .serializer(serializer)
                 .build();
         serviceDiscovery.start(); // 启动ServiceDiscovery
