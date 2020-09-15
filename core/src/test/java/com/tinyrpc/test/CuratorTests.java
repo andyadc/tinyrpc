@@ -7,17 +7,21 @@ import org.apache.curator.x.discovery.ServiceCache;
 import org.apache.curator.x.discovery.ServiceDiscovery;
 import org.apache.curator.x.discovery.ServiceDiscoveryBuilder;
 import org.apache.curator.x.discovery.ServiceInstance;
+import org.apache.curator.x.discovery.details.InstanceSerializer;
 import org.apache.curator.x.discovery.details.JsonInstanceSerializer;
+import org.apache.zookeeper.KeeperException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class CuratorTests {
 
     private static CuratorFramework client;
+    private InstanceSerializer<ServerPayload> serializer = new JsonInstanceSerializer<>(ServerPayload.class);
+
+    private String path = "/test";
 
     @BeforeAll
     public static void buildClient() throws Exception {
@@ -28,10 +32,47 @@ public class CuratorTests {
     }
 
     @Test
-    public void testClient() throws Exception {
-        String path = "/test";
-        client.delete().deletingChildrenIfNeeded().forPath(path);
+    public void testList() throws Exception {
+        client.checkExists().forPath(path);
+    }
 
+    @Test
+    public void testDel() {
+        try {
+            client.delete().deletingChildrenIfNeeded().forPath(path);
+        } catch (KeeperException.NoNodeException e) {
+            System.out.println(path + "　deleted");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testCache() throws Exception {
+        ServiceDiscovery<ServerPayload> discovery = ServiceDiscoveryBuilder.builder(ServerPayload.class)
+                .client(client)
+                .basePath(path)
+                .watchInstances(true)
+                .serializer(serializer)
+                .build();
+
+        discovery.start();
+
+        ServiceCache<ServerPayload> cache = discovery.serviceCacheBuilder()
+                .name(path)
+                .build();
+
+        cache.start();
+
+        List<ServiceInstance<ServerPayload>> cacheInstances;
+        for (int i = 0; i < 10; i++) {
+            cacheInstances = cache.getInstances();
+            System.out.println(cacheInstances);
+        }
+    }
+
+    @Test
+    public void testRegister() throws Exception {
         ServerPayload payload1 = new ServerPayload("127.0.0.1", 8888);
         payload1.setClassName(this.getClass().getSimpleName());
         payload1.setMethodName("test");
@@ -51,8 +92,8 @@ public class CuratorTests {
         ServiceDiscovery<ServerPayload> discovery = ServiceDiscoveryBuilder.builder(ServerPayload.class)
                 .client(client)
                 .basePath(path)
-                .serializer(new JsonInstanceSerializer<>(ServerPayload.class))
                 .watchInstances(true)
+                .serializer(serializer)
                 .build();
 
         discovery.start();
@@ -70,69 +111,7 @@ public class CuratorTests {
         Collection<String> instanceNames = discovery.queryForNames();
         System.out.println(instanceNames);
 
-        TimeUnit.SECONDS.sleep(10L);
-
-        List<ServiceInstance<ServerPayload>> cacheInstances = cache.getInstances();
-        System.out.println(cacheInstances);
-
         System.in.read();
     }
 
-    class ServerPayload {
-        private String host;
-        private int port;
-
-        private String className;
-        private String methodName;
-
-        public ServerPayload() {
-        }
-
-        public ServerPayload(String host, int port) {
-            this.host = host;
-            this.port = port;
-        }
-
-        public String getHost() {
-            return host;
-        }
-
-        public void setHost(String host) {
-            this.host = host;
-        }
-
-        public int getPort() {
-            return port;
-        }
-
-        public void setPort(int port) {
-            this.port = port;
-        }
-
-        public String getClassName() {
-            return className;
-        }
-
-        public void setClassName(String className) {
-            this.className = className;
-        }
-
-        public String getMethodName() {
-            return methodName;
-        }
-
-        public void setMethodName(String methodName) {
-            this.methodName = methodName;
-        }
-
-        @Override
-        public String toString() {
-            return "ServerPayload{" +
-                    "host='" + host + '\'' +
-                    ", port=" + port +
-                    ", className='" + className + '\'' +
-                    ", methodName='" + methodName + '\'' +
-                    '}';
-        }
-    }
 }
