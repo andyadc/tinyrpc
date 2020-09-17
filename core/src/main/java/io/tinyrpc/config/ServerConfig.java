@@ -6,7 +6,12 @@ import java.util.Map;
 /**
  * 服务配置
  */
-public class ServerConfig implements Serializable {
+public class ServerConfig extends AbstractConfig implements Serializable {
+
+	/**
+	 * 默认启动端口，包括不配置或者随机，都从此端口开始计算
+	 */
+	public static final int DEFAULT_SERVER_PORT = 21217;
 
 	/**
 	 * 实际监听IP，与网卡对应
