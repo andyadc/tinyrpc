@@ -18,6 +18,7 @@
         <module>transport</module>
         <module>registry</module>
         <module>example</module>
+        <module>test</module>
     </modules>
 
     <properties>
