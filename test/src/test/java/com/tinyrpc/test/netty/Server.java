@@ -1,5 +1,6 @@
 package com.tinyrpc.test.netty;
 
+import com.tinyrpc.test.netty.handler.IMServerHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -20,7 +21,8 @@ public class Server {
 			.childHandler(new ChannelInitializer<NioSocketChannel>() {
 				@Override
 				protected void initChannel(NioSocketChannel nioSocketChannel) throws Exception {
-					nioSocketChannel.pipeline().addLast(new FirstServerHandler());
+//					nioSocketChannel.pipeline().addLast(new FirstServerHandler());
+					nioSocketChannel.pipeline().addLast(new IMServerHandler());
 				}
 			})
 			.bind(9999)
