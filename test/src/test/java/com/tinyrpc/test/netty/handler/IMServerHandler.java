@@ -1,9 +1,6 @@
 package com.tinyrpc.test.netty.handler;
 
-import com.tinyrpc.test.netty.protocol.LoginRequestPacket;
-import com.tinyrpc.test.netty.protocol.LoginResponsePacket;
-import com.tinyrpc.test.netty.protocol.Packet;
-import com.tinyrpc.test.netty.protocol.PacketCodeC;
+import com.tinyrpc.test.netty.protocol.*;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -18,10 +15,11 @@ public class IMServerHandler extends ChannelInboundHandlerAdapter {
 
 		Packet packet = PacketCodeC.INSTANCE.decode(buf);
 
-		LoginResponsePacket loginResponsePacket = new LoginResponsePacket();
-		loginResponsePacket.setVersion(packet.getVersion());
-
+		ByteBuf byteBuf = null;
 		if (packet instanceof LoginRequestPacket) {
+			LoginResponsePacket loginResponsePacket = new LoginResponsePacket();
+			loginResponsePacket.setVersion(packet.getVersion());
+
 			LoginRequestPacket loginRequestPacket = (LoginRequestPacket) packet;
 			if (valid(loginRequestPacket)) {
 				System.out.println(new Date() + "登录成功");
@@ -32,9 +30,18 @@ public class IMServerHandler extends ChannelInboundHandlerAdapter {
 				System.out.println(new Date() + "登录失败");
 				loginResponsePacket.setMessage("登录失败");
 			}
+
+			byteBuf = PacketCodeC.INSTANCE.encode(loginResponsePacket);
+		} else if (packet instanceof MessageRequestPacket) {
+			MessageRequestPacket messageRequestPacket = (MessageRequestPacket) packet;
+			System.out.println(new Date() + ": 收到客户端消息: " + messageRequestPacket.getMessage());
+
+			MessageResponsePacket messageResponsePacket = new MessageResponsePacket();
+			messageResponsePacket.setMessage("服务端回复【" + messageRequestPacket.getMessage() + "】");
+
+			byteBuf = PacketCodeC.INSTANCE.encode(messageResponsePacket);
 		}
 
-		ByteBuf byteBuf = PacketCodeC.INSTANCE.encode(loginResponsePacket);
 		ctx.channel().writeAndFlush(byteBuf);
 	}
 

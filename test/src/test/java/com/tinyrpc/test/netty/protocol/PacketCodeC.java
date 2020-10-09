@@ -63,7 +63,12 @@ public class PacketCodeC {
 				return LoginRequestPacket.class;
 			case 2:
 				return LoginResponsePacket.class;
+			case 3:
+				return MessageRequestPacket.class;
+			case 4:
+				return MessageResponsePacket.class;
 			default:
+				System.out.println("Unknown cmd: " + cmd);
 				return null;
 		}
 	}

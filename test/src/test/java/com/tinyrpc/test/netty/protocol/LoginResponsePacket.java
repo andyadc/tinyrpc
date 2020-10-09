@@ -5,6 +5,10 @@ public class LoginResponsePacket extends Packet {
 	private String code;
 	private String message;
 
+	public boolean isSuccess() {
+		return this != null && "000".equals(code);
+	}
+
 	@Override
 	public Byte getCmd() {
 		return Cmd.LOGIN_RESPONSE;
