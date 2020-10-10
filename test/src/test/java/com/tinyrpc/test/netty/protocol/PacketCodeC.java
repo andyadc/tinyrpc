@@ -6,12 +6,11 @@ import io.netty.buffer.ByteBufAllocator;
 
 public class PacketCodeC {
 
-	private static final int MAGIC_NUMBER = 0x12345678;
+	public static final int MAGIC_NUMBER = 0x12345678;
 
 	public static PacketCodeC INSTANCE = new PacketCodeC();
 
-	public ByteBuf encode(Packet packet) {
-		ByteBuf buf = ByteBufAllocator.DEFAULT.ioBuffer();
+	public ByteBuf encode(ByteBuf buf, Packet packet) {
 		byte[] bytes = Serializer.DEFAULT.serializer(packet);
 
 		buf.writeInt(MAGIC_NUMBER);
@@ -22,6 +21,11 @@ public class PacketCodeC {
 		buf.writeBytes(bytes);
 
 		return buf;
+	}
+
+	public ByteBuf encode(Packet packet) {
+		ByteBuf buf = ByteBufAllocator.DEFAULT.ioBuffer();
+		return this.encode(buf, packet);
 	}
 
 	public Packet decode(ByteBuf buf) {

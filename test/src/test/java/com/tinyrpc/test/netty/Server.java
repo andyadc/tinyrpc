@@ -1,6 +1,12 @@
 package com.tinyrpc.test.netty;
 
-import com.tinyrpc.test.netty.handler.IMServerHandler;
+import com.tinyrpc.test.netty.codec.PacketDecoder;
+import com.tinyrpc.test.netty.codec.PacketEncoder;
+import com.tinyrpc.test.netty.codec.Spliter;
+import com.tinyrpc.test.netty.handler.AuthHandler;
+import com.tinyrpc.test.netty.handler.LifeCyCleTestHandler;
+import com.tinyrpc.test.netty.handler.LoginRequestHandler;
+import com.tinyrpc.test.netty.handler.MessageRequestHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -21,11 +27,31 @@ public class Server {
 			.childHandler(new ChannelInitializer<NioSocketChannel>() {
 				@Override
 				protected void initChannel(NioSocketChannel nioSocketChannel) throws Exception {
+
+					nioSocketChannel.pipeline().addLast(new LifeCyCleTestHandler());
+					nioSocketChannel.pipeline().addLast(new Spliter());
+
 //					nioSocketChannel.pipeline().addLast(new FirstServerHandler());
-					nioSocketChannel.pipeline().addLast(new IMServerHandler());
+
+//					nioSocketChannel.pipeline().addLast(new IMServerHandler());
+
+//					nioSocketChannel.pipeline().addLast(new InBoundHandlerA());
+//					nioSocketChannel.pipeline().addLast(new InBoundHandlerB());
+//					nioSocketChannel.pipeline().addLast(new InBoundHandlerC());
+
+					nioSocketChannel.pipeline().addLast(new PacketDecoder());
+					nioSocketChannel.pipeline().addLast(new LoginRequestHandler());
+					nioSocketChannel.pipeline().addLast(new AuthHandler()); // 新增加用户认证handler
+					nioSocketChannel.pipeline().addLast(new MessageRequestHandler());
+					nioSocketChannel.pipeline().addLast(new PacketEncoder());
 				}
 			})
 			.bind(9999)
+			.addListener(future -> {
+				if (future.isSuccess()) {
+					System.out.println("Bind succsss");
+				}
+			})
 		;
 	}
 }

@@ -22,12 +22,12 @@ public class IMServerHandler extends ChannelInboundHandlerAdapter {
 
 			LoginRequestPacket loginRequestPacket = (LoginRequestPacket) packet;
 			if (valid(loginRequestPacket)) {
-				System.out.println(new Date() + "登录成功");
+				System.out.println(new Date() + " 登录成功");
 				loginResponsePacket.setCode("000");
 				loginResponsePacket.setMessage("登录成功");
 			} else {
 				loginResponsePacket.setCode("999");
-				System.out.println(new Date() + "登录失败");
+				System.out.println(new Date() + " 登录失败");
 				loginResponsePacket.setMessage("登录失败");
 			}
 

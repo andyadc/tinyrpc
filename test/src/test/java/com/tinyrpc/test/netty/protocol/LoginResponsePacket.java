@@ -2,6 +2,8 @@ package com.tinyrpc.test.netty.protocol;
 
 public class LoginResponsePacket extends Packet {
 
+	private String uid;
+	private String uname;
 	private String code;
 	private String message;
 
@@ -12,6 +14,22 @@ public class LoginResponsePacket extends Packet {
 	@Override
 	public Byte getCmd() {
 		return Cmd.LOGIN_RESPONSE;
+	}
+
+	public String getUid() {
+		return uid;
+	}
+
+	public void setUid(String uid) {
+		this.uid = uid;
+	}
+
+	public String getUname() {
+		return uname;
+	}
+
+	public void setUname(String uname) {
+		this.uname = uname;
 	}
 
 	public String getCode() {
