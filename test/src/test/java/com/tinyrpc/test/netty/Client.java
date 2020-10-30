@@ -74,6 +74,7 @@ public class Client {
 						TimeUnit.SECONDS.sleep(1);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
+						Thread.currentThread().interrupt();
 					}
 				} else {
 					System.out.print("输入接受者Uid: ");
