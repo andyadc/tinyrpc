@@ -17,8 +17,8 @@ public class ConsumerMain {
 
         String message;
         for (int i = 0; i < 100; i++) {
-            message = helloService.hello("World");
-            System.out.println(message);
+            message = helloService.hello("World - " + i);
+			System.out.println(message);
         }
 
     }

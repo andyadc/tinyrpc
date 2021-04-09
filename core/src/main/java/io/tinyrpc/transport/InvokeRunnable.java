@@ -11,17 +11,17 @@ import java.lang.reflect.Method;
 
 public class InvokeRunnable implements Runnable {
 
-    private ChannelHandlerContext context;
-    private Message<Request> message;
+	private final ChannelHandlerContext context;
+	private final Message<Request> message;
 
-    public InvokeRunnable(ChannelHandlerContext context, Message<Request> message) {
-        this.context = context;
-        this.message = message;
-    }
+	public InvokeRunnable(ChannelHandlerContext context, Message<Request> message) {
+		this.context = context;
+		this.message = message;
+	}
 
-    @Override
-    public void run() {
-        Response response = new Response();
+	@Override
+	public void run() {
+		Response response = new Response();
 
         Object result = null;
         try {

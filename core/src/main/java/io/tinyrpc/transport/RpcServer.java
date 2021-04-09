@@ -16,57 +16,59 @@ import io.tinyrpc.codec.RpcEncoder;
 
 public class RpcServer {
 
-    protected int port;
-    private EventLoopGroup bossGroup;
-    private EventLoopGroup workerGroup;
-    private ServerBootstrap serverBootstrap;
-    private Channel channel;
+	private final EventLoopGroup bossGroup;
+	private final EventLoopGroup workerGroup;
+	private final ServerBootstrap serverBootstrap;
+	protected int port;
+	private Channel channel;
 
-    public RpcServer(int port) {
-        this.port = port;
+	public RpcServer(int port) {
+		this.port = port;
 
-        bossGroup = NettyEventLoopFactory.eventLoopGroup(1, "NettyServerBoss");
-        workerGroup = NettyEventLoopFactory.eventLoopGroup(Math.min(Runtime.getRuntime().availableProcessors() + 1, 32),
-                "NettyServerWorker");
+		bossGroup = NettyEventLoopFactory.eventLoopGroup(1, "NettyServerBoss");
+		workerGroup = NettyEventLoopFactory.eventLoopGroup(
+			Math.min(Runtime.getRuntime().availableProcessors() + 1, 32),
+			"NettyServerWorker"
+		);
 
-        serverBootstrap = new ServerBootstrap().group(bossGroup, workerGroup)
-                .channel(NioServerSocketChannel.class)
-                .option(ChannelOption.SO_REUSEADDR, Boolean.TRUE)
-                .childOption(ChannelOption.TCP_NODELAY, Boolean.TRUE)
-                .childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-                // 指定每个Channel上注册的ChannelHandler以及顺序
-                .handler(new LoggingHandler(LogLevel.INFO)).childHandler(new ChannelInitializer<SocketChannel>() {
-                    @Override
-                    protected void initChannel(SocketChannel channel) throws Exception {
-                        channel.pipeline().addLast("rpc-decoder", new RpcDecoder());
-                        channel.pipeline().addLast("rpc-encoder", new RpcEncoder());
-                        channel.pipeline().addLast("server-handler", new RpcServerHandler());
-                    }
-                });
-    }
+		serverBootstrap = new ServerBootstrap().group(bossGroup, workerGroup)
+			.channel(NioServerSocketChannel.class)
+			.option(ChannelOption.SO_REUSEADDR, Boolean.TRUE)
+			.childOption(ChannelOption.TCP_NODELAY, Boolean.TRUE)
+			.childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+			// 指定每个 Channel 上注册的 ChannelHandler 以及顺序
+			.handler(new LoggingHandler(LogLevel.INFO)).childHandler(new ChannelInitializer<SocketChannel>() {
+				@Override
+				protected void initChannel(SocketChannel channel) throws Exception {
+					channel.pipeline().addLast("rpc-decoder", new RpcDecoder());
+					channel.pipeline().addLast("rpc-encoder", new RpcEncoder());
+					channel.pipeline().addLast("server-handler", new RpcServerHandler());
+				}
+			});
+	}
 
-    public ChannelFuture start() {
-        // 监听指定端口
-        ChannelFuture bind = serverBootstrap.bind(port);
-        channel = bind.channel();
-        channel.closeFuture();
-        return bind;
-    }
+	public ChannelFuture start() {
+		// 监听指定端口
+		ChannelFuture bind = serverBootstrap.bind(port);
+		channel = bind.channel();
+		channel.closeFuture();
+		return bind;
+	}
 
-    public void startAndWait() {
-        try {
-            channel.closeFuture().await();
-        } catch (InterruptedException e) {
-            Thread.interrupted();
-            e.printStackTrace();
-        }
-    }
+	public void startAndWait() {
+		try {
+			channel.closeFuture().await();
+		} catch (InterruptedException e) {
+			Thread.interrupted();
+			e.printStackTrace();
+		}
+	}
 
-    public void shutdown() throws InterruptedException {
-        channel.close().sync();
-        if (bossGroup != null)
-            bossGroup.shutdownGracefully().awaitUninterruptibly(15_000);
-        if (workerGroup != null)
-            workerGroup.shutdownGracefully().awaitUninterruptibly(15_000);
-    }
+	public void shutdown() throws InterruptedException {
+		channel.close().sync();
+		if (bossGroup != null)
+			bossGroup.shutdownGracefully().awaitUninterruptibly(15_000);
+		if (workerGroup != null)
+			workerGroup.shutdownGracefully().awaitUninterruptibly(15_000);
+	}
 }

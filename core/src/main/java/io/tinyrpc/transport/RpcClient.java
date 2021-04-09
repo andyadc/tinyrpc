@@ -17,20 +17,20 @@ import java.io.IOException;
 
 public class RpcClient implements Closeable {
 
-    protected Bootstrap bootstrap;
-    protected EventLoopGroup group;
-    private String host;
-    private int port;
+	protected Bootstrap bootstrap;
+	protected EventLoopGroup group;
+	private final String host;
+	private final int port;
 
-    public RpcClient(String host, int port) {
-        this.host = host;
-        this.port = port;
+	public RpcClient(String host, int port) {
+		this.host = host;
+		this.port = port;
 
-        bootstrap = new Bootstrap();
-        group = NettyEventLoopFactory.eventLoopGroup(Constants.DEFAULT_IO_THREADS, "NettyClientWorker");
-        bootstrap.group(group)
-                .option(ChannelOption.TCP_NODELAY, true)
-                .option(ChannelOption.SO_KEEPALIVE, true)
+		bootstrap = new Bootstrap();
+		group = NettyEventLoopFactory.eventLoopGroup(Constants.DEFAULT_IO_THREADS, "NettyClientWorker");
+		bootstrap.group(group)
+			.option(ChannelOption.TCP_NODELAY, true)
+			.option(ChannelOption.SO_KEEPALIVE, true)
                 .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 .channel(NioSocketChannel.class) // 创建的Channel类型
                 // 指定ChannelHandler的顺序
