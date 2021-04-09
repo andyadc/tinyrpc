@@ -9,6 +9,8 @@ import io.tinyrpc.model.Header;
 import io.tinyrpc.model.Message;
 import io.tinyrpc.model.Request;
 import io.tinyrpc.model.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -19,9 +21,11 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class Connection implements Closeable {
 
+	private static final Logger logger = LoggerFactory.getLogger(Connection.class);
+
 	// TODO 时间轮定时删除
 	public final static Map<Long, NettyResponseFuture<Response>> IN_FLIGHT_REQUEST_MAP = new ConcurrentHashMap<>();
-	// 用于生成消息ID，全局唯一
+	// 用于生成消息 ID，全局唯一
 	private static final AtomicLong ID_GENERATOR = new AtomicLong(0);
 	private final AtomicBoolean isConnected = new AtomicBoolean();
 	private ChannelFuture future;
@@ -37,10 +41,10 @@ public class Connection implements Closeable {
 	}
 
 	public NettyResponseFuture<Response> request(Message<Request> message, long timeout) {
-		// 生成并设置消息ID
+		// 生成并设置消息 ID
 		long messageId = ID_GENERATOR.incrementAndGet();
 		message.getHeader().setMessageId(messageId);
-		// 创建消息关联的Future
+		// 创建消息关联的 Future
 		NettyResponseFuture<Response> responseFuture = new NettyResponseFuture<>(
 			System.currentTimeMillis(),
 			timeout,
@@ -54,6 +58,7 @@ public class Connection implements Closeable {
 		try {
 			future.channel().writeAndFlush(message); // 发送请求
 		} catch (Exception e) {
+			logger.error("", e);
 			// 发送请求异常时，删除对应的 Future
 			IN_FLIGHT_REQUEST_MAP.remove(messageId);
 			throw e;
@@ -72,7 +77,7 @@ public class Connection implements Closeable {
 			Promise<Response> await = responseFuture.getPromise().await();
 			return await.get().getCode() == Constants.HEARTBEAT_CODE;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error("", e);
 			return false;
 		}
 	}

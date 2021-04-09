@@ -11,6 +11,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.tinyrpc.Constants;
 import io.tinyrpc.codec.RpcDecoder;
 import io.tinyrpc.codec.RpcEncoder;
 
@@ -27,7 +28,7 @@ public class RpcServer {
 
 		bossGroup = NettyEventLoopFactory.eventLoopGroup(1, "NettyServerBoss");
 		workerGroup = NettyEventLoopFactory.eventLoopGroup(
-			Math.min(Runtime.getRuntime().availableProcessors() + 1, 32),
+			Constants.DEFAULT_IO_THREADS,
 			"NettyServerWorker"
 		);
 

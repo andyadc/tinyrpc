@@ -31,17 +31,17 @@ public class RpcClient implements Closeable {
 		bootstrap.group(group)
 			.option(ChannelOption.TCP_NODELAY, true)
 			.option(ChannelOption.SO_KEEPALIVE, true)
-                .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-                .channel(NioSocketChannel.class) // 创建的Channel类型
-                // 指定ChannelHandler的顺序
-                .handler(new ChannelInitializer<SocketChannel>() {
-                    @Override
-                    protected void initChannel(SocketChannel channel) throws Exception {
-                        channel.pipeline().addLast("rpc-encoder", new RpcEncoder());
-                        channel.pipeline().addLast("rpc-decoder", new RpcDecoder());
-                        channel.pipeline().addLast("client-handler", new RpcClientHandler());
-                    }
-                });
+			.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+			.channel(NioSocketChannel.class) // 创建的 Channel 类型
+			// 指定 ChannelHandler 的顺序
+			.handler(new ChannelInitializer<SocketChannel>() {
+				@Override
+				protected void initChannel(SocketChannel channel) throws Exception {
+					channel.pipeline().addLast("rpc-encoder", new RpcEncoder());
+					channel.pipeline().addLast("rpc-decoder", new RpcDecoder());
+					channel.pipeline().addLast("client-handler", new RpcClientHandler());
+				}
+			});
     }
 
     public ChannelFuture connect() {
