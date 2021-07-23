@@ -8,17 +8,17 @@ public class NettyResponseFuture<T> {
 
     private long createTime;
     private long timeout;
-    private Message request;
-    private Channel channel;
+	private Message<?> request;
+	private Channel channel;
     private Promise<T> promise;
 
-    public NettyResponseFuture(long createTime, long timeout, Message request, Channel channel, Promise<T> promise) {
-        this.createTime = createTime;
-        this.timeout = timeout;
-        this.request = request;
-        this.channel = channel;
-        this.promise = promise;
-    }
+	public NettyResponseFuture(long createTime, long timeout, Message<?> request, Channel channel, Promise<T> promise) {
+		this.createTime = createTime;
+		this.timeout = timeout;
+		this.request = request;
+		this.channel = channel;
+		this.promise = promise;
+	}
 
     public long getCreateTime() {
         return createTime;
@@ -36,13 +36,13 @@ public class NettyResponseFuture<T> {
         this.timeout = timeout;
     }
 
-    public Message getRequest() {
-        return request;
-    }
+	public Message<?> getRequest() {
+		return request;
+	}
 
-    public void setRequest(Message request) {
-        this.request = request;
-    }
+	public void setRequest(Message<?> request) {
+		this.request = request;
+	}
 
     public Channel getChannel() {
         return channel;
