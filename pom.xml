@@ -10,33 +10,34 @@
     <version>0.0.1</version>
 
     <modules>
-        <module>all</module>
-        <module>core</module>
-        <module>codec</module>
-        <module>proxy</module>
-        <module>remoting</module>
-        <module>transport</module>
-        <module>registry</module>
-        <module>example</module>
-        <module>test</module>
-    </modules>
+		<module>all</module>
+		<module>core</module>
+		<module>codec</module>
+		<module>proxy</module>
+		<module>remoting</module>
+		<module>transport</module>
+		<module>registry</module>
+		<module>example</module>
+		<module>test</module>
+		<module>tinyrpc-annotation</module>
+	</modules>
 
-    <properties>
+	<properties>
 		<jdk.version>1.8</jdk.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.compiler.source>${jdk.version}</maven.compiler.source>
 		<maven.compiler.target>${jdk.version}</maven.compiler.target>
 
-		<slf4j.version>1.7.32</slf4j.version>
-		<netty.version>4.1.70.Final</netty.version>
-		<zookeeper.version>3.7.0</zookeeper.version>
-		<curator.version>5.2.0</curator.version>
-		<hessian.version>4.0.65</hessian.version>
+		<slf4j.version>1.7.36</slf4j.version>
+		<netty.version>4.1.79.Final</netty.version>
+		<zookeeper.version>3.8.0</zookeeper.version>
+		<curator.version>5.3.0</curator.version>
+		<hessian.version>4.0.66</hessian.version>
 		<snappy.version>1.1.8.3</snappy.version>
-		<fastjson.version>1.2.78</fastjson.version>
-		<logback.version>1.2.7</logback.version>
-		<junit.version>5.8.1</junit.version>
+		<fastjson.version>2.0.11</fastjson.version>
+		<logback.version>1.2.11</logback.version>
+		<junit.version>5.9.0</junit.version>
 	</properties>
 
     <dependencyManagement>
@@ -76,11 +77,11 @@
                 <artifactId>snappy-java</artifactId>
                 <version>${snappy.version}</version>
             </dependency>
-            <dependency>
-                <groupId>com.alibaba</groupId>
-                <artifactId>fastjson</artifactId>
-                <version>${fastjson.version}</version>
-            </dependency>
+			<dependency>
+				<groupId>com.alibaba.fastjson2</groupId>
+				<artifactId>fastjson2</artifactId>
+				<version>${fastjson.version}</version>
+			</dependency>
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
