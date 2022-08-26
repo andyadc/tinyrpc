@@ -19,6 +19,7 @@
 		<module>example</module>
 		<module>tinyrpc-annotation</module>
 		<module>tinyrpc-common</module>
+		<module>tinyrpc-test</module>
 	</modules>
 
 	<properties>
