@@ -10,13 +10,7 @@
     <version>0.0.1</version>
 
     <modules>
-		<module>all</module>
 		<module>core</module>
-		<module>proxy</module>
-		<module>remoting</module>
-		<module>transport</module>
-		<module>registry</module>
-		<module>example</module>
 		<module>tinyrpc-annotation</module>
 		<module>tinyrpc-common</module>
 		<module>tinyrpc-test</module>
