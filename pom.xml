@@ -14,6 +14,7 @@
 		<module>tinyrpc-annotation</module>
 		<module>tinyrpc-common</module>
 		<module>tinyrpc-test</module>
+		<module>tinyrpc-protocol</module>
 	</modules>
 
 	<properties>
@@ -32,7 +33,7 @@
 		<snappy.version>1.1.8.3</snappy.version>
 		<fastjson.version>2.0.13</fastjson.version>
 		<logback.version>1.2.11</logback.version>
-		<junit.version>5.9.0</junit.version>
+		<junit.version>5.9.1</junit.version>
 	</properties>
 
     <dependencyManagement>
