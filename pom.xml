@@ -15,6 +15,7 @@
 		<module>tinyrpc-common</module>
 		<module>tinyrpc-test</module>
 		<module>tinyrpc-protocol</module>
+		<module>tinyrpc-provider</module>
 	</modules>
 
 	<properties>
@@ -31,7 +32,7 @@
 		<curator.version>5.3.0</curator.version>
 		<hessian.version>4.0.66</hessian.version>
 		<snappy.version>1.1.8.3</snappy.version>
-		<fastjson.version>2.0.13</fastjson.version>
+		<fastjson.version>2.0.15</fastjson.version>
 		<logback.version>1.2.11</logback.version>
 		<junit.version>5.9.1</junit.version>
 	</properties>
