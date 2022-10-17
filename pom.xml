@@ -14,8 +14,10 @@
 		<module>tinyrpc-test</module>
 		<module>tinyrpc-common</module>
 		<module>tinyrpc-annotation</module>
+		<module>tinyrpc-serialization</module>
 		<module>tinyrpc-proxy</module>
 		<module>tinyrpc-protocol</module>
+		<module>tinyrpc-codec</module>
 		<module>tinyrpc-provider</module>
 		<module>tinyrpc-consumer</module>
 	</modules>
