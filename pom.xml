@@ -34,6 +34,8 @@
 		<curator.version>5.3.0</curator.version>
 		<hessian.version>4.0.66</hessian.version>
 		<snappy.version>1.1.8.3</snappy.version>
+		<guava.version>31.1-jre</guava.version>
+		<commons-lang.version>3.12.0</commons-lang.version>
 		<fastjson.version>2.0.15</fastjson.version>
 		<logback.version>1.2.11</logback.version>
 		<junit.version>5.9.1</junit.version>
@@ -87,6 +89,16 @@
 				<groupId>org.xerial.snappy</groupId>
 				<artifactId>snappy-java</artifactId>
 				<version>${snappy.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>${guava.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-lang3</artifactId>
+				<version>${commons-lang.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.alibaba.fastjson2</groupId>
