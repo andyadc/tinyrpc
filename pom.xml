@@ -20,7 +20,7 @@
 		<module>tinyrpc-codec</module>
 		<module>tinyrpc-provider</module>
 		<module>tinyrpc-consumer</module>
-	</modules>
+    </modules>
 
 	<properties>
 		<jdk.version>1.8</jdk.version>

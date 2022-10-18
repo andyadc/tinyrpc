@@ -14,6 +14,7 @@
 
 	<modules>
 		<module>tinyrpc-serialization-api</module>
+		<module>tinyrpc-serialization-jdk</module>
 	</modules>
 
 </project>
