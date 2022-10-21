@@ -17,6 +17,7 @@
 		<module>tinyrpc-serialization</module>
 		<module>tinyrpc-proxy</module>
 		<module>tinyrpc-protocol</module>
+        <module>tinyrpc-registry</module>
 		<module>tinyrpc-codec</module>
 		<module>tinyrpc-provider</module>
 		<module>tinyrpc-consumer</module>
