@@ -2,6 +2,8 @@ package io.tinyrpc.common.exception;
 
 public class RpcException extends RuntimeException {
 
+	private static final long serialVersionUID = -4840799054543263687L;
+
 	public RpcException() {
 	}
 
