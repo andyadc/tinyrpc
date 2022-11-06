@@ -15,6 +15,10 @@
 	<modules>
 		<module>tinyrpc-serialization-api</module>
 		<module>tinyrpc-serialization-jdk</module>
+		<module>tinyrpc-serialization-fst</module>
+		<module>tinyrpc-serialization-hessian</module>
+		<module>tinyrpc-serialization-kryo</module>
+		<module>tinyrpc-serialization-json</module>
 	</modules>
 
 </project>
