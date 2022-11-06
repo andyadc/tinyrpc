@@ -17,11 +17,13 @@
 		<module>tinyrpc-serialization</module>
 		<module>tinyrpc-proxy</module>
 		<module>tinyrpc-protocol</module>
-        <module>tinyrpc-registry</module>
+		<module>tinyrpc-registry</module>
 		<module>tinyrpc-codec</module>
+		<module>tinyrpc-loadbalancer</module>
+		<module>tinyrpc-spi</module>
 		<module>tinyrpc-provider</module>
 		<module>tinyrpc-consumer</module>
-    </modules>
+	</modules>
 
 	<properties>
 		<jdk.version>1.8</jdk.version>
@@ -36,6 +38,7 @@
 		<zookeeper.version>3.8.0</zookeeper.version>
 		<curator.version>5.4.0</curator.version>
 		<hessian.version>4.0.66</hessian.version>
+		<fst.version>2.57</fst.version>
 		<snappy.version>1.1.8.3</snappy.version>
 		<guava.version>31.1-jre</guava.version>
 		<commons-lang.version>3.12.0</commons-lang.version>
