@@ -19,6 +19,7 @@
 		<module>tinyrpc-serialization-hessian</module>
 		<module>tinyrpc-serialization-kryo</module>
 		<module>tinyrpc-serialization-json</module>
+		<module>tinyrpc-serialization-protostuff</module>
 	</modules>
 
 </project>
