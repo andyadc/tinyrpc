@@ -1,0 +1,1 @@
+kryo=io.tinyrpc.serialization.kryo.KryoSerialization
