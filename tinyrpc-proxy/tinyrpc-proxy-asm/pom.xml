@@ -18,9 +18,9 @@
 
 	<dependencies>
 		<dependency>
-			<groupId></groupId>
-			<artifactId></artifactId>
+			<groupId>io.tinyrpc</groupId>
+			<artifactId>tinyrpc-proxy-api</artifactId>
+			<version>0.0.1</version>
 		</dependency>
 	</dependencies>
-
 </project>
