@@ -44,6 +44,7 @@
 		<cglib.version>3.3.0</cglib.version>
 		<objenesis.version>3.3</objenesis.version>
 		<javassist.version>3.29.2-GA</javassist.version>
+		<byte-buddy.version>1.12.19</byte-buddy.version>
 		<snappy.version>1.1.8.3</snappy.version>
 		<guava.version>31.1-jre</guava.version>
 		<jackson.version>2.13.4.2</jackson.version>

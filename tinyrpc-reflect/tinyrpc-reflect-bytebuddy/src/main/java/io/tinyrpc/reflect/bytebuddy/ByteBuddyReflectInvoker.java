@@ -10,6 +10,8 @@ public class ByteBuddyReflectInvoker implements ReflectInvoker {
 
 	@Override
 	public Object invokeMethod(Object serviceBean, Class<?> serviceClass, String methodName, Class<?>[] parameterTypes, Object[] parameters) throws Throwable {
+		logger.info("Use javassist reflect type invoke method...");
+
 		return null;
 	}
 }
