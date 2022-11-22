@@ -14,6 +14,11 @@
 
 	<modules>
 		<module>tinyrpc-reflect-api</module>
+		<module>tinyrpc-reflect-asm</module>
+		<module>tinyrpc-reflect-bytebuddy</module>
+		<module>tinyrpc-reflect-cglib</module>
+		<module>tinyrpc-reflect-javassist</module>
+		<module>tinyrpc-reflect-jdk</module>
 	</modules>
 
 </project>
