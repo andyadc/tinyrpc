@@ -1,0 +1,1 @@
+javassist=io.tinyrpc.proxy.javassist.JavassistProxyFactory

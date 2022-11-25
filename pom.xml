@@ -43,6 +43,7 @@
 		<kryo.version>5.3.0</kryo.version>
 		<cglib.version>3.3.0</cglib.version>
 		<objenesis.version>3.3</objenesis.version>
+		<asm.version>9.4</asm.version>
 		<javassist.version>3.29.2-GA</javassist.version>
 		<byte-buddy.version>1.12.19</byte-buddy.version>
 		<snappy.version>1.1.8.3</snappy.version>

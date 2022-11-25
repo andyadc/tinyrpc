@@ -16,6 +16,9 @@
 		<module>tinyrpc-proxy-api</module>
 		<module>tinyrpc-proxy-jdk</module>
 		<module>tinyrpc-proxy-asm</module>
+		<module>tinyrpc-proxy-bytebuddy</module>
+		<module>tinyrpc-proxy-cglib</module>
+		<module>tinyrpc-proxy-javassist</module>
 	</modules>
 
 </project>

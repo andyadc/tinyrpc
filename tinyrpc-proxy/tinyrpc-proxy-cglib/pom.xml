@@ -3,13 +3,13 @@
 		 xmlns="http://maven.apache.org/POM/4.0.0"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<parent>
-		<artifactId>tinyrpc-reflect</artifactId>
+		<artifactId>tinyrpc-proxy</artifactId>
 		<groupId>io.tinyrpc</groupId>
 		<version>0.0.1</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>tinyrpc-reflect-asm</artifactId>
+	<artifactId>tinyrpc-proxy-cglib</artifactId>
 
 	<properties>
 		<maven.compiler.source>8</maven.compiler.source>
@@ -19,13 +19,13 @@
 	<dependencies>
 		<dependency>
 			<groupId>io.tinyrpc</groupId>
-			<artifactId>tinyrpc-reflect-api</artifactId>
+			<artifactId>tinyrpc-proxy-api</artifactId>
 			<version>0.0.1</version>
 		</dependency>
 		<dependency>
-			<groupId>org.ow2.asm</groupId>
-			<artifactId>asm</artifactId>
-			<version>${asm.version}</version>
+			<groupId>cglib</groupId>
+			<artifactId>cglib</artifactId>
+			<version>${cglib.version}</version>
 		</dependency>
 	</dependencies>
 </project>
