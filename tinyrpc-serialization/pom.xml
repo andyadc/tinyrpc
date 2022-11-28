@@ -16,10 +16,10 @@
 		<module>tinyrpc-serialization-api</module>
 		<module>tinyrpc-serialization-jdk</module>
 		<module>tinyrpc-serialization-fst</module>
-		<module>tinyrpc-serialization-hessian</module>
 		<module>tinyrpc-serialization-kryo</module>
 		<module>tinyrpc-serialization-json</module>
 		<module>tinyrpc-serialization-protostuff</module>
+		<module>tinyrpc-serialization-hessian2</module>
 	</modules>
 
 </project>
