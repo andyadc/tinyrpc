@@ -7,81 +7,95 @@ import java.io.Serializable;
  */
 public class ServiceMeta implements Serializable {
 
-	private static final long serialVersionUID = -1806163011001544412L;
+	private static final long serialVersionUID = 8755684128839752914L;
 
 	/**
 	 * 服务名称
 	 */
-	private String name;
+	private String serviceName;
 
 	/**
 	 * 服务版本号
 	 */
-	private String version;
+	private String serviceVersion;
 
 	/**
 	 * 服务地址
 	 */
-	private String address;
+	private String serviceAddr;
 
 	/**
 	 * 服务端口
 	 */
-	private int port;
+	private int servicePort;
 
 	/**
 	 * 服务分组
 	 */
-	private String group;
+	private String serviceGroup;
+
+	/**
+	 * 服务提供者实例的权重
+	 */
+	private int weight;
 
 	public ServiceMeta() {
 	}
 
-	public ServiceMeta(String name, String version, String address, int port, String group) {
-		this.name = name;
-		this.version = version;
-		this.address = address;
-		this.port = port;
-		this.group = group;
+	public ServiceMeta(String serviceName, String serviceVersion, String serviceGroup, String serviceAddr, int servicePort, int weight) {
+		this.serviceName = serviceName;
+		this.serviceVersion = serviceVersion;
+		this.serviceAddr = serviceAddr;
+		this.servicePort = servicePort;
+		this.serviceGroup = serviceGroup;
+		this.weight = weight;
 	}
 
-	public String getName() {
-		return name;
+	public String getServiceName() {
+		return serviceName;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setServiceName(String serviceName) {
+		this.serviceName = serviceName;
 	}
 
-	public String getVersion() {
-		return version;
+	public String getServiceVersion() {
+		return serviceVersion;
 	}
 
-	public void setVersion(String version) {
-		this.version = version;
+	public void setServiceVersion(String serviceVersion) {
+		this.serviceVersion = serviceVersion;
 	}
 
-	public String getAddress() {
-		return address;
+	public String getServiceAddr() {
+		return serviceAddr;
 	}
 
-	public void setAddress(String address) {
-		this.address = address;
+	public void setServiceAddr(String serviceAddr) {
+		this.serviceAddr = serviceAddr;
 	}
 
-	public int getPort() {
-		return port;
+	public int getServicePort() {
+		return servicePort;
 	}
 
-	public void setPort(int port) {
-		this.port = port;
+	public void setServicePort(int servicePort) {
+		this.servicePort = servicePort;
 	}
 
-	public String getGroup() {
-		return group;
+	public String getServiceGroup() {
+		return serviceGroup;
 	}
 
-	public void setGroup(String group) {
-		this.group = group;
+	public void setServiceGroup(String serviceGroup) {
+		this.serviceGroup = serviceGroup;
+	}
+
+	public int getWeight() {
+		return weight;
+	}
+
+	public void setWeight(int weight) {
+		this.weight = weight;
 	}
 }
