@@ -16,5 +16,4 @@
 		<module>tinyrpc-provider-common</module>
 		<module>tinyrpc-provider-native</module>
 	</modules>
-
 </project>

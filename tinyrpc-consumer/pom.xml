@@ -16,5 +16,4 @@
 		<module>tinyrpc-consumer-common</module>
 		<module>tinyrpc-consumer-native</module>
 	</modules>
-
 </project>

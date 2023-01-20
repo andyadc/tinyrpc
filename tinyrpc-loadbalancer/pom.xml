@@ -16,5 +16,4 @@
 		<module>tinyrpc-loadbalancer-api</module>
 		<module>tinyrpc-loadbalancer-random</module>
 	</modules>
-
 </project>

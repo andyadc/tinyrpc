@@ -22,5 +22,4 @@
 			<artifactId>netty-all</artifactId>
 		</dependency>
 	</dependencies>
-
 </project>
