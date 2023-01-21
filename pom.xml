@@ -10,7 +10,6 @@
 	<version>0.0.1</version>
 
 	<modules>
-		<module>core</module>
 		<module>tinyrpc-common</module>
 		<module>tinyrpc-proxy</module>
 		<module>tinyrpc-reflect</module>
