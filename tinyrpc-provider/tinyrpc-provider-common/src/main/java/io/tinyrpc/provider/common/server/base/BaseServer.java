@@ -1,5 +1,6 @@
 package io.tinyrpc.provider.common.server.base;
 
+import com.google.common.base.Strings;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -8,6 +9,9 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.string.StringEncoder;
+import io.tinyrpc.provider.common.handler.RpcProviderHandler;
 import io.tinyrpc.provider.common.server.api.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +33,14 @@ public class BaseServer implements Server {
 	//存储的是实体类关系
 	protected Map<String, Object> handlerMap = new HashMap<>();
 
+	public BaseServer(String serverAddress) {
+		if (!Strings.isNullOrEmpty(serverAddress)) {
+			String[] serverArray = serverAddress.split(":");
+			this.host = serverArray[0];
+			this.port = Integer.parseInt(serverArray[1]);
+		}
+	}
+
 	@Override
 	public void startNettyServer() {
 		EventLoopGroup bossGroup = new NioEventLoopGroup();
@@ -41,7 +53,11 @@ public class BaseServer implements Server {
 				.childHandler(new ChannelInitializer<SocketChannel>() {
 					@Override
 					protected void initChannel(SocketChannel ch) throws Exception {
-
+						// TODO
+						ch.pipeline()
+							.addLast(new StringDecoder())
+							.addLast(new StringEncoder())
+							.addLast(new RpcProviderHandler(handlerMap));
 					}
 				})
 				.option(ChannelOption.SO_BACKLOG, 128)

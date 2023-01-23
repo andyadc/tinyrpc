@@ -27,6 +27,31 @@ public class RpcServiceScanner extends ClassScanner {
 			return handlerMap;
 		}
 
+		for (String className : classNameList) {
+			try {
+				Class<?> clazz = Class.forName(className);
+				RpcService rpcService = clazz.getAnnotation(RpcService.class);
+				if (rpcService != null) {
+					//优先使用interfaceClass, interfaceClass的name为空，再使用interfaceClassName
+					//TODO 后续逻辑向注册中心注册服务元数据，同时向handlerMap中记录标注了RpcService注解的类实例
+					logger.info("当前标注了@RpcService注解的类实例名称===>>> " + clazz.getName());
+					logger.info("@RpcService注解上标注的属性信息如下：");
+					logger.info("interfaceClass===>>> " + rpcService.interfaceClass().getName());
+					logger.info("interfaceClassName===>>> " + rpcService.interfaceClassName());
+					logger.info("version===>>> " + rpcService.version());
+					logger.info("group===>>> " + rpcService.group());
+
+					//handlerMap中的 Key先简单存储为serviceName+version+group，后续根据实际情况处理key
+					String serviceName = getServiceName(rpcService);
+					String key = serviceName.concat(rpcService.version()).concat(rpcService.group());
+					handlerMap.put(key, clazz.newInstance());
+				}
+			} catch (Exception e) {
+				logger.error("RpcService Scanner throws exception.", e);
+			}
+		}
+
+		/**
 		classNameList.forEach((className) -> {
 			try {
 				Class<?> clazz = Class.forName(className);
@@ -40,11 +65,17 @@ public class RpcServiceScanner extends ClassScanner {
 					logger.info("interfaceClassName===>>> " + rpcService.interfaceClassName());
 					logger.info("version===>>> " + rpcService.version());
 					logger.info("group===>>> " + rpcService.group());
+
+					//handlerMap中的 Key先简单存储为serviceName+version+group，后续根据实际情况处理key
+					String serviceName = getServiceName(rpcService);
+					String key = serviceName.concat(rpcService.version()).concat(rpcService.group());
+					handlerMap.put(key, clazz.newInstance());
 				}
 			} catch (Exception e) {
 				logger.error("RpcService Scanner throws exception.", e);
 			}
 		});
+		 **/
 
 		return handlerMap;
 	}
