@@ -4,6 +4,9 @@ import io.tinyrpc.common.constants.RpcConstants;
 import io.tinyrpc.common.id.IdFactory;
 import io.tinyrpc.protocol.enumeration.RpcType;
 
+/**
+ * RpcHeaderFactory
+ */
 public class RpcHeaderFactory {
 
 	public static RpcHeader getRequestHeader(String serializationType) {

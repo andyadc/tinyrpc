@@ -3,13 +3,13 @@
 		 xmlns="http://maven.apache.org/POM/4.0.0"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<parent>
-		<artifactId>tinyrpc</artifactId>
+		<artifactId>tinyrpc-test-consumer</artifactId>
 		<groupId>io.tinyrpc</groupId>
 		<version>0.0.1</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>tinyrpc-codec</artifactId>
+	<artifactId>tinyrpc-test-consumer-codec</artifactId>
 
 	<properties>
 		<maven.compiler.source>8</maven.compiler.source>
@@ -18,17 +18,13 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>io.netty</groupId>
-			<artifactId>netty-all</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>io.tinyrpc</groupId>
-			<artifactId>tinyrpc-protocol</artifactId>
+			<artifactId>tinyrpc-common</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.tinyrpc</groupId>
-			<artifactId>tinyrpc-serialization-jdk</artifactId>
+			<artifactId>tinyrpc-codec</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
