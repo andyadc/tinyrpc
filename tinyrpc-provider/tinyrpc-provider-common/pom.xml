@@ -19,7 +19,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>io.tinyrpc</groupId>
-			<artifactId>tinyrpc-protocol</artifactId>
+			<artifactId>tinyrpc-codec</artifactId>
 			<version>0.0.1</version>
 		</dependency>
 		<dependency>

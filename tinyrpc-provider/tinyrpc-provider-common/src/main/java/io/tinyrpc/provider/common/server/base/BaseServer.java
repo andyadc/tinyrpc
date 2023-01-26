@@ -9,8 +9,8 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
+import io.tinyrpc.codec.RpcDecoder;
+import io.tinyrpc.codec.RpcEncoder;
 import io.tinyrpc.provider.common.handler.RpcProviderHandler;
 import io.tinyrpc.provider.common.server.api.Server;
 import org.slf4j.Logger;
@@ -55,8 +55,8 @@ public class BaseServer implements Server {
 					protected void initChannel(SocketChannel ch) throws Exception {
 						// TODO
 						ch.pipeline()
-							.addLast(new StringDecoder())
-							.addLast(new StringEncoder())
+							.addLast(new RpcDecoder())
+							.addLast(new RpcEncoder())
 							.addLast(new RpcProviderHandler(handlerMap));
 					}
 				})

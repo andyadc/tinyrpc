@@ -2,6 +2,7 @@ package io.tinyrpc.provider.common.handler;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.tinyrpc.common.utils.JsonUtils;
 import io.tinyrpc.protocol.RpcProtocol;
 import io.tinyrpc.protocol.enumeration.RpcType;
 import io.tinyrpc.protocol.header.RpcHeader;
@@ -32,7 +33,7 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, RpcProtocol<RpcRequest> protocol) throws Exception {
-		logger.info("RPC提供者收到的数据为===>>> {}", protocol.toString());
+		logger.info("RPC提供者收到的数据为===>>> {}", JsonUtils.toJSONString(protocol));
 		logger.info("handlerMap中存放的数据如下: ");
 		for (Map.Entry<String, Object> entry : handlerMap.entrySet()) {
 			logger.info(entry.getKey() + " === " + entry.getValue());
