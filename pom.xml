@@ -32,10 +32,10 @@
 		<maven.compiler.source>${jdk.version}</maven.compiler.source>
 		<maven.compiler.target>${jdk.version}</maven.compiler.target>
 
-		<spring.version>5.3.21</spring.version>
+		<spring.version>5.3.25</spring.version>
 		<slf4j.version>1.7.36</slf4j.version>
 		<netty.version>4.1.87.Final</netty.version>
-		<zookeeper.version>3.8.0</zookeeper.version>
+		<zookeeper.version>3.8.1</zookeeper.version>
 		<curator.version>5.4.0</curator.version>
 		<hessian.version>4.0.66</hessian.version>
 		<fst.version>2.57</fst.version>
@@ -47,7 +47,7 @@
 		<byte-buddy.version>1.12.22</byte-buddy.version>
 		<snappy.version>1.1.8.3</snappy.version>
 		<guava.version>31.1-jre</guava.version>
-		<jackson.version>2.14.1</jackson.version>
+		<jackson.version>2.14.2</jackson.version>
 		<commons-lang.version>3.12.0</commons-lang.version>
 		<fastjson.version>2.0.23</fastjson.version>
 		<logback.version>1.2.11</logback.version>
