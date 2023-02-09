@@ -17,7 +17,7 @@ public class ServerThreadPool {
 			16,
 			600L,
 			TimeUnit.SECONDS,
-			new ArrayBlockingQueue<Runnable>(65536));
+			new ArrayBlockingQueue<>(65536));
 	}
 
 	public static void submit(Runnable task) {

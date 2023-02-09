@@ -1,9 +1,12 @@
 package io.tinyrpc.provider.common.handler;
 
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.tinyrpc.common.utils.JsonUtils;
+import io.tinyrpc.common.helper.RpcServiceHelper;
 import io.tinyrpc.protocol.RpcProtocol;
+import io.tinyrpc.protocol.enumeration.RpcStatus;
 import io.tinyrpc.protocol.enumeration.RpcType;
 import io.tinyrpc.protocol.header.RpcHeader;
 import io.tinyrpc.protocol.request.RpcRequest;
@@ -11,6 +14,7 @@ import io.tinyrpc.protocol.response.RpcResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Method;
 import java.util.Map;
 
 /**
@@ -33,26 +37,80 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, RpcProtocol<RpcRequest> protocol) throws Exception {
-		logger.info("RPC提供者收到的数据为===>>> {}", JsonUtils.toJSONString(protocol));
-		logger.info("handlerMap中存放的数据如下: ");
-		for (Map.Entry<String, Object> entry : handlerMap.entrySet()) {
-			logger.info(entry.getKey() + " === " + entry.getValue());
-		}
 
 		RpcHeader header = protocol.getHeader();
-		RpcRequest request = protocol.getBody();
-
-		//将header中的消息类型设置为响应类型的消息
+		logger.info("Receive request {}", header.getRequestId());
 		header.setMsgType((byte) RpcType.RESPONSE.getType());
 
-		//构建响应协议数据
+		RpcRequest request = protocol.getBody();
+
 		RpcProtocol<RpcResponse> responseRpcProtocol = new RpcProtocol<>();
 		RpcResponse response = new RpcResponse();
-		response.setResult("数据交互成功");
-		response.setAsync(request.getAsync());
-		response.setOneway(request.getOneway());
+
+		try {
+			Object result = handle(request);
+			response.setResult(result);
+			response.setAsync(request.getAsync());
+			response.setOneway(request.getOneway());
+
+			header.setStatus((byte) RpcStatus.SUCCESS.getCode());
+		} catch (Throwable cause) {
+			response.setError(cause.toString());
+			header.setStatus((byte) RpcStatus.FAIL.getCode());
+			logger.error("RPC Server handle request error", cause);
+		}
+
 		responseRpcProtocol.setHeader(header);
 		responseRpcProtocol.setBody(response);
-		ctx.writeAndFlush(responseRpcProtocol);
+
+		ctx.writeAndFlush(responseRpcProtocol).addListener(new ChannelFutureListener() {
+			@Override
+			public void operationComplete(ChannelFuture channelFuture) throws Exception {
+				logger.info("Send response for request " + header.getRequestId());
+			}
+		});
+	}
+
+	private Object handle(RpcRequest request) throws Throwable {
+		String serviceKey = RpcServiceHelper.buildServiceKey(request.getClassName(), request.getVersion(), request.getGroup());
+		Object serviceBean = handlerMap.get(serviceKey);
+		if (serviceBean == null) {
+			throw new RuntimeException(String.format("Service not exist: %s:%s", request.getClassName(), request.getMethodName()));
+		}
+
+		Class<?> serviceClass = serviceBean.getClass();
+		String methodName = request.getMethodName();
+		Class<?>[] parameterTypes = request.getParameterTypes();
+		Object[] parameters = request.getParameters();
+
+		logger.info(serviceClass.getName());
+		logger.info(methodName);
+
+		if (parameterTypes != null && parameterTypes.length > 0) {
+			for (Class<?> parameterType : parameterTypes) {
+				logger.info(parameterType.getName());
+			}
+		}
+
+		if (parameters != null && parameters.length > 0) {
+			for (Object parameter : parameters) {
+				logger.info(parameter.toString());
+			}
+		}
+
+		return invokeMethod(serviceBean, serviceClass, methodName, parameterTypes, parameters);
+	}
+
+	//TODO 目前使用JDK动态代理方式，此处埋点
+	private Object invokeMethod(Object serviceBean, Class<?> serviceClass, String methodName, Class<?>[] parameterTypes, Object[] parameters) throws Throwable {
+		Method method = serviceClass.getMethod(methodName, parameterTypes);
+		method.setAccessible(true);
+		return method.invoke(serviceBean, parameters);
+	}
+
+	@Override
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+		logger.error("Server caught exception.", cause);
+		ctx.close();
 	}
 }
