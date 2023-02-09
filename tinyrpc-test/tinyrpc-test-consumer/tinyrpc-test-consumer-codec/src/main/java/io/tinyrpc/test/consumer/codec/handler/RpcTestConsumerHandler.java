@@ -23,7 +23,7 @@ public class RpcTestConsumerHandler extends SimpleChannelInboundHandler<RpcProto
 		RpcRequest request = new RpcRequest();
 
 		request.setClassName("io.tinyrpc.test.api.TestService");
-		request.setGroup("adc");
+		request.setGroup("g-1");
 		request.setMethodName("hello");
 		request.setParameters(new Object[]{"andyadc"});
 		request.setParameterTypes(new Class[]{String.class});
