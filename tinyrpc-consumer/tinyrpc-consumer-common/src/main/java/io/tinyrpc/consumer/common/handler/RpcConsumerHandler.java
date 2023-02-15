@@ -7,6 +7,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.tinyrpc.common.utils.JsonUtils;
 import io.tinyrpc.protocol.RpcProtocol;
+import io.tinyrpc.protocol.request.RpcRequest;
 import io.tinyrpc.protocol.response.RpcResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,5 +51,10 @@ public class RpcConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<
 
 	public void close() {
 		channel.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
+	}
+
+	public void sendRequest(RpcProtocol<RpcRequest> protocol) {
+		logger.info("服务消费者发送的数据 ===>>>{}", JsonUtils.toJSONString(protocol));
+		channel.writeAndFlush(protocol);
 	}
 }

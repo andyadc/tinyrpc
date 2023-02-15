@@ -1,6 +1,8 @@
 package io.tinyrpc.consumer.common;
 
 import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -53,7 +55,35 @@ public class RpcConsumer {
 		String key = serviceAddress.concat("_").concat(String.valueOf(port));
 
 		RpcConsumerHandler handler = handlerMap.get(key);
-
+		//缓存中无RpcClientHandler
+		if (handler == null) {
+			handler = getRpcConsumerHandler(serviceAddress, port);
+			handlerMap.put(key, handler);
+		} else if (!handler.getChannel().isActive()) {  // 缓存中存在RpcClientHandler，但不活跃
+			handler.close();
+			handler = getRpcConsumerHandler(serviceAddress, port);
+			handlerMap.put(key, handler);
+		}
+		handler.sendRequest(protocol);
 	}
 
+	/**
+	 * 创建连接并返回RpcClientHandler
+	 */
+	private RpcConsumerHandler getRpcConsumerHandler(String serviceAddress, int port) throws InterruptedException {
+		ChannelFuture channelFuture = bootstrap.connect(serviceAddress, port).sync();
+		channelFuture.addListener(new ChannelFutureListener() {
+			@Override
+			public void operationComplete(ChannelFuture channelFuture) throws Exception {
+				if (channelFuture.isSuccess()) {
+					logger.info("connect rpc server {} on port {} success.", serviceAddress, port);
+				} else {
+					logger.error("connect rpc server {} on port {} failed.", serviceAddress, port);
+					channelFuture.cause().printStackTrace();
+					eventLoopGroup.shutdownGracefully();
+				}
+			}
+		});
+		return channelFuture.channel().pipeline().get(RpcConsumerHandler.class);
+	}
 }
