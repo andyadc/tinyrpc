@@ -1,6 +1,7 @@
 package io.tinyrpc.test.consumer.handler;
 
 import io.tinyrpc.consumer.common.RpcConsumer;
+import io.tinyrpc.consumer.common.future.RPCFuture;
 import io.tinyrpc.protocol.RpcProtocol;
 import io.tinyrpc.protocol.header.RpcHeaderFactory;
 import io.tinyrpc.protocol.request.RpcRequest;
@@ -13,9 +14,9 @@ public class RpcConsumerHandlerTest {
 
 	public static void main(String[] args) throws Exception {
 		RpcConsumer consumer = RpcConsumer.getInstance();
-		Object result = consumer.sendRequest(getRpcRequestProtocol());
+		RPCFuture future = consumer.sendRequest(getRpcRequestProtocol());
 
-		logger.info("从服务消费者获取到的数据 ===>>> " + result.toString());
+		logger.info("从服务消费者获取到的数据 ===>>> " + future.get());
 
 		consumer.close();
 	}

@@ -6,6 +6,7 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.tinyrpc.common.utils.JsonUtils;
+import io.tinyrpc.consumer.common.future.RPCFuture;
 import io.tinyrpc.protocol.RpcProtocol;
 import io.tinyrpc.protocol.header.RpcHeader;
 import io.tinyrpc.protocol.request.RpcRequest;
@@ -28,7 +29,9 @@ public class RpcConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<
 	private SocketAddress remotePeer;
 
 	//存储请求ID与RpcResponse协议的映射关系
-	private final Map<Long, RpcProtocol<RpcResponse>> pendingResponse = new ConcurrentHashMap<>();
+//	private final Map<Long, RpcProtocol<RpcResponse>> pendingResponse = new ConcurrentHashMap<>();
+
+	private final Map<Long, RPCFuture> pendingRPC = new ConcurrentHashMap<>();
 
 	public Channel getChannel() {
 		return channel;
@@ -58,24 +61,30 @@ public class RpcConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<
 		logger.info("服务消费者接收到的数据 ===>>> {}", JsonUtils.toJSONString(protocol));
 		RpcHeader header = protocol.getHeader();
 		long requestId = header.getRequestId();
-		pendingResponse.put(requestId, protocol);
+		RPCFuture rpcFuture = pendingRPC.remove(requestId);
+		if (rpcFuture != null) {
+			rpcFuture.done(protocol);
+		}
 	}
 
 	public void close() {
 		channel.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
 	}
 
-	public Object sendRequest(RpcProtocol<RpcRequest> protocol) {
+	public RPCFuture sendRequest(RpcProtocol<RpcRequest> protocol) {
 		logger.info("服务消费者发送的数据 ===>>>{}", JsonUtils.toJSONString(protocol));
+
+		RPCFuture rpcFuture = this.getRpcFuture(protocol);
+
 		channel.writeAndFlush(protocol);
+		return rpcFuture;
+	}
+
+	private RPCFuture getRpcFuture(RpcProtocol<RpcRequest> protocol) {
+		RPCFuture rpcFuture = new RPCFuture(protocol);
 		RpcHeader header = protocol.getHeader();
 		long requestId = header.getRequestId();
-		// 异步转同步
-		while (true) {
-			RpcProtocol<RpcResponse> responseRpcProtocol = pendingResponse.remove(requestId);
-			if (responseRpcProtocol != null) {
-				return responseRpcProtocol.getBody().getResult();
-			}
-		}
+		pendingRPC.put(requestId, rpcFuture);
+		return rpcFuture;
 	}
 }
