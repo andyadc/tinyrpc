@@ -4,14 +4,19 @@ import io.tinyrpc.consumer.common.RpcConsumer;
 import io.tinyrpc.protocol.RpcProtocol;
 import io.tinyrpc.protocol.header.RpcHeaderFactory;
 import io.tinyrpc.protocol.request.RpcRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RpcConsumerHandlerTest {
 
+	private static final Logger logger = LoggerFactory.getLogger(RpcConsumerHandlerTest.class);
+
 	public static void main(String[] args) throws Exception {
 		RpcConsumer consumer = RpcConsumer.getInstance();
-		consumer.sendRequest(getRpcRequestProtocol());
+		Object result = consumer.sendRequest(getRpcRequestProtocol());
 
-		Thread.sleep(2000);
+		logger.info("从服务消费者获取到的数据 ===>>> " + result.toString());
+
 		consumer.close();
 	}
 
