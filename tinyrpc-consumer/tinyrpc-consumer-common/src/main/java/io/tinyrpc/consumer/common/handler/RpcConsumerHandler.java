@@ -6,6 +6,7 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.tinyrpc.common.utils.JsonUtils;
+import io.tinyrpc.consumer.common.context.RpcContext;
 import io.tinyrpc.consumer.common.future.RPCFuture;
 import io.tinyrpc.protocol.RpcProtocol;
 import io.tinyrpc.protocol.header.RpcHeader;
@@ -24,14 +25,12 @@ import java.util.concurrent.ConcurrentHashMap;
 public class RpcConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<RpcResponse>> {
 
 	private static final Logger logger = LoggerFactory.getLogger(RpcConsumerHandler.class);
-
+	private final Map<Long, RPCFuture> pendingRPC = new ConcurrentHashMap<>();
 	private volatile Channel channel;
-	private SocketAddress remotePeer;
 
 	//存储请求ID与RpcResponse协议的映射关系
 //	private final Map<Long, RpcProtocol<RpcResponse>> pendingResponse = new ConcurrentHashMap<>();
-
-	private final Map<Long, RPCFuture> pendingRPC = new ConcurrentHashMap<>();
+	private SocketAddress remotePeer;
 
 	public Channel getChannel() {
 		return channel;
@@ -71,13 +70,34 @@ public class RpcConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<
 		channel.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
 	}
 
-	public RPCFuture sendRequest(RpcProtocol<RpcRequest> protocol) {
-		logger.info("服务消费者发送的数据 ===>>>{}", JsonUtils.toJSONString(protocol));
+	public RPCFuture sendRequest(RpcProtocol<RpcRequest> protocol, boolean async, boolean oneway) {
+		logger.info("服务消费者发送的数据 ===>>> {}", JsonUtils.toJSONString(protocol));
 
+		return oneway ? sendRequestOneway(protocol)
+			: async ? sendRequestAsync(protocol)
+			: sendRequestSync(protocol);
+	}
+
+	private RPCFuture sendRequestSync(RpcProtocol<RpcRequest> protocol) {
+		logger.info("-RequestSync-");
 		RPCFuture rpcFuture = this.getRpcFuture(protocol);
-
 		channel.writeAndFlush(protocol);
 		return rpcFuture;
+	}
+
+	private RPCFuture sendRequestAsync(RpcProtocol<RpcRequest> protocol) {
+		logger.info("-RequestAsync-");
+		RPCFuture rpcFuture = this.getRpcFuture(protocol);
+		//如果是异步调用，则将RPCFuture放入RpcContext
+		RpcContext.getContext().setRPCFuture(rpcFuture);
+		channel.writeAndFlush(protocol);
+		return null;
+	}
+
+	private RPCFuture sendRequestOneway(RpcProtocol<RpcRequest> protocol) {
+		logger.info("-Oneway-");
+		channel.writeAndFlush(protocol);
+		return null;
 	}
 
 	private RPCFuture getRpcFuture(RpcProtocol<RpcRequest> protocol) {
