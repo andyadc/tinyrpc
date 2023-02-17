@@ -1,16 +1,21 @@
 package io.tinyrpc.consumer.common.future;
 
+import io.tinyrpc.common.threadpool.ClientThreadPool;
+import io.tinyrpc.consumer.common.callback.AsyncRPCCallback;
 import io.tinyrpc.protocol.RpcProtocol;
 import io.tinyrpc.protocol.request.RpcRequest;
 import io.tinyrpc.protocol.response.RpcResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.AbstractQueuedSynchronizer;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * RPC框架获取异步结果的自定义Future
@@ -20,10 +25,13 @@ public class RPCFuture extends CompletableFuture<Object> {
 	private static final Logger logger = LoggerFactory.getLogger(RPCFuture.class);
 
 	private final Sync sync;
-	private final RpcProtocol<RpcRequest> requestRpcProtocol;
 	private final long startTime;
 	private final long responseTimeThreshold = 5000;
+	private final RpcProtocol<RpcRequest> requestRpcProtocol;
 	private RpcProtocol<RpcResponse> responseRpcProtocol;
+
+	private final List<AsyncRPCCallback> pendingCallbacks = new ArrayList<>();
+	private final ReentrantLock lock = new ReentrantLock();
 
 	public RPCFuture(RpcProtocol<RpcRequest> requestRpcProtocol) {
 		this.sync = new Sync();
@@ -75,11 +83,49 @@ public class RPCFuture extends CompletableFuture<Object> {
 	public void done(RpcProtocol<RpcResponse> responseRpcProtocol) {
 		this.responseRpcProtocol = responseRpcProtocol;
 		sync.release(1);
+
+		invokeCallbacks();
 		// Threshold
 		long responseTime = System.currentTimeMillis() - startTime;
 		if (responseTime > this.responseTimeThreshold) {
 			logger.warn("Service response time is too slow. Request id = " + responseRpcProtocol.getHeader().getRequestId() + ". Response Time = " + responseTime + "ms");
 		}
+	}
+
+	private void invokeCallbacks() {
+		lock.lock();
+		try {
+			for (final AsyncRPCCallback pendingCallback : pendingCallbacks) {
+				runCallback(pendingCallback);
+			}
+		} finally {
+			lock.unlock();
+		}
+	}
+
+	public RPCFuture addCallback(AsyncRPCCallback callback) {
+		lock.lock();
+		try {
+			if (isDone()) {
+				runCallback(callback);
+			} else {
+				this.pendingCallbacks.add(callback);
+			}
+		} finally {
+			lock.unlock();
+		}
+		return this;
+	}
+
+	private void runCallback(final AsyncRPCCallback callback) {
+		final RpcResponse res = this.responseRpcProtocol.getBody();
+		ClientThreadPool.submit(() -> {
+			if (!res.isError()) {
+				callback.onSuccess(res.getResult());
+			} else {
+				callback.onException(new RuntimeException("Response error", new Throwable(res.getError())));
+			}
+		});
 	}
 
 	static class Sync extends AbstractQueuedSynchronizer {

@@ -1,6 +1,7 @@
 package io.tinyrpc.test.consumer.handler;
 
 import io.tinyrpc.consumer.common.RpcConsumer;
+import io.tinyrpc.consumer.common.callback.AsyncRPCCallback;
 import io.tinyrpc.consumer.common.context.RpcContext;
 import io.tinyrpc.consumer.common.future.RPCFuture;
 import io.tinyrpc.protocol.RpcProtocol;
@@ -17,8 +18,20 @@ public class RpcConsumerHandlerTest {
 		RpcConsumer consumer = RpcConsumer.getInstance();
 
 		RPCFuture future = consumer.sendRequest(getRpcRequestProtocol());
-		logger.info("从服务消费者获取到的数据 ===>>> " + future.get());
+		future.addCallback(new AsyncRPCCallback() {
 
+			@Override
+			public void onSuccess(Object result) {
+				logger.info("从服务消费者获取到的数据 ===>>> " + result);
+			}
+
+			@Override
+			public void onException(Exception e) {
+				logger.info("抛出了异常 ===>>> " + e);
+			}
+		});
+
+		Thread.sleep(2000);
 		consumer.close();
 	}
 
