@@ -3,13 +3,13 @@
 		 xmlns="http://maven.apache.org/POM/4.0.0"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<parent>
-		<artifactId>tinyrpc-proxy</artifactId>
+		<artifactId>tinyrpc-test-consumer</artifactId>
 		<groupId>io.tinyrpc</groupId>
 		<version>0.0.1</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>tinyrpc-proxy-api</artifactId>
+	<artifactId>tinyrpc-test-consumer-native</artifactId>
 
 	<properties>
 		<maven.compiler.source>8</maven.compiler.source>
@@ -19,8 +19,18 @@
 	<dependencies>
 		<dependency>
 			<groupId>io.tinyrpc</groupId>
-			<artifactId>tinyrpc-protocol</artifactId>
+			<artifactId>tinyrpc-test-api</artifactId>
 			<version>0.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>io.tinyrpc</groupId>
+			<artifactId>tinyrpc-consumer-native</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
 		</dependency>
 	</dependencies>
 </project>

@@ -20,6 +20,7 @@
 	<modules>
 		<module>tinyrpc-test-consumer-codec</module>
 		<module>tinyrpc-test-consumer-handler</module>
+		<module>tinyrpc-test-consumer-native</module>
 	</modules>
 
 </project>

@@ -7,11 +7,11 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.tinyrpc.common.utils.JsonUtils;
 import io.tinyrpc.consumer.common.context.RpcContext;
-import io.tinyrpc.consumer.common.future.RPCFuture;
 import io.tinyrpc.protocol.RpcProtocol;
 import io.tinyrpc.protocol.header.RpcHeader;
 import io.tinyrpc.protocol.request.RpcRequest;
 import io.tinyrpc.protocol.response.RpcResponse;
+import io.tinyrpc.proxy.api.future.RPCFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

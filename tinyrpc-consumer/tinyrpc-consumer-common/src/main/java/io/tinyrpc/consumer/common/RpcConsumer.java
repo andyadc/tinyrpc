@@ -7,18 +7,22 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.tinyrpc.common.threadpool.ClientThreadPool;
-import io.tinyrpc.consumer.common.future.RPCFuture;
 import io.tinyrpc.consumer.common.handler.RpcConsumerHandler;
 import io.tinyrpc.consumer.common.initializer.RpcConsumerInitializer;
 import io.tinyrpc.protocol.RpcProtocol;
 import io.tinyrpc.protocol.request.RpcRequest;
+import io.tinyrpc.proxy.api.consumer.Consumer;
+import io.tinyrpc.proxy.api.future.RPCFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class RpcConsumer {
+/**
+ * 服务消费者
+ */
+public class RpcConsumer implements Consumer {
 
 	private static final Logger logger = LoggerFactory.getLogger(RpcConsumer.class);
 	private static final Map<String, RpcConsumerHandler> handlerMap = new ConcurrentHashMap<>();
@@ -51,6 +55,7 @@ public class RpcConsumer {
 		ClientThreadPool.shutdown();
 	}
 
+	@Override
 	public RPCFuture sendRequest(RpcProtocol<RpcRequest> protocol) throws Exception {
 		//TODO 暂时写死，后续在引入注册中心时，从注册中心获取
 		String serviceAddress = "127.0.0.1";

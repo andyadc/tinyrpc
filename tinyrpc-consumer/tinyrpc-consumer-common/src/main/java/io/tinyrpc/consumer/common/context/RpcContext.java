@@ -1,6 +1,6 @@
 package io.tinyrpc.consumer.common.context;
 
-import io.tinyrpc.consumer.common.future.RPCFuture;
+import io.tinyrpc.proxy.api.future.RPCFuture;
 
 /**
  * 保存RPC上下文

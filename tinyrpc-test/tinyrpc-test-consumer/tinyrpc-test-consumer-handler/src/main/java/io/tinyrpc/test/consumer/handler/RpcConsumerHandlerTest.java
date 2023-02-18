@@ -1,12 +1,12 @@
 package io.tinyrpc.test.consumer.handler;
 
 import io.tinyrpc.consumer.common.RpcConsumer;
-import io.tinyrpc.consumer.common.callback.AsyncRPCCallback;
 import io.tinyrpc.consumer.common.context.RpcContext;
-import io.tinyrpc.consumer.common.future.RPCFuture;
 import io.tinyrpc.protocol.RpcProtocol;
 import io.tinyrpc.protocol.header.RpcHeaderFactory;
 import io.tinyrpc.protocol.request.RpcRequest;
+import io.tinyrpc.proxy.api.callback.AsyncRPCCallback;
+import io.tinyrpc.proxy.api.future.RPCFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
