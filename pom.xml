@@ -34,7 +34,7 @@
 
 		<spring.version>5.3.25</spring.version>
 		<slf4j.version>1.7.36</slf4j.version>
-		<netty.version>4.1.87.Final</netty.version>
+		<netty.version>4.1.89.Final</netty.version>
 		<zookeeper.version>3.8.1</zookeeper.version>
 		<curator.version>5.4.0</curator.version>
 		<hessian.version>4.0.66</hessian.version>
