@@ -42,14 +42,14 @@
 		<kryo.version>5.4.0</kryo.version>
 		<cglib.version>3.3.0</cglib.version>
 		<objenesis.version>3.3</objenesis.version>
-		<asm.version>9.4</asm.version>
+		<asm.version>9.5</asm.version>
 		<javassist.version>3.29.2-GA</javassist.version>
 		<byte-buddy.version>1.12.23</byte-buddy.version>
-		<snappy.version>1.1.8.3</snappy.version>
+		<snappy.version>1.1.9.1</snappy.version>
 		<guava.version>31.1-jre</guava.version>
 		<jackson.version>2.13.5</jackson.version>
 		<commons-lang.version>3.12.0</commons-lang.version>
-		<fastjson.version>2.0.25</fastjson.version>
+		<fastjson.version>2.0.26</fastjson.version>
 		<logback.version>1.2.11</logback.version>
 		<junit.version>5.9.2</junit.version>
 	</properties>
