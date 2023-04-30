@@ -1,5 +1,6 @@
 package io.tinyrpc.test.consumer.handler;
 
+import io.tinyrpc.common.exception.RegistryException;
 import io.tinyrpc.consumer.common.RpcConsumer;
 import io.tinyrpc.consumer.common.context.RpcContext;
 import io.tinyrpc.protocol.RpcProtocol;
@@ -7,6 +8,9 @@ import io.tinyrpc.protocol.header.RpcHeaderFactory;
 import io.tinyrpc.protocol.request.RpcRequest;
 import io.tinyrpc.proxy.api.callback.AsyncRPCCallback;
 import io.tinyrpc.proxy.api.future.RPCFuture;
+import io.tinyrpc.registry.api.RegistryService;
+import io.tinyrpc.registry.api.config.RegistryConfig;
+import io.tinyrpc.registry.zookeeper.ZookeeperRegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +21,7 @@ public class RpcConsumerHandlerTest {
 	public static void main(String[] args) throws Exception {
 		RpcConsumer consumer = RpcConsumer.getInstance();
 
-		RPCFuture future = consumer.sendRequest(getRpcRequestProtocol());
+		RPCFuture future = consumer.sendRequest(getRpcRequestProtocol(), getRegistryService("127.0.0.1:2181", "zookeeper"));
 		future.addCallback(new AsyncRPCCallback() {
 
 			@Override
@@ -38,7 +42,7 @@ public class RpcConsumerHandlerTest {
 	public static void mainAsync(String[] args) throws Exception {
 		RpcConsumer consumer = RpcConsumer.getInstance();
 
-		consumer.sendRequest(getRpcRequestProtocolAsync());
+		consumer.sendRequest(getRpcRequestProtocolAsync(), getRegistryService("127.0.0.1:2181", "zookeeper"));
 		RPCFuture future = RpcContext.getContext().getRPCFuture();
 		logger.info("从服务消费者获取到的数据 ===>>> " + future.get());
 
@@ -48,10 +52,25 @@ public class RpcConsumerHandlerTest {
 	public static void mainOneway(String[] args) throws Exception {
 		RpcConsumer consumer = RpcConsumer.getInstance();
 
-		consumer.sendRequest(getRpcRequestProtocolOneway());
+		consumer.sendRequest(getRpcRequestProtocolOneway(), getRegistryService("127.0.0.1:2181", "zookeeper"));
 		logger.info("无需获取返回的结果数据");
 
 		consumer.close();
+	}
+
+	private static RegistryService getRegistryService(String registryAddress, String registryType) {
+		if (registryType == null) {
+			throw new IllegalArgumentException("registry type is null");
+		}
+		//TODO 后续SPI扩展
+		RegistryService registryService = new ZookeeperRegistryService();
+		try {
+			registryService.init(new RegistryConfig(registryAddress, registryType));
+		} catch (Exception e) {
+			logger.error("RpcClient init registry service throws exception", e);
+			throw new RegistryException(e.getMessage(), e);
+		}
+		return registryService;
 	}
 
 	private static RpcProtocol<RpcRequest> getRpcRequestProtocol() {
