@@ -4,6 +4,7 @@ import io.tinyrpc.consumer.RpcClient;
 import io.tinyrpc.proxy.api.async.IAsyncObjectProxy;
 import io.tinyrpc.proxy.api.future.RPCFuture;
 import io.tinyrpc.test.api.TestService;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +25,7 @@ public class RpcConsumerNativeTest {
 		rpcClient.shutdown();
 	}
 
+	@Test
 	public void testInterfaceRpc() {
 		RpcClient rpcClient = new RpcClient("1.0.0", "g-1", "jdk", 3000, false, false);
 
@@ -34,6 +36,7 @@ public class RpcConsumerNativeTest {
 		rpcClient.shutdown();
 	}
 
+	@Test
 	public void testAsyncInterfaceRpc() throws Exception {
 		RpcClient rpcClient = new RpcClient("1.0.0", "g-1", "jdk", 3000, false, false);
 
