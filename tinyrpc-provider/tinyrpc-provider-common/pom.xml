@@ -28,6 +28,11 @@
 			<version>0.0.1</version>
 		</dependency>
 		<dependency>
+			<groupId>io.tinyrpc</groupId>
+			<artifactId>tinyrpc-registry-zookeeper</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+		<dependency>
 			<groupId>io.netty</groupId>
 			<artifactId>netty-all</artifactId>
 		</dependency>

@@ -13,6 +13,9 @@ import io.tinyrpc.codec.RpcDecoder;
 import io.tinyrpc.codec.RpcEncoder;
 import io.tinyrpc.provider.common.handler.RpcProviderHandler;
 import io.tinyrpc.provider.common.server.api.Server;
+import io.tinyrpc.registry.api.RegistryService;
+import io.tinyrpc.registry.api.config.RegistryConfig;
+import io.tinyrpc.registry.zookeeper.ZookeeperRegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,16 +38,32 @@ public class BaseServer implements Server {
 
 	private String reflectType;
 
-	public BaseServer(String serverAddress, String reflectType) {
+	protected RegistryService registryService;
+
+	public BaseServer(String serverAddress, String registryAddress, String registryType, String reflectType) {
 		if (!Strings.isNullOrEmpty(serverAddress)) {
 			String[] serverArray = serverAddress.split(":");
 			this.host = serverArray[0];
 			this.port = Integer.parseInt(serverArray[1]);
 		}
 		this.reflectType = reflectType;
+		this.registryService = getRegistryService(registryAddress, registryType);
 	}
 
-	@Override
+	private RegistryService getRegistryService(String registryAddress, String registryType) {
+		//TODO 后续扩展支持SPI
+		RegistryService registryService = null;
+
+		try {
+			registryService = new ZookeeperRegistryService();
+			registryService.init(new RegistryConfig(registryAddress, registryType));
+		} catch (Exception e) {
+			logger.error("RPC Server init error", e);
+		}
+		return registryService;
+	}
+
+		@Override
 	public void startNettyServer() {
 		EventLoopGroup bossGroup = new NioEventLoopGroup();
 		EventLoopGroup workerGroup = new NioEventLoopGroup();

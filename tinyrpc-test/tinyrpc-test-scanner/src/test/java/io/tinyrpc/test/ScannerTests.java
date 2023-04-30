@@ -4,7 +4,7 @@ import io.tinyrpc.annotation.RpcReference;
 import io.tinyrpc.annotation.RpcService;
 import io.tinyrpc.common.scanner.ClassScanner;
 import io.tinyrpc.common.scanner.reference.RpcReferenceScanner;
-import io.tinyrpc.common.scanner.server.RpcServiceScanner;
+import io.tinyrpc.provider.common.scanner.RpcServiceScanner;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -28,7 +28,9 @@ public class ScannerTests {
 	 */
 	@Test
 	public void testScannerClassNameListByRpcService() throws Exception {
-		RpcServiceScanner.doScannerWithRpcServiceAnnotationFilterAndRegistryService("io.tinyrpc.test");
+		RpcServiceScanner.doScannerWithRpcServiceAnnotationFilterAndRegistryService(
+			"127.0.0.1", 2181,
+			"io.tinyrpc.test", null);
 	}
 
 	/**

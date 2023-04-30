@@ -42,13 +42,12 @@ public class ServiceMeta implements Serializable {
 	public ServiceMeta() {
 	}
 
-	public ServiceMeta(String serviceName, String serviceVersion, String serviceGroup, String serviceAddr, int servicePort, int weight) {
+	public ServiceMeta(String serviceName, String serviceVersion, String serviceGroup, String serviceAddr, int servicePort) {
 		this.serviceName = serviceName;
 		this.serviceVersion = serviceVersion;
 		this.serviceAddr = serviceAddr;
 		this.servicePort = servicePort;
 		this.serviceGroup = serviceGroup;
-		this.weight = weight;
 	}
 
 	public String getServiceName() {

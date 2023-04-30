@@ -1,8 +1,10 @@
-package io.tinyrpc.common.scanner.server;
+package io.tinyrpc.provider.common.scanner;
 
 import io.tinyrpc.annotation.RpcService;
 import io.tinyrpc.common.helper.RpcServiceHelper;
 import io.tinyrpc.common.scanner.ClassScanner;
+import io.tinyrpc.protocol.meta.ServiceMeta;
+import io.tinyrpc.registry.api.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +23,7 @@ public class RpcServiceScanner extends ClassScanner {
 	 * 扫描指定包下的类，并筛选使用@RpcService注解标注的类
 	 */
 	public static Map<String, Object> doScannerWithRpcServiceAnnotationFilterAndRegistryService(
-		/*String host, int port, */ String scanPackage /*, RegistryService registryService*/) throws Exception {
+		String host, int port, String scanPackage, RegistryService registryService) throws Exception {
 		Map<String, Object> handlerMap = new HashMap<>();
 		List<String> classNameList = getClassNameList(scanPackage);
 		if (classNameList.isEmpty()) {
@@ -34,17 +36,19 @@ public class RpcServiceScanner extends ClassScanner {
 				RpcService rpcService = clazz.getAnnotation(RpcService.class);
 				if (rpcService != null) {
 					//优先使用interfaceClass, interfaceClass的name为空，再使用interfaceClassName
-					//TODO 后续逻辑向注册中心注册服务元数据，同时向handlerMap中记录标注了RpcService注解的类实例
 					//handlerMap中的 Key先简单存储为serviceName+version+group，后续根据实际情况处理key
 					String serviceName = getServiceName(rpcService);
 					String key = RpcServiceHelper.buildServiceKey(serviceName, rpcService.version(), rpcService.group());
 					handlerMap.put(key, clazz.newInstance());
+
+					//将元数据注册到注册中心
+					ServiceMeta serviceMeta = new ServiceMeta(serviceName, rpcService.version(), rpcService.group(), host, port);
+					registryService.register(serviceMeta);
 				}
 			} catch (Exception e) {
 				logger.error("RpcService Scanner throws exception.", e);
 			}
 		}
-
 		return handlerMap;
 	}
 
