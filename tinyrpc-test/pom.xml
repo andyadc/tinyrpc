@@ -17,7 +17,8 @@
 		<module>tinyrpc-test-api</module>
 		<module>tinyrpc-test-provider</module>
 		<module>tinyrpc-test-consumer</module>
-	</modules>
+        <module>tinyrpc-test-registry</module>
+    </modules>
 
 	<properties>
 		<maven.compiler.source>8</maven.compiler.source>
