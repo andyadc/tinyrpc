@@ -4,7 +4,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.tinyrpc.common.constants.RpcConstants;
+import io.tinyrpc.common.exception.RpcException;
 import io.tinyrpc.common.helper.RpcServiceHelper;
 import io.tinyrpc.protocol.RpcProtocol;
 import io.tinyrpc.protocol.enumeration.RpcStatus;
@@ -12,12 +12,11 @@ import io.tinyrpc.protocol.enumeration.RpcType;
 import io.tinyrpc.protocol.header.RpcHeader;
 import io.tinyrpc.protocol.request.RpcRequest;
 import io.tinyrpc.protocol.response.RpcResponse;
-import net.sf.cglib.reflect.FastClass;
-import net.sf.cglib.reflect.FastMethod;
+import io.tinyrpc.reflect.api.ReflectInvoker;
+import io.tinyrpc.spi.loader.ExtensionLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Method;
 import java.util.Map;
 
 /**
@@ -34,16 +33,17 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 	 */
 	private final Map<String, Object> handlerMap;
 
-	//调用采用哪种类型调用真实方法
-	private final String reflectType;
+	private final ReflectInvoker reflectInvoker;
 
 	public RpcProviderHandler(String reflectType, Map<String, Object> handlerMap) {
-		this.reflectType = reflectType;
 		this.handlerMap = handlerMap;
+		this.reflectInvoker = ExtensionLoader.getExtension(ReflectInvoker.class, reflectType);
 	}
 
 	@Override
-	protected void channelRead0(ChannelHandlerContext ctx, RpcProtocol<RpcRequest> protocol) throws Exception {
+	protected void channelRead0(ChannelHandlerContext ctx, RpcProtocol<RpcRequest> protocol) {
+
+		// TODO 异步 ServerThreadPool.submit(() -> {})
 
 		RpcHeader header = protocol.getHeader();
 		logger.info("Receive request {}", header.getRequestId());
@@ -72,7 +72,7 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 
 		ctx.writeAndFlush(responseRpcProtocol).addListener(new ChannelFutureListener() {
 			@Override
-			public void operationComplete(ChannelFuture channelFuture) throws Exception {
+			public void operationComplete(ChannelFuture channelFuture) {
 				logger.info("Send response for request " + header.getRequestId());
 			}
 		});
@@ -82,7 +82,7 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 		String serviceKey = RpcServiceHelper.buildServiceKey(request.getClassName(), request.getVersion(), request.getGroup());
 		Object serviceBean = handlerMap.get(serviceKey);
 		if (serviceBean == null) {
-			throw new RuntimeException(String.format("Service not exist: %s:%s", request.getClassName(), request.getMethodName()));
+			throw new RpcException(String.format("Service not exist: %s:%s", request.getClassName(), request.getMethodName()));
 		}
 
 		Class<?> serviceClass = serviceBean.getClass();
@@ -105,38 +105,11 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 			}
 		}
 
-		return invokeMethod(serviceBean, serviceClass, methodName, parameterTypes, parameters);
-	}
-
-	private Object invokeMethod(Object serviceBean, Class<?> serviceClass, String methodName, Class<?>[] parameterTypes, Object[] parameters) throws Throwable {
-		switch (this.reflectType) {
-			case RpcConstants.PROXY_JDK:
-				return invokeJdkMethod(serviceBean, serviceClass, methodName, parameterTypes, parameters);
-			case RpcConstants.PROXY_CGLIB:
-				return invokeCglibMethod(serviceBean, serviceClass, methodName, parameterTypes, parameters);
-			default:
-				throw new IllegalArgumentException("Not support reflect type [{" + reflectType + "}]");
-		}
-	}
-
-	private Object invokeCglibMethod(Object serviceBean, Class<?> serviceClass, String methodName, Class<?>[] parameterTypes, Object[] parameters) throws Throwable {
-		logger.info("Use cglib reflect type invoke method...");
-
-		FastClass serviceFastClass = FastClass.create(serviceClass);
-		FastMethod serviceFastMethod = serviceFastClass.getMethod(methodName, parameterTypes);
-		return serviceFastMethod.invoke(serviceBean, parameters);
-	}
-
-	private Object invokeJdkMethod(Object serviceBean, Class<?> serviceClass, String methodName, Class<?>[] parameterTypes, Object[] parameters) throws Throwable {
-		logger.info("Use jdk reflect type invoke method...");
-
-		Method method = serviceClass.getMethod(methodName, parameterTypes);
-		method.setAccessible(true);
-		return method.invoke(serviceBean, parameters);
+		return this.reflectInvoker.invokeMethod(serviceBean, serviceClass, methodName, parameterTypes, parameters);
 	}
 
 	@Override
-	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
 		logger.error("Server caught exception.", cause);
 		ctx.close();
 	}

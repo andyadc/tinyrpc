@@ -80,13 +80,13 @@ public final class ExtensionLoader<T> {
 	 */
 	public static <T> ExtensionLoader<T> getExtensionLoader(final Class<T> clazz, final ClassLoader cl) {
 
-		Objects.requireNonNull(clazz, "extension clazz is null");
+		Objects.requireNonNull(clazz, "extension class is null");
 
 		if (!clazz.isInterface()) {
-			throw new IllegalArgumentException("extension clazz (" + clazz + ") is not interface!");
+			throw new IllegalArgumentException("extension class (" + clazz + ") is not interface!");
 		}
 		if (!clazz.isAnnotationPresent(SPI.class)) {
-			throw new IllegalArgumentException("extension clazz (" + clazz + ") without @" + SPI.class + " Annotation");
+			throw new IllegalArgumentException("extension class (" + clazz + ") without @" + SPI.class + " Annotation");
 		}
 		ExtensionLoader<T> extensionLoader = (ExtensionLoader<T>) LOADERS.get(clazz);
 		if (Objects.nonNull(extensionLoader)) {
@@ -188,7 +188,7 @@ public final class ExtensionLoader<T> {
 	private T createExtension(final String name) {
 		Class<?> aClass = getExtensionClasses().get(name);
 		if (Objects.isNull(aClass)) {
-			throw new IllegalArgumentException("name is error - " + name);
+			throw new IllegalArgumentException("name is error: " + name);
 		}
 		Object o = spiClassInstances.get(aClass);
 		if (Objects.isNull(o)) {
@@ -278,16 +278,16 @@ public final class ExtensionLoader<T> {
 						   final String name, final String classPath) throws ClassNotFoundException {
 		Class<?> subClass = Objects.nonNull(this.classLoader) ? Class.forName(classPath, true, this.classLoader) : Class.forName(classPath);
 		if (!clazz.isAssignableFrom(subClass)) {
-			throw new IllegalStateException("load extension resources error," + subClass + " subtype is not of " + clazz);
+			throw new IllegalStateException("load extension resources error, " + subClass + " subtype is not of " + clazz);
 		}
 		if (!subClass.isAnnotationPresent(SPIClass.class)) {
-			throw new IllegalStateException("load extension resources error," + subClass + " without @" + SPIClass.class + " annotation");
+			throw new IllegalStateException("load extension resources error, " + subClass + " without @" + SPIClass.class + " annotation");
 		}
 		Class<?> oldClass = classes.get(name);
 		if (Objects.isNull(oldClass)) {
 			classes.put(name, subClass);
 		} else if (!Objects.equals(oldClass, subClass)) {
-			throw new IllegalStateException("load extension resources error,Duplicate class " + clazz.getName() + " name " + name + " on " + oldClass.getName() + " or " + subClass.getName());
+			throw new IllegalStateException("load extension resources error, Duplicate class " + clazz.getName() + " name " + name + " on " + oldClass.getName() + " or " + subClass.getName());
 		}
 	}
 

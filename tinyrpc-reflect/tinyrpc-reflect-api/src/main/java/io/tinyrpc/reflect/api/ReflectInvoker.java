@@ -1,8 +1,11 @@
 package io.tinyrpc.reflect.api;
 
+import io.tinyrpc.spi.annotation.SPI;
+
 /**
  * 反射方法的调用接口
  */
+@SPI
 public interface ReflectInvoker {
 
 	/**

@@ -1,5 +1,6 @@
 package io.tinyrpc.proxy.api.future;
 
+import io.tinyrpc.common.exception.RpcException;
 import io.tinyrpc.common.threadpool.ClientThreadPool;
 import io.tinyrpc.protocol.RpcProtocol;
 import io.tinyrpc.protocol.request.RpcRequest;
@@ -63,7 +64,7 @@ public class RPCFuture extends CompletableFuture<Object> {
 				return null;
 			}
 		} else {
-			throw new RuntimeException("Timeout exception. Request id: " + this.requestRpcProtocol.getHeader().getRequestId()
+			throw new RpcException("Timeout exception. Request id: " + this.requestRpcProtocol.getHeader().getRequestId()
 				+ ". Request class name: " + this.requestRpcProtocol.getBody().getClassName()
 				+ ". Request method: " + this.requestRpcProtocol.getBody().getMethodName());
 		}
@@ -122,7 +123,7 @@ public class RPCFuture extends CompletableFuture<Object> {
 			if (!res.isError()) {
 				callback.onSuccess(res.getResult());
 			} else {
-				callback.onException(new RuntimeException("Response error", new Throwable(res.getError())));
+				callback.onException(new RpcException("Response error", new Throwable(res.getError())));
 			}
 		});
 	}
