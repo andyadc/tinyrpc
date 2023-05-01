@@ -30,7 +30,15 @@ public class RpcConsumerNativeTest {
 
 	@BeforeEach
 	public void init() {
-		rpcClient = new RpcClient("127.0.0.1:2181", "zookeeper", "1.0.0", "g-1", "jdk", 3000, false, false);
+		rpcClient = new RpcClient(
+			"127.0.0.1:2181",
+			"zookeeper",
+			"1.0.0",
+			"g-1",
+			"json",
+			3000,
+			false,
+			false);
 	}
 
 	@Test

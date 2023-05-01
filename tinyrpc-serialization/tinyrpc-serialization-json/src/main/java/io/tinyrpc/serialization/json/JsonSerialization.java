@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import io.tinyrpc.common.exception.SerializerException;
 import io.tinyrpc.serialization.api.Serialization;
+import io.tinyrpc.spi.annotation.SPIClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,6 +17,10 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
+/**
+ * Json系列化与反序列化
+ */
+@SPIClass
 public class JsonSerialization implements Serialization {
 
 	private static final Logger logger = LoggerFactory.getLogger(JsonSerialization.class);
@@ -38,7 +43,9 @@ public class JsonSerialization implements Serialization {
 
 	@Override
 	public <T> byte[] serialize(T obj) {
-		logger.info("execute json serialize...");
+		if (logger.isDebugEnabled()) {
+			logger.debug("--- json serialize ---");
+		}
 		if (obj == null) {
 			throw new SerializerException("Serialize object is null");
 		}
@@ -53,7 +60,9 @@ public class JsonSerialization implements Serialization {
 
 	@Override
 	public <T> T deserialize(byte[] data, Class<T> clazz) {
-		logger.info("execute json deserialize...");
+		if (logger.isDebugEnabled()) {
+			logger.debug("--- json deserialize ---");
+		}
 		if (data == null) {
 			throw new SerializerException("Deserialize data is null");
 		}

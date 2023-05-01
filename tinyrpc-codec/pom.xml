@@ -28,12 +28,17 @@
 		</dependency>
 		<dependency>
 			<groupId>io.tinyrpc</groupId>
+			<artifactId>tinyrpc-spi</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.tinyrpc</groupId>
 			<artifactId>tinyrpc-serialization-jdk</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.tinyrpc</groupId>
-			<artifactId>tinyrpc-spi</artifactId>
+			<artifactId>tinyrpc-serialization-json</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
