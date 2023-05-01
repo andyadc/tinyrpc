@@ -9,7 +9,7 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>tinyrpc-loadbalancer-round-robin</artifactId>
+	<artifactId>tinyrpc-loadbalancer-round-robin-weight</artifactId>
 
 	<properties>
 		<maven.compiler.source>8</maven.compiler.source>

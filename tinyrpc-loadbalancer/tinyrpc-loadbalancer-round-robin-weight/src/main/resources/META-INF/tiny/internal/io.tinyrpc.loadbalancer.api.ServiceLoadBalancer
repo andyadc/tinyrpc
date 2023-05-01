@@ -1,0 +1,1 @@
+robinweight=io.tinyrpc.loadbalancer.robin.weight.RobinWeightServiceLoadBalancer
