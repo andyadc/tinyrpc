@@ -42,5 +42,10 @@
 			<artifactId>tinyrpc-loadbalancer-round-robin-weight</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>io.tinyrpc</groupId>
+			<artifactId>tinyrpc-loadbalancer-hash</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
 </project>
