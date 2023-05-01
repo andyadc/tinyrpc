@@ -47,6 +47,11 @@
 			<artifactId>tinyrpc-reflect-javassist</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>io.tinyrpc</groupId>
+			<artifactId>tinyrpc-reflect-bytebuddy</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>io.netty</groupId>
