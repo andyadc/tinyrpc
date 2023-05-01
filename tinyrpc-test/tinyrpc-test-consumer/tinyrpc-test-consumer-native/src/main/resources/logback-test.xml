@@ -8,6 +8,16 @@
 		</encoder>
 	</appender>
 
+	<logger name="io.netty">
+		<level value="info"/>
+	</logger>
+	<logger name="org.apache.zookeeper">
+		<level value="info"/>
+	</logger>
+	<logger name="org.apache.curator">
+		<level value="info"/>
+	</logger>
+
 	<root level="debug">
 		<appender-ref ref="STDOUT"/>
 	</root>

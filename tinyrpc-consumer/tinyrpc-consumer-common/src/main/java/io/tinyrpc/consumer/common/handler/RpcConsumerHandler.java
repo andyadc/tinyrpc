@@ -79,14 +79,14 @@ public class RpcConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<
 	}
 
 	private RPCFuture sendRequestSync(RpcProtocol<RpcRequest> protocol) {
-		logger.info("-RequestSync-");
+		logger.info("-- Sync request --");
 		RPCFuture rpcFuture = this.getRpcFuture(protocol);
 		channel.writeAndFlush(protocol);
 		return rpcFuture;
 	}
 
 	private RPCFuture sendRequestAsync(RpcProtocol<RpcRequest> protocol) {
-		logger.info("-RequestAsync-");
+		logger.info("-- Async request --");
 		RPCFuture rpcFuture = this.getRpcFuture(protocol);
 		//如果是异步调用，则将RPCFuture放入RpcContext
 		RpcContext.getContext().setRPCFuture(rpcFuture);
@@ -95,7 +95,7 @@ public class RpcConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<
 	}
 
 	private RPCFuture sendRequestOneway(RpcProtocol<RpcRequest> protocol) {
-		logger.info("-Oneway-");
+		logger.info("-- Oneway --");
 		channel.writeAndFlush(protocol);
 		return null;
 	}

@@ -31,5 +31,10 @@
 			<artifactId>tinyrpc-serialization-jdk</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>io.tinyrpc</groupId>
+			<artifactId>tinyrpc-spi</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
 </project>
