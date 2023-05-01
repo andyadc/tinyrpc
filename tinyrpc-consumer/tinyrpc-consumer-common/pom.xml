@@ -20,17 +20,22 @@
 		<dependency>
 			<groupId>io.tinyrpc</groupId>
 			<artifactId>tinyrpc-codec</artifactId>
-			<version>0.0.1</version>
-		</dependency>
-		<dependency>
-			<groupId>io.tinyrpc</groupId>
-			<artifactId>tinyrpc-proxy-jdk</artifactId>
-			<version>0.0.1</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.tinyrpc</groupId>
 			<artifactId>tinyrpc-registry-zookeeper</artifactId>
-			<version>0.0.1</version>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.tinyrpc</groupId>
+			<artifactId>tinyrpc-proxy-jdk</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.tinyrpc</groupId>
+			<artifactId>tinyrpc-proxy-cglib</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 </project>
