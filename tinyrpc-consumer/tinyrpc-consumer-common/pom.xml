@@ -47,5 +47,10 @@
 			<artifactId>tinyrpc-proxy-bytebuddy</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>io.tinyrpc</groupId>
+			<artifactId>tinyrpc-proxy-asm</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
 </project>
