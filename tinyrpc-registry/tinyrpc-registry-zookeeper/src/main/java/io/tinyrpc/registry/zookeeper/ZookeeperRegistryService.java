@@ -2,10 +2,10 @@ package io.tinyrpc.registry.zookeeper;
 
 import io.tinyrpc.common.helper.RpcServiceHelper;
 import io.tinyrpc.loadbalancer.api.ServiceLoadBalancer;
-import io.tinyrpc.loadbalancer.random.RandomServiceLoadBalancer;
 import io.tinyrpc.protocol.meta.ServiceMeta;
 import io.tinyrpc.registry.api.RegistryService;
 import io.tinyrpc.registry.api.config.RegistryConfig;
+import io.tinyrpc.spi.loader.ExtensionLoader;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
@@ -29,6 +29,7 @@ public class ZookeeperRegistryService implements RegistryService {
 
 	private ServiceDiscovery<ServiceMeta> serviceDiscovery;
 
+	// 负载均衡接口
 	private ServiceLoadBalancer<ServiceInstance<ServiceMeta>> serviceInstanceServiceLoadBalancer;
 
 	@Override
@@ -48,8 +49,7 @@ public class ZookeeperRegistryService implements RegistryService {
 			.build();
 		this.serviceDiscovery.start();
 
-		//TODO 默认创建基于随机算法的负载均衡策略，后续基于SPI扩展
-		serviceInstanceServiceLoadBalancer = new RandomServiceLoadBalancer<>();
+		this.serviceInstanceServiceLoadBalancer = ExtensionLoader.getExtension(ServiceLoadBalancer.class, registryConfig.getRegistryLoadBalanceType());
 	}
 
 	@Override

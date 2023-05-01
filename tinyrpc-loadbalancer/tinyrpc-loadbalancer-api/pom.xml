@@ -20,7 +20,12 @@
 		<dependency>
 			<groupId>io.tinyrpc</groupId>
 			<artifactId>tinyrpc-protocol</artifactId>
-			<version>0.0.1</version>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.tinyrpc</groupId>
+			<artifactId>tinyrpc-spi</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 </project>

@@ -35,35 +35,33 @@ public class BaseServer implements Server {
 	protected int port = 27110;
 	//存储的是实体类关系
 	protected Map<String, Object> handlerMap = new HashMap<>();
-
+	protected RegistryService registryService;
 	private String reflectType;
 
-	protected RegistryService registryService;
-
-	public BaseServer(String serverAddress, String registryAddress, String registryType, String reflectType) {
+	public BaseServer(String serverAddress, String registryAddress, String registryType, String registryLoadBalanceType, String reflectType) {
 		if (!Strings.isNullOrEmpty(serverAddress)) {
 			String[] serverArray = serverAddress.split(":");
 			this.host = serverArray[0];
 			this.port = Integer.parseInt(serverArray[1]);
 		}
 		this.reflectType = reflectType;
-		this.registryService = getRegistryService(registryAddress, registryType);
+		this.registryService = getRegistryService(registryAddress, registryType, registryLoadBalanceType);
 	}
 
-	private RegistryService getRegistryService(String registryAddress, String registryType) {
+	private RegistryService getRegistryService(String registryAddress, String registryType, String registryLoadBalanceType) {
 		//TODO 后续扩展支持SPI
 		RegistryService registryService = null;
 
 		try {
 			registryService = new ZookeeperRegistryService();
-			registryService.init(new RegistryConfig(registryAddress, registryType));
+			registryService.init(new RegistryConfig(registryAddress, registryType, registryLoadBalanceType));
 		} catch (Exception e) {
 			logger.error("RPC Server init error", e);
 		}
 		return registryService;
 	}
 
-		@Override
+	@Override
 	public void startNettyServer() {
 		EventLoopGroup bossGroup = new NioEventLoopGroup();
 		EventLoopGroup workerGroup = new NioEventLoopGroup();

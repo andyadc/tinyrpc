@@ -12,8 +12,8 @@ public class RpcSingleServer extends BaseServer {
 
 	private static final Logger logger = LoggerFactory.getLogger(RpcSingleServer.class);
 
-	public RpcSingleServer(String serverAddress, String registryAddress, String registryType, String scanPackage, String reflectType) {
-		super(serverAddress, registryAddress, registryType, reflectType);
+	public RpcSingleServer(String serverAddress, String registryAddress, String registryType, String registryLoadBalanceType, String scanPackage, String reflectType) {
+		super(serverAddress, registryAddress, registryType, registryLoadBalanceType, reflectType);
 
 		try {
 			this.handlerMap = RpcServiceScanner.doScannerWithRpcServiceAnnotationFilterAndRegistryService(

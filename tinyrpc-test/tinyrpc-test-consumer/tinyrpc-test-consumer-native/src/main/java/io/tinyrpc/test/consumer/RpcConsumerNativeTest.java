@@ -18,7 +18,7 @@ public class RpcConsumerNativeTest {
 	private RpcClient rpcClient;
 
 	public static void main(String[] args) throws Exception {
-		RpcClient rpcClient = new RpcClient("127.0.0.1:2181", "zookeeper", "jdk", "1.0.0", "g-1", "jdk", 3000, false, false);
+		RpcClient rpcClient = new RpcClient("127.0.0.1:2181", "zookeeper", "random", "jdk", "1.0.0", "g-1", "jdk", 3000, false, false);
 
 		IAsyncObjectProxy testService = rpcClient.createAsync(TestService.class);
 		RPCFuture rpcFuture = testService.call("hello", "adc");
@@ -32,6 +32,7 @@ public class RpcConsumerNativeTest {
 		rpcClient = new RpcClient(
 			"127.0.0.1:2181",
 			"zookeeper",
+			"random",
 			"asm",
 			"1.0.0",
 			"g-1",

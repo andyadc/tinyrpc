@@ -1,10 +1,14 @@
 package io.tinyrpc.loadbalancer.api;
 
+import io.tinyrpc.common.constants.RpcConstants;
+import io.tinyrpc.spi.annotation.SPI;
+
 import java.util.List;
 
 /**
  * 负载均衡接口
  */
+@SPI(RpcConstants.SERVICE_LOAD_BALANCER_RANDOM)
 public interface ServiceLoadBalancer<T> {
 
 	/**
