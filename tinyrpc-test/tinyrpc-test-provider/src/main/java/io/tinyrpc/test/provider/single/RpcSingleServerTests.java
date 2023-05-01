@@ -12,7 +12,7 @@ public class RpcSingleServerTests {
 			"127.0.0.1:2181",
 			"zookeeper",
 			"io.tinyrpc.test",
-			"bytebuddy");
+			"asm");
 
 		singleServer.startNettyServer();
 	}
