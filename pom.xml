@@ -23,6 +23,7 @@
 		<module>tinyrpc-provider</module>
 		<module>tinyrpc-consumer</module>
 		<module>tinyrpc-test</module>
+		<module>tinyrpc-loadbalancer/tinyrpc-loadbalancer-round-robin</module>
 	</modules>
 
 	<properties>

@@ -22,16 +22,6 @@
 			<artifactId>tinyrpc-registry-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>io.tinyrpc</groupId>
-			<artifactId>tinyrpc-loadbalancer-random</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>io.tinyrpc</groupId>
-			<artifactId>tinyrpc-loadbalancer-random-weight</artifactId>
-			<version>${project.version}</version>
-		</dependency>
 
 		<dependency>
 			<groupId>org.apache.curator</groupId>
