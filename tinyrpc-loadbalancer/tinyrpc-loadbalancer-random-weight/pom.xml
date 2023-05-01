@@ -3,13 +3,13 @@
 		 xmlns="http://maven.apache.org/POM/4.0.0"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<parent>
-		<artifactId>tinyrpc-registry</artifactId>
+		<artifactId>tinyrpc-loadbalancer</artifactId>
 		<groupId>io.tinyrpc</groupId>
 		<version>0.0.1</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>tinyrpc-registry-api</artifactId>
+	<artifactId>tinyrpc-loadbalancer-random-weight</artifactId>
 
 	<properties>
 		<maven.compiler.source>8</maven.compiler.source>
@@ -19,7 +19,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>io.tinyrpc</groupId>
-			<artifactId>tinyrpc-protocol</artifactId>
+			<artifactId>tinyrpc-loadbalancer-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
