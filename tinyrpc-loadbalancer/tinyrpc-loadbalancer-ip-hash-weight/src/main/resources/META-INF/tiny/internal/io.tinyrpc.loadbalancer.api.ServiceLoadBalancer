@@ -1,0 +1,1 @@
+iphashweight=io.tinyrpc.loadbalancer.ip.hash.weight.SourceIpHashWeightServiceLoadBalancer

@@ -22,5 +22,6 @@
 		<module>tinyrpc-loadbalancer-hash-weight</module>
 		<module>tinyrpc-loadbalancer-sourceip-hash</module>
 		<module>tinyrpc-loadbalancer-ip-hash</module>
+		<module>tinyrpc-loadbalancer-ip-hash-weight</module>
 	</modules>
 </project>
