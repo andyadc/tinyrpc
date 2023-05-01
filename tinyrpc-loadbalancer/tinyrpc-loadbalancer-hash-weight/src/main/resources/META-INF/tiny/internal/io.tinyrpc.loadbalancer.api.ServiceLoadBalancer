@@ -1,0 +1,1 @@
+hashweight=io.tinyrpc.loadbalancer.hash.weight.HashWeightServiceLoadBalancer
