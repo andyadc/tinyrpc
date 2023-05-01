@@ -1,10 +1,12 @@
 package io.tinyrpc.proxy.api;
 
 import io.tinyrpc.proxy.api.config.ProxyConfig;
+import io.tinyrpc.spi.annotation.SPI;
 
 /**
  * 代理工厂接口
  */
+@SPI
 public interface ProxyFactory {
 
 	/**

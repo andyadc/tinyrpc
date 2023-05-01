@@ -1,4 +1,4 @@
-package com.andyadc.test.registry;
+package io.tinyrpc.test.registry;
 
 import io.tinyrpc.protocol.meta.ServiceMeta;
 import io.tinyrpc.registry.api.RegistryService;

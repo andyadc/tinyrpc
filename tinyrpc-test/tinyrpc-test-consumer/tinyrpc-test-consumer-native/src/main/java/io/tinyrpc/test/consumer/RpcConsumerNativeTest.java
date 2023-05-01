@@ -15,9 +15,10 @@ import org.slf4j.LoggerFactory;
 public class RpcConsumerNativeTest {
 
 	private static final Logger logger = LoggerFactory.getLogger(RpcConsumerNativeTest.class);
+	private RpcClient rpcClient;
 
 	public static void main(String[] args) throws Exception {
-		RpcClient rpcClient = new RpcClient("127.0.0.1:2181", "zookeeper","1.0.0", "g-1", "jdk", 3000, false, false);
+		RpcClient rpcClient = new RpcClient("127.0.0.1:2181", "zookeeper", "jdk", "1.0.0", "g-1", "jdk", 3000, false, false);
 
 		IAsyncObjectProxy testService = rpcClient.createAsync(TestService.class);
 		RPCFuture rpcFuture = testService.call("hello", "adc");
@@ -26,13 +27,12 @@ public class RpcConsumerNativeTest {
 		rpcClient.shutdown();
 	}
 
-	private RpcClient rpcClient;
-
 	@BeforeEach
 	public void init() {
 		rpcClient = new RpcClient(
 			"127.0.0.1:2181",
 			"zookeeper",
+			"jdk",
 			"1.0.0",
 			"g-1",
 			"protostuff",

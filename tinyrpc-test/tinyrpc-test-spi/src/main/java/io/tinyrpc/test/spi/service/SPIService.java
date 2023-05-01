@@ -1,4 +1,4 @@
-package com.andyadc.test.spi.service;
+package io.tinyrpc.test.spi.service;
 
 import io.tinyrpc.spi.annotation.SPI;
 

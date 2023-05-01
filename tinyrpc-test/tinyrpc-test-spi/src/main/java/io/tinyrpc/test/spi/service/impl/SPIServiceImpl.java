@@ -1,6 +1,6 @@
-package com.andyadc.test.spi.service.impl;
+package io.tinyrpc.test.spi.service.impl;
 
-import com.andyadc.test.spi.service.SPIService;
+import io.tinyrpc.test.spi.service.SPIService;
 import io.tinyrpc.spi.annotation.SPIClass;
 
 @SPIClass

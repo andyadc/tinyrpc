@@ -1,6 +1,6 @@
-package com.andyadc.test.spi;
+package io.tinyrpc.test.spi;
 
-import com.andyadc.test.spi.service.SPIService;
+import io.tinyrpc.test.spi.service.SPIService;
 import io.tinyrpc.spi.loader.ExtensionLoader;
 import org.junit.jupiter.api.Test;
 

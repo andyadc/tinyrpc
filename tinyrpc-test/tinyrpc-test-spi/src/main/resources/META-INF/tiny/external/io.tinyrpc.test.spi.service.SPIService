@@ -1,0 +1,1 @@
+spiService=io.tinyrpc.test.spi.service.impl.SPIServiceImpl

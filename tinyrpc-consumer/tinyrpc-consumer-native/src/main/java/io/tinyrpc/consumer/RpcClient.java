@@ -6,10 +6,10 @@ import io.tinyrpc.proxy.api.ProxyFactory;
 import io.tinyrpc.proxy.api.async.IAsyncObjectProxy;
 import io.tinyrpc.proxy.api.config.ProxyConfig;
 import io.tinyrpc.proxy.api.object.ObjectProxy;
-import io.tinyrpc.proxy.jdk.JdkProxyFactory;
 import io.tinyrpc.registry.api.RegistryService;
 import io.tinyrpc.registry.api.config.RegistryConfig;
 import io.tinyrpc.registry.zookeeper.ZookeeperRegistryService;
+import io.tinyrpc.spi.loader.ExtensionLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,9 +53,14 @@ public class RpcClient {
 	/**
 	 * 注册服务
 	 */
-	private RegistryService registryService;
+	private final RegistryService registryService;
 
-	public RpcClient(String registryAddress, String registryType, String serviceVersion, String serviceGroup, String serializationType, long timeout, boolean async, boolean oneway) {
+	/**
+	 * 代理
+	 */
+	private final String proxy;
+
+	public RpcClient(String registryAddress, String registryType, String proxy, String serviceVersion, String serviceGroup, String serializationType, long timeout, boolean async, boolean oneway) {
 		this.serviceVersion = serviceVersion;
 		this.timeout = timeout;
 		this.serviceGroup = serviceGroup;
@@ -63,6 +68,7 @@ public class RpcClient {
 		this.async = async;
 		this.oneway = oneway;
 		this.registryService = this.getRegistryService(registryAddress, registryType);
+		this.proxy = proxy;
 	}
 
 	private RegistryService getRegistryService(String registryAddress, String registryType) {
@@ -81,7 +87,7 @@ public class RpcClient {
 	}
 
 	public <T> T create(Class<T> interfaceClass) {
-		ProxyFactory proxyFactory = new JdkProxyFactory<>();
+		ProxyFactory proxyFactory = ExtensionLoader.getExtension(ProxyFactory.class, proxy);
 		proxyFactory.init(new ProxyConfig<>(interfaceClass, serviceVersion, serviceGroup, serializationType, timeout, registryService, RpcConsumer.getInstance(), async, oneway));
 		return proxyFactory.getProxy(interfaceClass);
 	}
