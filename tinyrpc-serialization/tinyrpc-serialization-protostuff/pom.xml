@@ -27,5 +27,20 @@
 			<artifactId>tinyrpc-serialization-api</artifactId>
 			<version>0.0.1</version>
 		</dependency>
+		<dependency>
+			<groupId>com.dyuproject.protostuff</groupId>
+			<artifactId>protostuff-core</artifactId>
+			<version>${protostuff.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.dyuproject.protostuff</groupId>
+			<artifactId>protostuff-runtime</artifactId>
+			<version>${protostuff.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.objenesis</groupId>
+			<artifactId>objenesis</artifactId>
+			<version>${objenesis.version}</version>
+		</dependency>
 	</dependencies>
 </project>

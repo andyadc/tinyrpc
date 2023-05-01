@@ -56,5 +56,10 @@
 			<artifactId>tinyrpc-serialization-kryo</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>io.tinyrpc</groupId>
+			<artifactId>tinyrpc-serialization-protostuff</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
 </project>
