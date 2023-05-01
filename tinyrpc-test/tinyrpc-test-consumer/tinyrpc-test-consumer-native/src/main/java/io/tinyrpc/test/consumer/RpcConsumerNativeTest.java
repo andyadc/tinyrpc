@@ -35,7 +35,7 @@ public class RpcConsumerNativeTest {
 			"zookeeper",
 			"1.0.0",
 			"g-1",
-			"json",
+			"hessian2",
 			3000,
 			false,
 			false);

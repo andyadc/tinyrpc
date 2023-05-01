@@ -1,9 +1,10 @@
-package io.tinyrpc.serialization.hessian;
+package io.tinyrpc.serialization.hessian2;
 
 import com.caucho.hessian.io.Hessian2Input;
 import com.caucho.hessian.io.Hessian2Output;
 import io.tinyrpc.common.exception.SerializerException;
 import io.tinyrpc.serialization.api.Serialization;
+import io.tinyrpc.spi.annotation.SPIClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,12 +12,19 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+/**
+ * Hessian2序列化与反序列化
+ */
+@SPIClass
 public class Hessian2Serialization implements Serialization {
 
 	private static final Logger logger = LoggerFactory.getLogger(Hessian2Serialization.class);
 
 	@Override
 	public <T> byte[] serialize(T obj) {
+		if (logger.isDebugEnabled()) {
+			logger.debug("--- hessian2 serialize ---");
+		}
 		if (obj == null) {
 			throw new SerializerException("serialize object is null");
 		}
@@ -33,12 +41,10 @@ public class Hessian2Serialization implements Serialization {
 			throw new SerializerException(e.getMessage(), e);
 		} finally {
 			try {
-				if (hessian2Output != null) {
-					hessian2Output.close();
-					byteArrayOutputStream.close();
-				}
+				hessian2Output.close();
+				byteArrayOutputStream.close();
 			} catch (IOException e) {
-				throw new SerializerException(e.getMessage(), e);
+				logger.error("Hessian2 serialize close error", e);
 			}
 		}
 		return result;
@@ -46,6 +52,9 @@ public class Hessian2Serialization implements Serialization {
 
 	@Override
 	public <T> T deserialize(byte[] data, Class<T> clazz) {
+		if (logger.isDebugEnabled()) {
+			logger.debug("--- hessian2 deserialize ---");
+		}
 		if (data == null) {
 			throw new SerializerException("deserialize data is null");
 		}
@@ -60,14 +69,12 @@ public class Hessian2Serialization implements Serialization {
 			throw new SerializerException(e.getMessage(), e);
 		} finally {
 			try {
-				if (null != hessian2Input) {
-					hessian2Input.close();
-					byteInputStream.close();
-				}
+				hessian2Input.close();
+				byteInputStream.close();
 			} catch (IOException e) {
-				throw new SerializerException(e.getMessage(), e);
+				logger.error("Hessian2 deserialize close error", e);
 			}
-			return object;
 		}
+		return object;
 	}
 }
