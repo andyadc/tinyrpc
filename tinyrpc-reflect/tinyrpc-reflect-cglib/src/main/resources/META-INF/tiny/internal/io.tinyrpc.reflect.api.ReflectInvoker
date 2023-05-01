@@ -1,0 +1,1 @@
+cglib=io.tinyrpc.reflect.cglib.CglibReflectInvoker

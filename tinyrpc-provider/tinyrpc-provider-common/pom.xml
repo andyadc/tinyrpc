@@ -37,6 +37,11 @@
 			<artifactId>tinyrpc-reflect-jdk</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>io.tinyrpc</groupId>
+			<artifactId>tinyrpc-reflect-cglib</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>io.netty</groupId>
