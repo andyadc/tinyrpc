@@ -37,5 +37,10 @@
 			<artifactId>tinyrpc-proxy-cglib</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>io.tinyrpc</groupId>
+			<artifactId>tinyrpc-proxy-javassist</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
 </project>
