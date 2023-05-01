@@ -20,5 +20,7 @@
 		<module>tinyrpc-loadbalancer-round-robin-weight</module>
 		<module>tinyrpc-loadbalancer-hash</module>
 		<module>tinyrpc-loadbalancer-hash-weight</module>
+		<module>tinyrpc-loadbalancer-sourceip-hash</module>
+		<module>tinyrpc-loadbalancer-ip-hash</module>
 	</modules>
 </project>

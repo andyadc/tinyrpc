@@ -21,7 +21,7 @@ public class RobinWeightServiceLoadBalancer<T> implements ServiceLoadBalancer<T>
 	private final AtomicInteger atomicInteger = new AtomicInteger(0);
 
 	@Override
-	public T select(List<T> servers, int hashCode) {
+	public T select(List<T> servers, int hashCode, String sourceIp) {
 		logger.info("--- Round-robin weight LoadBalancer ---");
 		if (servers == null || servers.isEmpty()) {
 			return null;

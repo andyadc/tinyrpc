@@ -19,7 +19,7 @@ public class RandomWeightServiceLoadBalancer<T> implements ServiceLoadBalancer<T
 	private static final Logger logger = LoggerFactory.getLogger(RandomWeightServiceLoadBalancer.class);
 
 	@Override
-	public T select(List<T> servers, int hashCode) {
+	public T select(List<T> servers, int hashCode, String sourceIp) {
 		logger.info("--- Random-Weight LoadBalancer ---");
 		if (servers == null || servers.isEmpty()) {
 			return null;

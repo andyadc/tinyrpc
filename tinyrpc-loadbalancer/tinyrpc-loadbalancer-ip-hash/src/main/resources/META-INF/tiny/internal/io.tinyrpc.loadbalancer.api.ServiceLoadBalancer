@@ -1,0 +1,1 @@
+iphash=io.tinyrpc.loadbalancer.ip.hash.SourceIpHashServiceLoadBalancer

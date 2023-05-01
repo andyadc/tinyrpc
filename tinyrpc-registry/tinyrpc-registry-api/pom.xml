@@ -52,5 +52,10 @@
 			<artifactId>tinyrpc-loadbalancer-hash-weight</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>io.tinyrpc</groupId>
+			<artifactId>tinyrpc-loadbalancer-ip-hash</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
 </project>

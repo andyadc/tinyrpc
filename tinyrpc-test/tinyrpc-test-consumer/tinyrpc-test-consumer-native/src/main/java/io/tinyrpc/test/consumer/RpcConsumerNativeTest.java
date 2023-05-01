@@ -32,7 +32,7 @@ public class RpcConsumerNativeTest {
 		rpcClient = new RpcClient(
 			"127.0.0.1:2181",
 			"zookeeper",
-			"hashweight",
+			"iphash",
 			"asm",
 			"1.0.0",
 			"g-1",

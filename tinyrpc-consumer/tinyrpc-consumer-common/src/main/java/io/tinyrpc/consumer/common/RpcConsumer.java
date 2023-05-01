@@ -8,6 +8,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.tinyrpc.common.helper.RpcServiceHelper;
 import io.tinyrpc.common.threadpool.ClientThreadPool;
+import io.tinyrpc.common.utils.IPUtils;
 import io.tinyrpc.common.utils.JsonUtils;
 import io.tinyrpc.consumer.common.handler.RpcConsumerHandler;
 import io.tinyrpc.consumer.common.helper.RpcConsumerHandlerHelper;
@@ -31,7 +32,10 @@ public class RpcConsumer implements Consumer {
 	private final Bootstrap bootstrap;
 	private final EventLoopGroup eventLoopGroup;
 
+	private final String localIp;
+
 	private RpcConsumer() {
+		localIp = IPUtils.getLocalHostIP();
 		bootstrap = new Bootstrap();
 		eventLoopGroup = new NioEventLoopGroup(4);
 		bootstrap
@@ -65,7 +69,7 @@ public class RpcConsumer implements Consumer {
 		Object[] params = request.getParameters();
 		int invokerHashCode = (params == null || params.length <= 0) ? serviceKey.hashCode() : params[0].hashCode();
 
-		ServiceMeta serviceMeta = registryService.discovery(serviceKey, invokerHashCode);
+		ServiceMeta serviceMeta = registryService.discovery(serviceKey, invokerHashCode, localIp);
 		logger.info(">>> serviceKey={}, serviceMeta={}", serviceKey, JsonUtils.toJSONString(serviceMeta));
 		if (serviceMeta != null) {
 			RpcConsumerHandler handler = RpcConsumerHandlerHelper.get(serviceMeta);
