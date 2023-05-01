@@ -12,8 +12,7 @@ public interface ServiceLoadBalancer<T> {
 	 *
 	 * @param servers  服务列表
 	 * @param hashCode Hash值
-	 * @param sourceIp 源IP地址
 	 * @return 可用的服务节点
 	 */
-	T select(List<T> servers, int hashCode, String sourceIp);
+	T select(List<T> servers, int hashCode);
 }

@@ -1,6 +1,8 @@
 package io.tinyrpc.registry.zookeeper;
 
 import io.tinyrpc.common.helper.RpcServiceHelper;
+import io.tinyrpc.loadbalancer.api.ServiceLoadBalancer;
+import io.tinyrpc.loadbalancer.random.RandomServiceLoadBalancer;
 import io.tinyrpc.protocol.meta.ServiceMeta;
 import io.tinyrpc.registry.api.RegistryService;
 import io.tinyrpc.registry.api.config.RegistryConfig;
@@ -13,7 +15,6 @@ import org.apache.curator.x.discovery.ServiceInstance;
 import org.apache.curator.x.discovery.details.JsonInstanceSerializer;
 
 import java.io.IOException;
-import java.security.SecureRandom;
 import java.util.Collection;
 import java.util.List;
 
@@ -27,6 +28,8 @@ public class ZookeeperRegistryService implements RegistryService {
 	private static final String ZK_BASE_PATH = "/tiny_rpc";
 
 	private ServiceDiscovery<ServiceMeta> serviceDiscovery;
+
+	private ServiceLoadBalancer<ServiceInstance<ServiceMeta>> serviceInstanceServiceLoadBalancer;
 
 	@Override
 	public void init(RegistryConfig registryConfig) throws Exception {
@@ -44,6 +47,9 @@ public class ZookeeperRegistryService implements RegistryService {
 			.basePath(ZK_BASE_PATH)
 			.build();
 		this.serviceDiscovery.start();
+
+		//TODO 默认创建基于随机算法的负载均衡策略，后续基于SPI扩展
+		serviceInstanceServiceLoadBalancer = new RandomServiceLoadBalancer<>();
 	}
 
 	@Override
@@ -73,22 +79,11 @@ public class ZookeeperRegistryService implements RegistryService {
 	@Override
 	public ServiceMeta discovery(String serviceName, int invokerHashCode) throws Exception {
 		Collection<ServiceInstance<ServiceMeta>> serviceInstances = serviceDiscovery.queryForInstances(serviceName);
-		ServiceInstance<ServiceMeta> instance = this.selectOneServiceInstance((List<ServiceInstance<ServiceMeta>>) serviceInstances);
+		ServiceInstance<ServiceMeta> instance = serviceInstanceServiceLoadBalancer.select((List<ServiceInstance<ServiceMeta>>) serviceInstances, invokerHashCode);
 		if (instance != null) {
 			return instance.getPayload();
 		}
 		return null;
-	}
-
-	/**
-	 * 随机挑选一个
-	 */
-	private ServiceInstance<ServiceMeta> selectOneServiceInstance(List<ServiceInstance<ServiceMeta>> serviceInstances) {
-		if (serviceInstances == null || serviceInstances.isEmpty()) {
-			return null;
-		}
-		int r = new SecureRandom().nextInt(serviceInstances.size());
-		return serviceInstances.get(r);
 	}
 
 	@Override
