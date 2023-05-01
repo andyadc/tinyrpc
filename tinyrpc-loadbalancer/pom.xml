@@ -16,5 +16,6 @@
 		<module>tinyrpc-loadbalancer-api</module>
 		<module>tinyrpc-loadbalancer-random</module>
         <module>tinyrpc-loadbalancer-random-weight</module>
+		<module>tinyrpc-loadbalancer-round-robin</module>
     </modules>
 </project>
