@@ -15,7 +15,7 @@ import io.tinyrpc.provider.common.handler.RpcProviderHandler;
 import io.tinyrpc.provider.common.server.api.Server;
 import io.tinyrpc.registry.api.RegistryService;
 import io.tinyrpc.registry.api.config.RegistryConfig;
-import io.tinyrpc.registry.zookeeper.ZookeeperRegistryService;
+import io.tinyrpc.spi.loader.ExtensionLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +28,7 @@ import java.util.Map;
 public class BaseServer implements Server {
 
 	private final Logger logger = LoggerFactory.getLogger(BaseServer.class);
-
+	private final String reflectType;
 	//主机域名或者IP地址
 	protected String host = "127.0.0.1";
 	//端口号
@@ -36,7 +36,6 @@ public class BaseServer implements Server {
 	//存储的是实体类关系
 	protected Map<String, Object> handlerMap = new HashMap<>();
 	protected RegistryService registryService;
-	private String reflectType;
 
 	public BaseServer(String serverAddress, String registryAddress, String registryType, String registryLoadBalanceType, String reflectType) {
 		if (!Strings.isNullOrEmpty(serverAddress)) {
@@ -49,11 +48,8 @@ public class BaseServer implements Server {
 	}
 
 	private RegistryService getRegistryService(String registryAddress, String registryType, String registryLoadBalanceType) {
-		//TODO 后续扩展支持SPI
-		RegistryService registryService = null;
-
+		RegistryService registryService = ExtensionLoader.getExtension(RegistryService.class, registryType);
 		try {
-			registryService = new ZookeeperRegistryService();
 			registryService.init(new RegistryConfig(registryAddress, registryType, registryLoadBalanceType));
 		} catch (Exception e) {
 			logger.error("RPC Server init error", e);

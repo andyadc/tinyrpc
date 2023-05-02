@@ -2,9 +2,11 @@ package io.tinyrpc.registry.api;
 
 import io.tinyrpc.protocol.meta.ServiceMeta;
 import io.tinyrpc.registry.api.config.RegistryConfig;
+import io.tinyrpc.spi.annotation.SPI;
 
 import java.io.IOException;
 
+@SPI
 public interface RegistryService {
 
 	/**

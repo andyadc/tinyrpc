@@ -1,0 +1,1 @@
+zookeeper=io.tinyrpc.registry.zookeeper.ZookeeperRegistryService

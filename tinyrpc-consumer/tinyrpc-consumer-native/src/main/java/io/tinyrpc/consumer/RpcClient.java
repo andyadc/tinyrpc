@@ -8,7 +8,6 @@ import io.tinyrpc.proxy.api.config.ProxyConfig;
 import io.tinyrpc.proxy.api.object.ObjectProxy;
 import io.tinyrpc.registry.api.RegistryService;
 import io.tinyrpc.registry.api.config.RegistryConfig;
-import io.tinyrpc.registry.zookeeper.ZookeeperRegistryService;
 import io.tinyrpc.spi.loader.ExtensionLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,12 +74,11 @@ public class RpcClient {
 		if (registryType == null) {
 			throw new IllegalArgumentException("registry type is null");
 		}
-		//TODO 后续SPI扩展
-		RegistryService registryService = new ZookeeperRegistryService();
+		RegistryService registryService = ExtensionLoader.getExtension(RegistryService.class, registryType);
 		try {
 			registryService.init(new RegistryConfig(registryAddress, registryType, registryLoadBalanceType));
 		} catch (Exception e) {
-			logger.error("RpcClient init registry service throws exception", e);
+			logger.error("RpcClient init registry service error", e);
 			throw new RegistryException(e.getMessage(), e);
 		}
 		return registryService;

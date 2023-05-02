@@ -7,6 +7,7 @@ import io.tinyrpc.loadbalancer.helper.ServiceLoadBalancerHelper;
 import io.tinyrpc.protocol.meta.ServiceMeta;
 import io.tinyrpc.registry.api.RegistryService;
 import io.tinyrpc.registry.api.config.RegistryConfig;
+import io.tinyrpc.spi.annotation.SPIClass;
 import io.tinyrpc.spi.loader.ExtensionLoader;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -15,6 +16,8 @@ import org.apache.curator.x.discovery.ServiceDiscovery;
 import org.apache.curator.x.discovery.ServiceDiscoveryBuilder;
 import org.apache.curator.x.discovery.ServiceInstance;
 import org.apache.curator.x.discovery.details.JsonInstanceSerializer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -23,7 +26,10 @@ import java.util.List;
 /**
  * 基于Zookeeper的注册服务
  */
+@SPIClass
 public class ZookeeperRegistryService implements RegistryService {
+
+	private static final Logger logger = LoggerFactory.getLogger(ZookeeperRegistryService.class);
 
 	private static final int BASE_SLEEP_TIME_MS = 1000;
 	private static final int MAX_RETRIES = 3;
@@ -38,6 +44,9 @@ public class ZookeeperRegistryService implements RegistryService {
 
 	@Override
 	public void init(RegistryConfig registryConfig) throws Exception {
+		if (logger.isDebugEnabled()) {
+			logger.debug("--- Zookeeper Registry ---");
+		}
 		CuratorFramework client = CuratorFrameworkFactory.newClient(
 			registryConfig.getRegistryAddr(),
 			new ExponentialBackoffRetry(BASE_SLEEP_TIME_MS, MAX_RETRIES)
