@@ -27,5 +27,6 @@
         <module>tinyrpc-loadbalancer-random-weight-enhanced</module>
 		<module>tinyrpc-loadbalancer-round-robin-weight-enhanced</module>
 		<module>tinyrpc-loadbalancer-hash-weight-enhanced</module>
+		<module>tinyrpc-loadbalancer-ip-hash-weight-enhanced</module>
 	</modules>
 </project>

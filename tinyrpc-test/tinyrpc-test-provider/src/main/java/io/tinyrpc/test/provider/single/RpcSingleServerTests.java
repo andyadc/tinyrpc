@@ -11,7 +11,7 @@ public class RpcSingleServerTests {
 			"127.0.0.1:27880",
 			"127.0.0.1:2181",
 			"zookeeper",
-			"enhanced_hashweight",
+			"enhanced_iphashweight",
 			"io.tinyrpc.test",
 			"asm");
 
