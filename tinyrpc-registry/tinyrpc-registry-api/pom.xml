@@ -72,5 +72,10 @@
 			<artifactId>tinyrpc-loadbalancer-random-weight-enhanced</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>io.tinyrpc</groupId>
+			<artifactId>tinyrpc-loadbalancer-round-robin-weight-enhanced</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
 </project>
