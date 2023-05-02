@@ -17,7 +17,7 @@ public class ZookeeperRegistryTests {
 		RegistryConfig registryConfig = new RegistryConfig("127.0.0.1:2181", "zookeeper", "random");
 		this.registryService = new ZookeeperRegistryService();
 		this.registryService.init(registryConfig);
-		this.serviceMeta = new ServiceMeta(ZookeeperRegistryTests.class.getName(), "1.0.0", "andyadc", "127.0.0.1", 8080);
+		this.serviceMeta = new ServiceMeta(ZookeeperRegistryTests.class.getName(), "1.0.0", "andyadc", "127.0.0.1", 8080, 1);
 	}
 
 	@Test
@@ -32,7 +32,7 @@ public class ZookeeperRegistryTests {
 
 	@Test
 	public void testDiscovery() throws Exception {
-		registryService.discovery(RegistryService.class.getName(), "adc".hashCode());
+		registryService.discovery(RegistryService.class.getName(), "adc".hashCode(), "198.168.1.1");
 	}
 
 	@Test

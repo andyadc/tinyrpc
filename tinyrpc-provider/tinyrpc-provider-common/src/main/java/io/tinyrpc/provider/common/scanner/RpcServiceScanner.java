@@ -1,6 +1,7 @@
 package io.tinyrpc.provider.common.scanner;
 
 import io.tinyrpc.annotation.RpcService;
+import io.tinyrpc.common.constants.RpcConstants;
 import io.tinyrpc.common.helper.RpcServiceHelper;
 import io.tinyrpc.common.scanner.ClassScanner;
 import io.tinyrpc.protocol.meta.ServiceMeta;
@@ -42,7 +43,7 @@ public class RpcServiceScanner extends ClassScanner {
 					handlerMap.put(key, clazz.newInstance());
 
 					//将元数据注册到注册中心
-					ServiceMeta serviceMeta = new ServiceMeta(serviceName, rpcService.version(), rpcService.group(), host, port);
+					ServiceMeta serviceMeta = new ServiceMeta(serviceName, rpcService.version(), rpcService.group(), host, port, getWeight(rpcService.weight()));
 					registryService.register(serviceMeta);
 				}
 			} catch (Exception e) {
@@ -50,6 +51,16 @@ public class RpcServiceScanner extends ClassScanner {
 			}
 		}
 		return handlerMap;
+	}
+
+	private static int getWeight(int weight) {
+		if (weight < RpcConstants.SERVICE_WEIGHT_MIN) {
+			weight = RpcConstants.SERVICE_WEIGHT_MIN;
+		}
+		if (weight > RpcConstants.SERVICE_WEIGHT_MAX) {
+			weight = RpcConstants.SERVICE_WEIGHT_MAX;
+		}
+		return weight;
 	}
 
 	/**

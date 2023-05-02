@@ -28,4 +28,9 @@ public @interface RpcService {
 	 * 服务分组，默认为空
 	 */
 	String group() default "";
+
+	/**
+	 * 权重
+	 */
+	int weight() default 0;
 }

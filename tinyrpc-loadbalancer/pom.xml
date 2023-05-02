@@ -24,5 +24,6 @@
 		<module>tinyrpc-loadbalancer-ip-hash</module>
 		<module>tinyrpc-loadbalancer-ip-hash-weight</module>
 		<module>tinyrpc-loadbalancer-consistenthash-zk</module>
-	</modules>
+        <module>tinyrpc-loadbalancer-random-weight-enhanced</module>
+    </modules>
 </project>
