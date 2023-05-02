@@ -29,5 +29,6 @@
 		<module>tinyrpc-loadbalancer-hash-weight-enhanced</module>
 		<module>tinyrpc-loadbalancer-ip-hash-weight-enhanced</module>
 		<module>tinyrpc-loadbalancer-consistenthash-zk-enhanced</module>
+		<module>tinyrpc-loadbalancer-least-connections</module>
 	</modules>
 </project>

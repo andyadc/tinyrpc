@@ -13,6 +13,7 @@ import io.tinyrpc.common.utils.JsonUtils;
 import io.tinyrpc.consumer.common.handler.RpcConsumerHandler;
 import io.tinyrpc.consumer.common.helper.RpcConsumerHandlerHelper;
 import io.tinyrpc.consumer.common.initializer.RpcConsumerInitializer;
+import io.tinyrpc.loadbalancer.context.ConnectionsContext;
 import io.tinyrpc.protocol.RpcProtocol;
 import io.tinyrpc.protocol.meta.ServiceMeta;
 import io.tinyrpc.protocol.request.RpcRequest;
@@ -75,11 +76,11 @@ public class RpcConsumer implements Consumer {
 			RpcConsumerHandler handler = RpcConsumerHandlerHelper.get(serviceMeta);
 			//缓存中无RpcClientHandler
 			if (handler == null) {
-				handler = getRpcConsumerHandler(serviceMeta.getServiceAddr(), serviceMeta.getServicePort());
+				handler = getRpcConsumerHandler(serviceMeta);
 				RpcConsumerHandlerHelper.put(serviceMeta, handler);
 			} else if (!handler.getChannel().isActive()) {  // 缓存中存在RpcClientHandler，但不活跃
 				handler.close();
-				handler = getRpcConsumerHandler(serviceMeta.getServiceAddr(), serviceMeta.getServicePort());
+				handler = getRpcConsumerHandler(serviceMeta);
 				RpcConsumerHandlerHelper.put(serviceMeta, handler);
 			}
 			return handler.sendRequest(protocol, request.getAsync(), request.getOneway());
@@ -90,13 +91,17 @@ public class RpcConsumer implements Consumer {
 	/**
 	 * 创建连接并返回RpcClientHandler
 	 */
-	private RpcConsumerHandler getRpcConsumerHandler(String serviceAddress, int port) throws InterruptedException {
+	private RpcConsumerHandler getRpcConsumerHandler(ServiceMeta serviceMeta) throws InterruptedException {
+		String serviceAddress = serviceMeta.getServiceAddr();
+		int port = serviceMeta.getServicePort();
 		ChannelFuture channelFuture = bootstrap.connect(serviceAddress, port).sync();
 		channelFuture.addListener(new ChannelFutureListener() {
 			@Override
 			public void operationComplete(ChannelFuture channelFuture) throws Exception {
 				if (channelFuture.isSuccess()) {
 					logger.info("connect rpc server {} on port {} success.", serviceAddress, port);
+					// 添加连接信息，在服务消费者端记录每个服务提供者实例的连接次数
+					ConnectionsContext.add(serviceMeta);
 				} else {
 					logger.error("connect rpc server {} on port {} failed.", serviceAddress, port);
 					channelFuture.cause().printStackTrace();
