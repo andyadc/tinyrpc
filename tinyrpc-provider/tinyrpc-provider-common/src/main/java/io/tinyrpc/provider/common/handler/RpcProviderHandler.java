@@ -1,5 +1,6 @@
 package io.tinyrpc.provider.common.handler;
 
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -15,6 +16,7 @@ import io.tinyrpc.protocol.enumeration.RpcType;
 import io.tinyrpc.protocol.header.RpcHeader;
 import io.tinyrpc.protocol.request.RpcRequest;
 import io.tinyrpc.protocol.response.RpcResponse;
+import io.tinyrpc.provider.common.cache.ProviderChannelCache;
 import io.tinyrpc.reflect.api.ReflectInvoker;
 import io.tinyrpc.spi.loader.ExtensionLoader;
 import org.slf4j.Logger;
@@ -48,7 +50,7 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 
 		// 异步 ServerThreadPool.submit(() -> {})
 		ServerThreadPool.submit(() -> {
-			RpcProtocol<RpcResponse> responseRpcProtocol = handleMessage(protocol);
+			RpcProtocol<RpcResponse> responseRpcProtocol = handleMessage(protocol, ctx.channel());
 
 			ctx.writeAndFlush(responseRpcProtocol).addListener(new ChannelFutureListener() {
 				@Override
@@ -62,16 +64,19 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 	/**
 	 * 处理消息
 	 */
-	private RpcProtocol<RpcResponse> handleMessage(RpcProtocol<RpcRequest> protocol) {
+	private RpcProtocol<RpcResponse> handleMessage(RpcProtocol<RpcRequest> protocol, Channel channel) {
+		logger.info("Provider received request ===>>> {}", JsonUtils.toJSONString(protocol));
 		RpcProtocol<RpcResponse> responseRpcProtocol = null;
 		RpcHeader header = protocol.getHeader();
-		logger.info("Provider received request ===>>> {}", JsonUtils.toJSONString(protocol));
 
-		if (header.getMsgType() == (byte) RpcType.HEARTBEAT_FROM_CONSUMER.getType()) { // 心跳消息
-			responseRpcProtocol = handleHeartbeatMessage(protocol, header);
-		} else if (header.getMsgType() == (byte) RpcType.REQUEST.getType()) { // 请求消息
+		if (header.getMsgType() == (byte) RpcType.REQUEST.getType()) { // 请求消息
 			responseRpcProtocol = handleRequestMessage(protocol, header);
+		} else if (header.getMsgType() == (byte) RpcType.HEARTBEAT_FROM_CONSUMER.getType()) { // 接收到服务消费者发送的心跳消息
+			responseRpcProtocol = handleHeartbeatMessage(protocol, header);
+		} else if (header.getMsgType() == (byte) RpcType.HEARTBEAT_TO_PROVIDER.getType()) { // 接收到服务消费者响应的心跳消息
+			handleHeartbeatMessageToProvider(protocol, channel);
 		}
+
 		return responseRpcProtocol;
 	}
 
@@ -99,6 +104,14 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 		responseRpcProtocol.setHeader(header);
 		responseRpcProtocol.setBody(response);
 		return responseRpcProtocol;
+	}
+
+	/**
+	 * 处理服务消费者响应的心跳消息
+	 */
+	private void handleHeartbeatMessageToProvider(RpcProtocol<RpcRequest> protocol, Channel channel) {
+		logger.info("receive service consumer heartbeat message, the consumer is: {}, the heartbeat message is: {}",
+			channel.remoteAddress(), protocol.getBody().getParameters()[0]);
 	}
 
 	/**
@@ -150,8 +163,30 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 	}
 
 	@Override
+	public void channelActive(ChannelHandlerContext ctx) throws Exception {
+		super.channelActive(ctx);
+
+		ProviderChannelCache.add(ctx.channel());
+	}
+
+	@Override
+	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+		super.channelInactive(ctx);
+
+		ProviderChannelCache.remove(ctx.channel());
+	}
+
+	@Override
+	public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
+		super.channelUnregistered(ctx);
+
+		ProviderChannelCache.remove(ctx.channel());
+	}
+
+	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
 		logger.error("Server caught exception.", cause);
+		ProviderChannelCache.remove(ctx.channel());
 		ctx.close();
 	}
 }

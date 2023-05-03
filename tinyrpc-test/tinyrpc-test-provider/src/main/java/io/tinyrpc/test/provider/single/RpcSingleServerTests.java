@@ -13,7 +13,9 @@ public class RpcSingleServerTests {
 			"zookeeper",
 			"enhanced_leastconnections",
 			"io.tinyrpc.test",
-			"asm");
+			"asm",
+			30000,
+			60000);
 
 		singleServer.startNettyServer();
 	}

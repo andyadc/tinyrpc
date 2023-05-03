@@ -12,6 +12,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.tinyrpc.codec.RpcDecoder;
 import io.tinyrpc.codec.RpcEncoder;
 import io.tinyrpc.provider.common.handler.RpcProviderHandler;
+import io.tinyrpc.provider.common.manager.ProviderConnectionManager;
 import io.tinyrpc.provider.common.server.api.Server;
 import io.tinyrpc.registry.api.RegistryService;
 import io.tinyrpc.registry.api.config.RegistryConfig;
@@ -21,6 +22,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 基础服务
@@ -28,21 +32,39 @@ import java.util.Map;
 public class BaseServer implements Server {
 
 	private final Logger logger = LoggerFactory.getLogger(BaseServer.class);
+
 	private final String reflectType;
-	//主机域名或者IP地址
+	// 默认主机域名或者IP地址
 	protected String host = "127.0.0.1";
-	//端口号
+	// 默认端口号
 	protected int port = 27110;
-	//存储的是实体类关系
+	// 存储的是实体类关系
 	protected Map<String, Object> handlerMap = new HashMap<>();
 	protected RegistryService registryService;
 
-	public BaseServer(String serverAddress, String registryAddress, String registryType, String registryLoadBalanceType, String reflectType) {
+	//心跳定时任务线程池
+	private ScheduledExecutorService scheduledExecutorService;
+
+	//心跳间隔时间，默认30秒
+	private int heartbeatInterval = 30000;
+	//扫描并移除空闲连接时间，默认60秒
+	private int scanNotActiveChannelInterval = 60000;
+
+	public BaseServer(String serverAddress, String registryAddress, String registryType, String registryLoadBalanceType, String reflectType,
+					  int heartbeatInterval, int scanNotActiveChannelInterval) {
 		if (!Strings.isNullOrEmpty(serverAddress)) {
 			String[] serverArray = serverAddress.split(":");
 			this.host = serverArray[0];
 			this.port = Integer.parseInt(serverArray[1]);
 		}
+
+		if (heartbeatInterval > 0) {
+			this.heartbeatInterval = heartbeatInterval;
+		}
+		if (scanNotActiveChannelInterval > 0) {
+			this.scanNotActiveChannelInterval = scanNotActiveChannelInterval;
+		}
+
 		this.reflectType = reflectType;
 		this.registryService = getRegistryService(registryAddress, registryType, registryLoadBalanceType);
 	}
@@ -59,6 +81,9 @@ public class BaseServer implements Server {
 
 	@Override
 	public void startNettyServer() {
+		// 启动心跳
+		this.startHeartbeat();
+
 		EventLoopGroup bossGroup = new NioEventLoopGroup();
 		EventLoopGroup workerGroup = new NioEventLoopGroup();
 		try {
@@ -69,7 +94,6 @@ public class BaseServer implements Server {
 				.childHandler(new ChannelInitializer<SocketChannel>() {
 					@Override
 					protected void initChannel(SocketChannel ch) throws Exception {
-						// TODO
 						ch.pipeline()
 							.addLast(new RpcDecoder())
 							.addLast(new RpcEncoder())
@@ -88,5 +112,20 @@ public class BaseServer implements Server {
 			workerGroup.shutdownGracefully();
 			bossGroup.shutdownGracefully();
 		}
+	}
+
+	private void startHeartbeat() {
+		scheduledExecutorService = Executors.newScheduledThreadPool(2);
+
+		//扫描并处理所有不活跃的连接
+		scheduledExecutorService.scheduleAtFixedRate(() -> {
+			logger.info("=== scan Not active Channel ===");
+			ProviderConnectionManager.scanNotActiveChannel();
+		}, 10 * 1000, scanNotActiveChannelInterval, TimeUnit.MILLISECONDS);
+
+		scheduledExecutorService.scheduleAtFixedRate(() -> {
+			logger.info("=== broadcast Ping message from provoder ===");
+			ProviderConnectionManager.broadcastPingMessageFromProvider();
+		}, 3 * 1000, heartbeatInterval, TimeUnit.MILLISECONDS);
 	}
 }

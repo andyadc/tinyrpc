@@ -55,7 +55,7 @@ public class RpcConsumerNativeTest {
 		String result = service.hello("andyadc");
 		logger.info("返回的结果数据 ===>>> " + result);
 
-		ThreadUtil.sleep(10, TimeUnit.SECONDS);
+		ThreadUtil.sleep(60, TimeUnit.SECONDS);
 
 		rpcClient.shutdown();
 	}
