@@ -6,6 +6,7 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.tinyrpc.common.constants.RpcConstants;
 import io.tinyrpc.common.helper.RpcServiceHelper;
 import io.tinyrpc.common.threadpool.ClientThreadPool;
 import io.tinyrpc.common.utils.IPUtils;
@@ -41,18 +42,25 @@ public class RpcConsumer implements Consumer {
 
 	private ScheduledExecutorService scheduledExecutorService;
 
-	//心跳间隔时间，默认30秒
+	// 心跳间隔时间，默认30秒
 	private int heartbeatInterval = 30000;
-	//扫描并移除空闲连接时间，默认60秒
+	// 扫描并移除空闲连接时间，默认60秒
 	private int scanNotActiveChannelInterval = 60000;
 
-	private RpcConsumer(int heartbeatInterval, int scanNotActiveChannelInterval) {
+	// 重试间隔时间
+	private int retryInterval = 1000;
+	// 重试次数
+	private int retryTimes = 3;
+
+	private RpcConsumer(int heartbeatInterval, int scanNotActiveChannelInterval, int retryInterval, int retryTimes) {
 		if (heartbeatInterval > 0) {
 			this.heartbeatInterval = heartbeatInterval;
 		}
 		if (scanNotActiveChannelInterval > 0) {
 			this.scanNotActiveChannelInterval = scanNotActiveChannelInterval;
 		}
+		this.retryInterval = retryInterval <= 0 ? RpcConstants.DEFAULT_RETRY_INTERVAL : retryInterval;
+		this.retryTimes = retryTimes <= 0 ? RpcConstants.DEFAULT_RETRY_TIMES : retryTimes;
 
 		localIp = IPUtils.getLocalHostIP();
 		bootstrap = new Bootstrap();
@@ -65,11 +73,11 @@ public class RpcConsumer implements Consumer {
 		this.startHeartbeat();
 	}
 
-	public static RpcConsumer getInstance(int heartbeatInterval, int scanNotActiveChannelInterval) {
+	public static RpcConsumer getInstance(int heartbeatInterval, int scanNotActiveChannelInterval, int retryInterval, int retryTimes) {
 		if (instance == null) {
 			synchronized (RpcConsumer.class) {
 				if (instance == null) {
-					instance = new RpcConsumer(heartbeatInterval, scanNotActiveChannelInterval);
+					instance = new RpcConsumer(heartbeatInterval, scanNotActiveChannelInterval, retryInterval, retryTimes);
 				}
 			}
 		}
@@ -104,7 +112,7 @@ public class RpcConsumer implements Consumer {
 		Object[] params = request.getParameters();
 		int invokerHashCode = (params == null || params.length <= 0) ? serviceKey.hashCode() : params[0].hashCode();
 
-		ServiceMeta serviceMeta = registryService.discovery(serviceKey, invokerHashCode, localIp);
+		ServiceMeta serviceMeta = this.getServiceMeta(registryService, serviceKey, invokerHashCode);
 		logger.info(">>> serviceKey={}, serviceMeta={}", serviceKey, JsonUtils.toJSONString(serviceMeta));
 		if (serviceMeta != null) {
 			RpcConsumerHandler handler = RpcConsumerHandlerHelper.get(serviceMeta);
@@ -120,6 +128,26 @@ public class RpcConsumer implements Consumer {
 			return handler.sendRequest(protocol, request.getAsync(), request.getOneway());
 		}
 		return null;
+	}
+
+	/**
+	 * 重试获取服务提供者元数据
+	 */
+	private ServiceMeta getServiceMeta(RegistryService registryService, String serviceKey, int invokerHashCode) throws Exception {
+		// 首次获取服务元数据信息，如果获取到，则直接返回，否则进行重试
+		logger.info("retrieve service provider meta data");
+		ServiceMeta serviceMeta = registryService.discovery(serviceKey, invokerHashCode, localIp);
+		if (serviceMeta == null) {
+			for (int i = 1; i <= retryTimes; i++) {
+				logger.info("retrieve meta data. 【{}】 retry ...", i);
+				serviceMeta = registryService.discovery(serviceKey, invokerHashCode, localIp);
+				if (serviceMeta != null) {
+					break;
+				}
+				Thread.sleep(retryInterval);
+			}
+		}
+		return serviceMeta;
 	}
 
 	/**
