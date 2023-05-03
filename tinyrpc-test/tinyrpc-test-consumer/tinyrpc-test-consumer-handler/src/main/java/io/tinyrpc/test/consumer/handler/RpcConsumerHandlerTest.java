@@ -20,7 +20,7 @@ public class RpcConsumerHandlerTest {
 	private static final Logger logger = LoggerFactory.getLogger(RpcConsumerHandlerTest.class);
 
 	public static void main(String[] args) throws Exception {
-		RpcConsumer consumer = RpcConsumer.getInstance();
+		RpcConsumer consumer = RpcConsumer.getInstance(30000, 60000);
 
 		RPCFuture future = consumer.sendRequest(getRpcRequestProtocol(), getRegistryService("127.0.0.1:2181", "zookeeper", "random"));
 		future.addCallback(new AsyncRPCCallback() {
@@ -41,7 +41,7 @@ public class RpcConsumerHandlerTest {
 	}
 
 	public static void mainAsync(String[] args) throws Exception {
-		RpcConsumer consumer = RpcConsumer.getInstance();
+		RpcConsumer consumer = RpcConsumer.getInstance(30000, 60000);
 
 		consumer.sendRequest(getRpcRequestProtocolAsync(), getRegistryService("127.0.0.1:2181", "zookeeper", "random"));
 		RPCFuture future = RpcContext.getContext().getRPCFuture();
@@ -51,7 +51,7 @@ public class RpcConsumerHandlerTest {
 	}
 
 	public static void mainOneway(String[] args) throws Exception {
-		RpcConsumer consumer = RpcConsumer.getInstance();
+		RpcConsumer consumer = RpcConsumer.getInstance(30000, 60000);
 
 		consumer.sendRequest(getRpcRequestProtocolOneway(), getRegistryService("127.0.0.1:2181", "zookeeper", "random"));
 		logger.info("无需获取返回的结果数据");

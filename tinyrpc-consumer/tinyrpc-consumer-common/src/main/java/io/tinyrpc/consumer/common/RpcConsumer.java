@@ -41,7 +41,19 @@ public class RpcConsumer implements Consumer {
 
 	private ScheduledExecutorService scheduledExecutorService;
 
-	private RpcConsumer() {
+	//心跳间隔时间，默认30秒
+	private int heartbeatInterval = 30000;
+	//扫描并移除空闲连接时间，默认60秒
+	private int scanNotActiveChannelInterval = 60000;
+
+	private RpcConsumer(int heartbeatInterval, int scanNotActiveChannelInterval) {
+		if (heartbeatInterval > 0) {
+			this.heartbeatInterval = heartbeatInterval;
+		}
+		if (scanNotActiveChannelInterval > 0) {
+			this.scanNotActiveChannelInterval = scanNotActiveChannelInterval;
+		}
+
 		localIp = IPUtils.getLocalHostIP();
 		bootstrap = new Bootstrap();
 		eventLoopGroup = new NioEventLoopGroup(4);
@@ -49,15 +61,15 @@ public class RpcConsumer implements Consumer {
 			.group(eventLoopGroup)
 			.channel(NioSocketChannel.class)
 			.handler(new RpcConsumerInitializer());
-		// TODO 启动心跳，后续优化
+		//TODO 启动心跳，后续优化
 		this.startHeartbeat();
 	}
 
-	public static RpcConsumer getInstance() {
+	public static RpcConsumer getInstance(int heartbeatInterval, int scanNotActiveChannelInterval) {
 		if (instance == null) {
 			synchronized (RpcConsumer.class) {
 				if (instance == null) {
-					instance = new RpcConsumer();
+					instance = new RpcConsumer(heartbeatInterval, scanNotActiveChannelInterval);
 				}
 			}
 		}
@@ -70,12 +82,12 @@ public class RpcConsumer implements Consumer {
 		scheduledExecutorService.scheduleAtFixedRate(() -> {
 			logger.info("=== scan Not active Channel ===");
 			ConsumerConnectionManager.scanNotActiveChannel();
-		}, 10, 60, TimeUnit.SECONDS);
+		}, 10 * 1000, scanNotActiveChannelInterval, TimeUnit.MILLISECONDS);
 
 		scheduledExecutorService.scheduleAtFixedRate(() -> {
 			logger.info("=== broadcast Ping message from consumer ===");
 			ConsumerConnectionManager.broadcastPingMessageFromConsumer();
-		}, 3, 30, TimeUnit.SECONDS);
+		}, 3 * 1000, heartbeatInterval, TimeUnit.MILLISECONDS);
 	}
 
 	public void close() {
