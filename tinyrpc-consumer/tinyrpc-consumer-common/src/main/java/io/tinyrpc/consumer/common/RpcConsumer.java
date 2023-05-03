@@ -25,9 +25,11 @@ import io.tinyrpc.registry.api.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.ConnectException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 服务消费者
@@ -39,18 +41,17 @@ public class RpcConsumer implements Consumer {
 	private final Bootstrap bootstrap;
 	private final EventLoopGroup eventLoopGroup;
 	private final String localIp;
-
+	// 重试间隔时间
+	private final int retryInterval;
+	// 重试次数
+	private final int retryTimes;
+	// 当前重试次数
+	private final AtomicInteger currentConnectRetryTimes = new AtomicInteger(0);
 	private ScheduledExecutorService scheduledExecutorService;
-
 	// 心跳间隔时间，默认30秒
 	private int heartbeatInterval = 30000;
 	// 扫描并移除空闲连接时间，默认60秒
 	private int scanNotActiveChannelInterval = 60000;
-
-	// 重试间隔时间
-	private int retryInterval = 1000;
-	// 重试次数
-	private int retryTimes = 3;
 
 	private RpcConsumer(int heartbeatInterval, int scanNotActiveChannelInterval, int retryInterval, int retryTimes) {
 		if (heartbeatInterval > 0) {
@@ -114,20 +115,29 @@ public class RpcConsumer implements Consumer {
 
 		ServiceMeta serviceMeta = this.getServiceMeta(registryService, serviceKey, invokerHashCode);
 		logger.info(">>> serviceKey={}, serviceMeta={}", serviceKey, JsonUtils.toJSONString(serviceMeta));
+
+//		if (serviceMeta != null) {
+//			RpcConsumerHandler handler = RpcConsumerHandlerHelper.get(serviceMeta);
+//			if (handler == null) { // 缓存中无RpcClientHandler
+//				handler = getRpcConsumerHandler(serviceMeta);
+//				RpcConsumerHandlerHelper.put(serviceMeta, handler);
+//			} else if (!handler.getChannel().isActive()) {  // 缓存中存在RpcClientHandler，但不活跃
+//				handler.close();
+//				handler = getRpcConsumerHandler(serviceMeta);
+//				RpcConsumerHandlerHelper.put(serviceMeta, handler);
+//			}
+//			return handler.sendRequest(protocol, request.getAsync(), request.getOneway());
+//		}
+
+		RpcConsumerHandler handler = null;
 		if (serviceMeta != null) {
-			RpcConsumerHandler handler = RpcConsumerHandlerHelper.get(serviceMeta);
-			//缓存中无RpcClientHandler
-			if (handler == null) {
-				handler = getRpcConsumerHandler(serviceMeta);
-				RpcConsumerHandlerHelper.put(serviceMeta, handler);
-			} else if (!handler.getChannel().isActive()) {  // 缓存中存在RpcClientHandler，但不活跃
-				handler.close();
-				handler = getRpcConsumerHandler(serviceMeta);
-				RpcConsumerHandlerHelper.put(serviceMeta, handler);
-			}
-			return handler.sendRequest(protocol, request.getAsync(), request.getOneway());
+			handler = getRpcConsumerHandlerWithRetry(serviceMeta);
 		}
-		return null;
+		RPCFuture rpcFuture = null;
+		if (handler != null) {
+			rpcFuture = handler.sendRequest(protocol, request.getAsync(), request.getOneway());
+		}
+		return rpcFuture;
 	}
 
 	/**
@@ -164,6 +174,8 @@ public class RpcConsumer implements Consumer {
 					logger.info("connect rpc server {} on port {} success.", serviceAddress, port);
 					// 添加连接信息，在服务消费者端记录每个服务提供者实例的连接次数
 					ConnectionsContext.add(serviceMeta);
+					//连接成功，将当前连接重试次数设置为0
+					currentConnectRetryTimes.set(0);
 				} else {
 					logger.error("connect rpc server {} on port {} failed.", serviceAddress, port);
 					channelFuture.cause().printStackTrace();
@@ -172,5 +184,45 @@ public class RpcConsumer implements Consumer {
 			}
 		});
 		return channelFuture.channel().pipeline().get(RpcConsumerHandler.class);
+	}
+
+	/**
+	 * 获取RpcConsumerHandler
+	 */
+	private RpcConsumerHandler getRpcConsumerHandlerWithRetry(ServiceMeta serviceMeta) throws InterruptedException {
+		logger.info("Consumer connecting server provider...");
+		RpcConsumerHandler handler = null;
+		try {
+			handler = this.getRpcConsumerHandlerWithCache(serviceMeta);
+		} catch (Exception e) {
+			// 连接异常
+			if (e instanceof ConnectException) {
+				// 启动重试机制
+				if (handler == null) {
+					if (currentConnectRetryTimes.get() < retryTimes) {
+						handler = this.getRpcConsumerHandlerWithRetry(serviceMeta);
+						logger.info("connect server provider 【{}】 retry...", currentConnectRetryTimes.incrementAndGet());
+						Thread.sleep(retryInterval);
+					}
+				}
+			}
+		}
+		return handler;
+	}
+
+	/**
+	 * 从缓存中获取RpcConsumerHandler，缓存中没有，再创建
+	 */
+	private RpcConsumerHandler getRpcConsumerHandlerWithCache(ServiceMeta serviceMeta) throws InterruptedException {
+		RpcConsumerHandler handler = RpcConsumerHandlerHelper.get(serviceMeta);
+		if (handler == null) { // 缓存中无RpcClientHandler
+			handler = getRpcConsumerHandler(serviceMeta);
+			RpcConsumerHandlerHelper.put(serviceMeta, handler);
+		} else if (!handler.getChannel().isActive()) {  // 缓存中存在RpcClientHandler，但不活跃
+			handler.close();
+			handler = getRpcConsumerHandler(serviceMeta);
+			RpcConsumerHandlerHelper.put(serviceMeta, handler);
+		}
+		return handler;
 	}
 }
