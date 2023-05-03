@@ -6,6 +6,7 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.tinyrpc.common.utils.JsonUtils;
+import io.tinyrpc.consumer.common.cache.ConsumerChannelCache;
 import io.tinyrpc.consumer.common.context.RpcContext;
 import io.tinyrpc.protocol.RpcProtocol;
 import io.tinyrpc.protocol.enumeration.RpcType;
@@ -45,6 +46,8 @@ public class RpcConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		super.channelActive(ctx);
 		this.remotePeer = this.channel.remoteAddress();
+
+		ConsumerChannelCache.add(channel);
 	}
 
 	@Override
@@ -59,6 +62,20 @@ public class RpcConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<
 			return;
 		}
 		handleMessage(protocol);
+	}
+
+	@Override
+	public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
+		super.channelUnregistered(ctx);
+
+		ConsumerChannelCache.remove(channel);
+	}
+
+	@Override
+	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+		super.channelInactive(ctx);
+
+		ConsumerChannelCache.remove(channel);
 	}
 
 	private void handleMessage(RpcProtocol<RpcResponse> protocol) {
@@ -76,8 +93,8 @@ public class RpcConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<
 	 * 处理心跳消息
 	 */
 	private void handleHeartbeatMessage(RpcProtocol<RpcResponse> protocol) {
-		//此处简单打印即可,实际场景可不做处理
-		logger.info("receive service provider heartbeat message: {}", protocol.getBody().getResult());
+		// 此处简单打印即可,实际场景可不做处理
+		logger.info("receive service provider heartbeat message, the provider is: {}, the heartbeat message is: {}", channel.remoteAddress(), protocol.getBody().getResult());
 	}
 
 	/**
@@ -93,6 +110,8 @@ public class RpcConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<
 
 	public void close() {
 		channel.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
+
+		ConsumerChannelCache.remove(channel);
 	}
 
 	public RPCFuture sendRequest(RpcProtocol<RpcRequest> protocol, boolean async, boolean oneway) {

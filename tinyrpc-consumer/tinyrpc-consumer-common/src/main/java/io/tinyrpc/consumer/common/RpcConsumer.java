@@ -13,6 +13,7 @@ import io.tinyrpc.common.utils.JsonUtils;
 import io.tinyrpc.consumer.common.handler.RpcConsumerHandler;
 import io.tinyrpc.consumer.common.helper.RpcConsumerHandlerHelper;
 import io.tinyrpc.consumer.common.initializer.RpcConsumerInitializer;
+import io.tinyrpc.consumer.common.manager.ConsumerConnectionManager;
 import io.tinyrpc.loadbalancer.context.ConnectionsContext;
 import io.tinyrpc.protocol.RpcProtocol;
 import io.tinyrpc.protocol.meta.ServiceMeta;
@@ -23,6 +24,10 @@ import io.tinyrpc.registry.api.RegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 /**
  * 服务消费者
  */
@@ -32,8 +37,9 @@ public class RpcConsumer implements Consumer {
 	private static volatile RpcConsumer instance;
 	private final Bootstrap bootstrap;
 	private final EventLoopGroup eventLoopGroup;
-
 	private final String localIp;
+
+	private ScheduledExecutorService scheduledExecutorService;
 
 	private RpcConsumer() {
 		localIp = IPUtils.getLocalHostIP();
@@ -43,6 +49,8 @@ public class RpcConsumer implements Consumer {
 			.group(eventLoopGroup)
 			.channel(NioSocketChannel.class)
 			.handler(new RpcConsumerInitializer());
+		// TODO 启动心跳，后续优化
+		this.startHeartbeat();
 	}
 
 	public static RpcConsumer getInstance() {
@@ -54,6 +62,20 @@ public class RpcConsumer implements Consumer {
 			}
 		}
 		return instance;
+	}
+
+	private void startHeartbeat() {
+		scheduledExecutorService = Executors.newScheduledThreadPool(2);
+		// 扫描并处理所有不活跃的连接
+		scheduledExecutorService.scheduleAtFixedRate(() -> {
+			logger.info("=== scan Not active Channel ===");
+			ConsumerConnectionManager.scanNotActiveChannel();
+		}, 10, 60, TimeUnit.SECONDS);
+
+		scheduledExecutorService.scheduleAtFixedRate(() -> {
+			logger.info("=== broadcast Ping message from consumer ===");
+			ConsumerConnectionManager.broadcastPingMessageFromConsumer();
+		}, 3, 30, TimeUnit.SECONDS);
 	}
 
 	public void close() {

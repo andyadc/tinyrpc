@@ -1,5 +1,6 @@
 package io.tinyrpc.test.consumer;
 
+import io.tinyrpc.common.utils.ThreadUtil;
 import io.tinyrpc.consumer.RpcClient;
 import io.tinyrpc.proxy.api.async.IAsyncObjectProxy;
 import io.tinyrpc.proxy.api.future.RPCFuture;
@@ -8,6 +9,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * 测试Java原生启动服务消费者
@@ -47,6 +50,8 @@ public class RpcConsumerNativeTest {
 		TestService service = rpcClient.create(TestService.class);
 		String result = service.hello("andyadc");
 		logger.info("返回的结果数据 ===>>> " + result);
+
+		ThreadUtil.sleep(10, TimeUnit.SECONDS);
 
 		rpcClient.shutdown();
 	}

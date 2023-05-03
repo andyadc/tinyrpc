@@ -4,6 +4,7 @@ import io.tinyrpc.common.exception.RegistryException;
 import io.tinyrpc.consumer.common.RpcConsumer;
 import io.tinyrpc.consumer.common.context.RpcContext;
 import io.tinyrpc.protocol.RpcProtocol;
+import io.tinyrpc.protocol.enumeration.RpcType;
 import io.tinyrpc.protocol.header.RpcHeaderFactory;
 import io.tinyrpc.protocol.request.RpcRequest;
 import io.tinyrpc.proxy.api.callback.AsyncRPCCallback;
@@ -76,7 +77,7 @@ public class RpcConsumerHandlerTest {
 	private static RpcProtocol<RpcRequest> getRpcRequestProtocol() {
 		//模拟发送数据
 		RpcProtocol<RpcRequest> protocol = new RpcProtocol<>();
-		protocol.setHeader(RpcHeaderFactory.getRequestHeader("jdk"));
+		protocol.setHeader(RpcHeaderFactory.getRequestHeader("jdk", RpcType.REQUEST.getType()));
 
 		RpcRequest request = new RpcRequest();
 		request.setClassName("io.tinyrpc.test.api.TestService");
@@ -95,7 +96,7 @@ public class RpcConsumerHandlerTest {
 	private static RpcProtocol<RpcRequest> getRpcRequestProtocolAsync() {
 		//模拟发送数据
 		RpcProtocol<RpcRequest> protocol = new RpcProtocol<>();
-		protocol.setHeader(RpcHeaderFactory.getRequestHeader("jdk"));
+		protocol.setHeader(RpcHeaderFactory.getRequestHeader("jdk", RpcType.REQUEST.getType()));
 
 		RpcRequest request = new RpcRequest();
 		request.setClassName("io.tinyrpc.test.api.TestService");
@@ -114,7 +115,7 @@ public class RpcConsumerHandlerTest {
 	private static RpcProtocol<RpcRequest> getRpcRequestProtocolOneway() {
 		//模拟发送数据
 		RpcProtocol<RpcRequest> protocol = new RpcProtocol<>();
-		protocol.setHeader(RpcHeaderFactory.getRequestHeader("jdk"));
+		protocol.setHeader(RpcHeaderFactory.getRequestHeader("jdk", RpcType.REQUEST.getType()));
 
 		RpcRequest request = new RpcRequest();
 		request.setClassName("io.tinyrpc.test.api.TestService");

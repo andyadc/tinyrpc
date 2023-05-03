@@ -1,6 +1,7 @@
 package io.tinyrpc.protocol.test;
 
 import io.tinyrpc.protocol.RpcProtocol;
+import io.tinyrpc.protocol.enumeration.RpcType;
 import io.tinyrpc.protocol.header.RpcHeader;
 import io.tinyrpc.protocol.header.RpcHeaderFactory;
 import io.tinyrpc.protocol.request.RpcRequest;
@@ -8,7 +9,7 @@ import io.tinyrpc.protocol.request.RpcRequest;
 public class Tests {
 
 	public static RpcProtocol<RpcRequest> getRpcProtocol() {
-		RpcHeader header = RpcHeaderFactory.getRequestHeader("jdk");
+		RpcHeader header = RpcHeaderFactory.getRequestHeader("jdk", RpcType.REQUEST.getType());
 		RpcRequest body = new RpcRequest();
 		body.setOneway(false);
 		body.setAsync(false);

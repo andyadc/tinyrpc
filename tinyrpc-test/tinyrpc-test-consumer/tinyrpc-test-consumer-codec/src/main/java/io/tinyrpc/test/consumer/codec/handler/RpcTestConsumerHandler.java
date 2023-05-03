@@ -4,6 +4,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.tinyrpc.common.utils.JsonUtils;
 import io.tinyrpc.protocol.RpcProtocol;
+import io.tinyrpc.protocol.enumeration.RpcType;
 import io.tinyrpc.protocol.header.RpcHeaderFactory;
 import io.tinyrpc.protocol.request.RpcRequest;
 import io.tinyrpc.protocol.response.RpcResponse;
@@ -19,7 +20,7 @@ public class RpcTestConsumerHandler extends SimpleChannelInboundHandler<RpcProto
 		logger.info("发送数据开始...");
 		//模拟发送数据
 		RpcProtocol<RpcRequest> protocol = new RpcProtocol<>();
-		protocol.setHeader(RpcHeaderFactory.getRequestHeader("jdk"));
+		protocol.setHeader(RpcHeaderFactory.getRequestHeader("jdk", RpcType.REQUEST.getType()));
 		RpcRequest request = new RpcRequest();
 
 		request.setClassName("io.tinyrpc.test.api.TestService");
