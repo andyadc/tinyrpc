@@ -9,8 +9,10 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.timeout.IdleStateHandler;
 import io.tinyrpc.codec.RpcDecoder;
 import io.tinyrpc.codec.RpcEncoder;
+import io.tinyrpc.common.constants.RpcConstants;
 import io.tinyrpc.provider.common.handler.RpcProviderHandler;
 import io.tinyrpc.provider.common.manager.ProviderConnectionManager;
 import io.tinyrpc.provider.common.server.api.Server;
@@ -95,9 +97,11 @@ public class BaseServer implements Server {
 					@Override
 					protected void initChannel(SocketChannel ch) throws Exception {
 						ch.pipeline()
-							.addLast(new RpcDecoder())
-							.addLast(new RpcEncoder())
-							.addLast(new RpcProviderHandler(reflectType, handlerMap));
+							.addLast(RpcConstants.CODEC_DECODER, new RpcDecoder())
+							.addLast(RpcConstants.CODEC_ENCODER, new RpcEncoder())
+							.addLast(RpcConstants.CODEC_SERVER_IDLE_HANDLER,
+								new IdleStateHandler(0, 0, heartbeatInterval, TimeUnit.MILLISECONDS))
+							.addLast(RpcConstants.CODEC_HANDLER, new RpcProviderHandler(reflectType, handlerMap));
 					}
 				})
 				.option(ChannelOption.SO_BACKLOG, 128)

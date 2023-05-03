@@ -1,10 +1,12 @@
 package io.tinyrpc.provider.common.handler;
 
+import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.handler.timeout.IdleStateEvent;
 import io.tinyrpc.common.constants.RpcConstants;
 import io.tinyrpc.common.exception.RpcException;
 import io.tinyrpc.common.helper.RpcServiceHelper;
@@ -160,6 +162,21 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 		}
 
 		return this.reflectInvoker.invokeMethod(serviceBean, serviceClass, methodName, parameterTypes, parameters);
+	}
+
+	@Override
+	public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+		// 如果是IdleStateEvent事件
+		if (evt instanceof IdleStateEvent) {
+			Channel channel = ctx.channel();
+			try {
+				logger.info("IdleStateEvent triggered, close channel " + channel.remoteAddress());
+				channel.close();
+			} finally {
+				channel.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
+			}
+		}
+		super.userEventTriggered(ctx, evt);
 	}
 
 	@Override

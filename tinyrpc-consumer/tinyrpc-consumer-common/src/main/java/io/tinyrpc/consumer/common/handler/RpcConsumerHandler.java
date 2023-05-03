@@ -5,6 +5,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.handler.timeout.IdleStateEvent;
 import io.tinyrpc.common.constants.RpcConstants;
 import io.tinyrpc.common.utils.JsonUtils;
 import io.tinyrpc.consumer.common.cache.ConsumerChannelCache;
@@ -13,6 +14,7 @@ import io.tinyrpc.protocol.RpcProtocol;
 import io.tinyrpc.protocol.enumeration.RpcStatus;
 import io.tinyrpc.protocol.enumeration.RpcType;
 import io.tinyrpc.protocol.header.RpcHeader;
+import io.tinyrpc.protocol.header.RpcHeaderFactory;
 import io.tinyrpc.protocol.request.RpcRequest;
 import io.tinyrpc.protocol.response.RpcResponse;
 import io.tinyrpc.proxy.api.future.RPCFuture;
@@ -78,6 +80,22 @@ public class RpcConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<
 		super.channelInactive(ctx);
 
 		ConsumerChannelCache.remove(channel);
+	}
+
+	@Override
+	public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+		if (evt instanceof IdleStateEvent) {
+			// 发送一次心跳数据
+			RpcHeader header = RpcHeaderFactory.getRequestHeader(RpcConstants.SERIALIZATION_PROTOSTUFF, RpcType.HEARTBEAT_FROM_CONSUMER.getType());
+			RpcProtocol<RpcRequest> requestRpcProtocol = new RpcProtocol<>();
+			RpcRequest rpcRequest = new RpcRequest();
+			rpcRequest.setParameters(new Object[]{RpcConstants.HEARTBEAT_PING});
+			requestRpcProtocol.setHeader(header);
+			requestRpcProtocol.setBody(rpcRequest);
+			ctx.writeAndFlush(requestRpcProtocol);
+		} else {
+			super.userEventTriggered(ctx, evt);
+		}
 	}
 
 	private void handleMessage(RpcProtocol<RpcResponse> protocol, Channel channel) {
