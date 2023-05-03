@@ -21,7 +21,7 @@ public class RpcConsumerHandlerTest {
 	public static void main(String[] args) throws Exception {
 		RpcConsumer consumer = RpcConsumer.getInstance();
 
-		RPCFuture future = consumer.sendRequest(getRpcRequestProtocol(), getRegistryService("127.0.0.1:2181", "zookeeper"));
+		RPCFuture future = consumer.sendRequest(getRpcRequestProtocol(), getRegistryService("127.0.0.1:2181", "zookeeper", "random"));
 		future.addCallback(new AsyncRPCCallback() {
 
 			@Override
@@ -42,7 +42,7 @@ public class RpcConsumerHandlerTest {
 	public static void mainAsync(String[] args) throws Exception {
 		RpcConsumer consumer = RpcConsumer.getInstance();
 
-		consumer.sendRequest(getRpcRequestProtocolAsync(), getRegistryService("127.0.0.1:2181", "zookeeper"));
+		consumer.sendRequest(getRpcRequestProtocolAsync(), getRegistryService("127.0.0.1:2181", "zookeeper", "random"));
 		RPCFuture future = RpcContext.getContext().getRPCFuture();
 		logger.info("从服务消费者获取到的数据 ===>>> " + future.get());
 
@@ -52,20 +52,20 @@ public class RpcConsumerHandlerTest {
 	public static void mainOneway(String[] args) throws Exception {
 		RpcConsumer consumer = RpcConsumer.getInstance();
 
-		consumer.sendRequest(getRpcRequestProtocolOneway(), getRegistryService("127.0.0.1:2181", "zookeeper"));
+		consumer.sendRequest(getRpcRequestProtocolOneway(), getRegistryService("127.0.0.1:2181", "zookeeper", "random"));
 		logger.info("无需获取返回的结果数据");
 
 		consumer.close();
 	}
 
-	private static RegistryService getRegistryService(String registryAddress, String registryType) {
+	private static RegistryService getRegistryService(String registryAddress, String registryType, String registryLoadBalanceType) {
 		if (registryType == null) {
 			throw new IllegalArgumentException("registry type is null");
 		}
 		//TODO 后续SPI扩展
 		RegistryService registryService = new ZookeeperRegistryService();
 		try {
-			registryService.init(new RegistryConfig(registryAddress, registryType));
+			registryService.init(new RegistryConfig(registryAddress, registryType, registryLoadBalanceType));
 		} catch (Exception e) {
 			logger.error("RpcClient init registry service throws exception", e);
 			throw new RegistryException(e.getMessage(), e);

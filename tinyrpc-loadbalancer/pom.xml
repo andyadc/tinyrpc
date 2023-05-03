@@ -15,16 +15,15 @@
 	<modules>
 		<module>tinyrpc-loadbalancer-api</module>
 		<module>tinyrpc-loadbalancer-random</module>
-        <module>tinyrpc-loadbalancer-random-weight</module>
+		<module>tinyrpc-loadbalancer-random-weight</module>
 		<module>tinyrpc-loadbalancer-round-robin</module>
 		<module>tinyrpc-loadbalancer-round-robin-weight</module>
 		<module>tinyrpc-loadbalancer-hash</module>
 		<module>tinyrpc-loadbalancer-hash-weight</module>
-		<module>tinyrpc-loadbalancer-sourceip-hash</module>
 		<module>tinyrpc-loadbalancer-ip-hash</module>
 		<module>tinyrpc-loadbalancer-ip-hash-weight</module>
 		<module>tinyrpc-loadbalancer-consistenthash-zk</module>
-        <module>tinyrpc-loadbalancer-random-weight-enhanced</module>
+		<module>tinyrpc-loadbalancer-random-weight-enhanced</module>
 		<module>tinyrpc-loadbalancer-round-robin-weight-enhanced</module>
 		<module>tinyrpc-loadbalancer-hash-weight-enhanced</module>
 		<module>tinyrpc-loadbalancer-ip-hash-weight-enhanced</module>

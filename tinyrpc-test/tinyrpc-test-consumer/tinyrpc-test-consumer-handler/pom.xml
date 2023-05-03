@@ -20,7 +20,7 @@
 		<dependency>
 			<groupId>io.tinyrpc</groupId>
 			<artifactId>tinyrpc-consumer-common</artifactId>
-			<version>0.0.1</version>
+			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 </project>

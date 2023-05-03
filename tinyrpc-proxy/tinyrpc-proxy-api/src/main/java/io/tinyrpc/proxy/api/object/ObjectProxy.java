@@ -110,8 +110,9 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
 		requestRpcProtocol.setBody(request);
 
 		// Debug
-		logger.debug(method.getDeclaringClass().getName());
-		logger.debug(method.getName());
+		if (logger.isDebugEnabled()) {
+			logger.debug("className: {}, methodName: {}", method.getDeclaringClass().getName(), method.getName());
+		}
 
 		if (method.getParameterTypes().length > 0) {
 			for (int i = 0; i < method.getParameterTypes().length; ++i) {
@@ -162,12 +163,14 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
 		request.setParameterTypes(parameterTypes);
 		requestRpcProtocol.setBody(request);
 
-		logger.debug(className);
-		logger.debug(methodName);
+		if (logger.isDebugEnabled()) {
+			logger.debug("className: {}, methodName: {}", className, methodName);
+		}
 
 		for (Class<?> parameterType : parameterTypes) {
 			logger.debug(parameterType.getName());
 		}
+
 		for (Object arg : args) {
 			logger.debug(arg.toString());
 		}

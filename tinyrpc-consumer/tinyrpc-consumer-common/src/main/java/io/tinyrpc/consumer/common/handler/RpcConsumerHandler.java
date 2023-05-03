@@ -8,6 +8,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.tinyrpc.common.utils.JsonUtils;
 import io.tinyrpc.consumer.common.context.RpcContext;
 import io.tinyrpc.protocol.RpcProtocol;
+import io.tinyrpc.protocol.enumeration.RpcType;
 import io.tinyrpc.protocol.header.RpcHeader;
 import io.tinyrpc.protocol.request.RpcRequest;
 import io.tinyrpc.protocol.response.RpcResponse;
@@ -57,8 +58,32 @@ public class RpcConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<
 		if (protocol == null) {
 			return;
 		}
-		logger.info("服务消费者接收到的数据 ===>>> {}", JsonUtils.toJSONString(protocol));
+		handleMessage(protocol);
+	}
+
+	private void handleMessage(RpcProtocol<RpcResponse> protocol) {
+		logger.info("Consumer received request ===>>> {}", JsonUtils.toJSONString(protocol));
+
 		RpcHeader header = protocol.getHeader();
+		if (header.getMsgType() == (byte) RpcType.HEARTBEAT.getType()) { // 心跳消息
+			this.handleHeartbeatMessage(protocol);
+		} else if (header.getMsgType() == (byte) RpcType.RESPONSE.getType()) { // 响应消息
+			this.handleResponseMessage(protocol, header);
+		}
+	}
+
+	/**
+	 * 处理心跳消息
+	 */
+	private void handleHeartbeatMessage(RpcProtocol<RpcResponse> protocol) {
+		//此处简单打印即可,实际场景可不做处理
+		logger.info("receive service provider heartbeat message: {}", protocol.getBody().getResult());
+	}
+
+	/**
+	 * 处理响应消息
+	 */
+	private void handleResponseMessage(RpcProtocol<RpcResponse> protocol, RpcHeader header) {
 		long requestId = header.getRequestId();
 		RPCFuture rpcFuture = pendingRPC.remove(requestId);
 		if (rpcFuture != null) {
@@ -71,7 +96,7 @@ public class RpcConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<
 	}
 
 	public RPCFuture sendRequest(RpcProtocol<RpcRequest> protocol, boolean async, boolean oneway) {
-		logger.info("服务消费者发送的数据 ===>>> {}", JsonUtils.toJSONString(protocol));
+		logger.info("Consumer sending request ===>>> {}", JsonUtils.toJSONString(protocol));
 
 		return oneway ? sendRequestOneway(protocol)
 			: async ? sendRequestAsync(protocol)
