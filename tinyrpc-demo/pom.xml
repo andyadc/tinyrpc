@@ -18,7 +18,9 @@
 		<module>tinyrpc-demo-native-provider</module>
 		<module>tinyrpc-demo-spring-xml-provider</module>
         <module>tinyrpc-demo-spring-annotation-provider</module>
-    </modules>
+		<module>tinyrpc-demo-spring-xml-consumer</module>
+		<module>tinyrpc-demo-spring-annotation-consumer</module>
+	</modules>
 
 	<dependencies>
 		<dependency>
