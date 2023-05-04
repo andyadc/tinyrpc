@@ -72,14 +72,18 @@ public class ZookeeperRegistryService implements RegistryService {
 
 	@Override
 	public void register(ServiceMeta serviceMeta) throws Exception {
+		String registryName = RpcServiceHelper.buildServiceKey(serviceMeta.getServiceName(), serviceMeta.getServiceVersion(), serviceMeta.getServiceGroup());
 		ServiceInstance<ServiceMeta> serviceInstance = ServiceInstance
 			.<ServiceMeta>builder()
-			.name(RpcServiceHelper.buildServiceKey(serviceMeta.getServiceName(), serviceMeta.getServiceVersion(), serviceMeta.getServiceGroup()))
+			.name(registryName)
 			.address(serviceMeta.getServiceAddr())
 			.port(serviceMeta.getServicePort())
 			.payload(serviceMeta)
 			.build();
 		serviceDiscovery.registerService(serviceInstance);
+		if (logger.isDebugEnabled()) {
+			logger.debug(" --- registered name: {}, payload: {} ---", registryName, serviceMeta);
+		}
 	}
 
 	@Override
@@ -92,6 +96,9 @@ public class ZookeeperRegistryService implements RegistryService {
 			.payload(serviceMeta)
 			.build();
 		serviceDiscovery.unregisterService(serviceInstance);
+		if (logger.isDebugEnabled()) {
+			logger.debug("--- unregister service: {} ---", serviceMeta.getServiceName());
+		}
 	}
 
 	@Override

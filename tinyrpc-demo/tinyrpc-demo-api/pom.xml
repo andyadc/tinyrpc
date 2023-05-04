@@ -3,18 +3,17 @@
 		 xmlns="http://maven.apache.org/POM/4.0.0"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<parent>
-		<artifactId>tinyrpc</artifactId>
+		<artifactId>tinyrpc-demo</artifactId>
 		<groupId>io.tinyrpc</groupId>
 		<version>0.0.1</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>tinyrpc-provider</artifactId>
-	<packaging>pom</packaging>
+	<artifactId>tinyrpc-demo-api</artifactId>
 
-	<modules>
-		<module>tinyrpc-provider-common</module>
-		<module>tinyrpc-provider-native</module>
-        <module>tinyrpc-provider-spring</module>
-    </modules>
+	<properties>
+		<maven.compiler.source>8</maven.compiler.source>
+		<maven.compiler.target>8</maven.compiler.target>
+	</properties>
+
 </project>

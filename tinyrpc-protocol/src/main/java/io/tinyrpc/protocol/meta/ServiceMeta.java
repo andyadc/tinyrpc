@@ -98,4 +98,16 @@ public class ServiceMeta implements Serializable {
 	public void setWeight(int weight) {
 		this.weight = weight;
 	}
+
+	@Override
+	public String toString() {
+		return "ServiceMeta{" +
+			"serviceName=" + serviceName +
+			", serviceVersion=" + serviceVersion +
+			", serviceAddr=" + serviceAddr +
+			", servicePort=" + servicePort +
+			", serviceGroup=" + serviceGroup +
+			", weight=" + weight +
+			'}';
+	}
 }

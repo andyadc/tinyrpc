@@ -23,7 +23,8 @@
 		<module>tinyrpc-provider</module>
 		<module>tinyrpc-consumer</module>
 		<module>tinyrpc-test</module>
-    </modules>
+		<module>tinyrpc-demo</module>
+	</modules>
 
 	<properties>
 		<jdk.version>1.8</jdk.version>
