@@ -20,6 +20,7 @@
         <module>tinyrpc-demo-spring-annotation-provider</module>
 		<module>tinyrpc-demo-spring-xml-consumer</module>
 		<module>tinyrpc-demo-spring-annotation-consumer</module>
+		<module>tinyrpc-demo-spring-boot-provider</module>
 	</modules>
 
 	<dependencies>

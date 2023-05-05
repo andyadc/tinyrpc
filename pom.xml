@@ -24,6 +24,7 @@
 		<module>tinyrpc-consumer</module>
 		<module>tinyrpc-test</module>
 		<module>tinyrpc-demo</module>
+		<module>tinyrpc-spring-boot-starter</module>
 	</modules>
 
 	<properties>
@@ -34,6 +35,7 @@
 		<maven.compiler.target>${jdk.version}</maven.compiler.target>
 
 		<spring.version>5.3.27</spring.version>
+		<spring-boot.version>2.7.11</spring-boot.version>
 		<slf4j.version>1.7.36</slf4j.version>
 		<netty.version>4.1.91.Final</netty.version>
 		<zookeeper.version>3.8.1</zookeeper.version>
