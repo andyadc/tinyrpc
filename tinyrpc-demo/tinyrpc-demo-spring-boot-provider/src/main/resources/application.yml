@@ -21,3 +21,7 @@ tinyrpc:
         heartbeatInterval: 30000
         # scanNotActiveChannelInterval
         scanNotActiveChannelInterval: 60000
+        # enableResultCache
+        enableResultCache: true
+        # resultCacheExpire
+        resultCacheExpire: 5000

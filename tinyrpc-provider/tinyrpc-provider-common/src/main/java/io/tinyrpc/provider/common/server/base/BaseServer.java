@@ -52,8 +52,13 @@ public class BaseServer implements Server {
 	//扫描并移除空闲连接时间，默认60秒
 	private int scanNotActiveChannelInterval = 60000;
 
+	//结果缓存过期时长，默认5秒
+	private int resultCacheExpire = 5000;
+	//是否开启结果缓存
+	private boolean enableResultCache;
+
 	public BaseServer(String serverAddress, String registryAddress, String registryType, String registryLoadBalanceType, String reflectType,
-					  int heartbeatInterval, int scanNotActiveChannelInterval) {
+					  int heartbeatInterval, int scanNotActiveChannelInterval, boolean enableResultCache, int resultCacheExpire) {
 		if (!Strings.isNullOrEmpty(serverAddress)) {
 			String[] serverArray = serverAddress.split(":");
 			this.host = serverArray[0];
@@ -69,6 +74,11 @@ public class BaseServer implements Server {
 
 		this.reflectType = reflectType;
 		this.registryService = getRegistryService(registryAddress, registryType, registryLoadBalanceType);
+
+		if (resultCacheExpire > 0) {
+			this.resultCacheExpire = resultCacheExpire;
+		}
+		this.enableResultCache = enableResultCache;
 	}
 
 	private RegistryService getRegistryService(String registryAddress, String registryType, String registryLoadBalanceType) {
@@ -101,7 +111,8 @@ public class BaseServer implements Server {
 							.addLast(RpcConstants.CODEC_ENCODER, new RpcEncoder())
 							.addLast(RpcConstants.CODEC_SERVER_IDLE_HANDLER,
 								new IdleStateHandler(0, 0, heartbeatInterval, TimeUnit.MILLISECONDS))
-							.addLast(RpcConstants.CODEC_HANDLER, new RpcProviderHandler(reflectType, handlerMap));
+							.addLast(RpcConstants.CODEC_HANDLER,
+								new RpcProviderHandler(reflectType, enableResultCache, resultCacheExpire, handlerMap));
 					}
 				})
 				.option(ChannelOption.SO_BACKLOG, 128)

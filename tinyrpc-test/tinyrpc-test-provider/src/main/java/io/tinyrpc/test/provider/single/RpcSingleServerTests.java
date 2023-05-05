@@ -15,7 +15,10 @@ public class RpcSingleServerTests {
 			"io.tinyrpc.test",
 			"asm",
 			30000,
-			60000);
+			60000,
+			true,
+			5000
+		);
 
 		singleServer.startNettyServer();
 	}

@@ -13,7 +13,9 @@ public class ProviderNativeDemoMain {
 			"io.tinyrpc.demo",
 			"asm",
 			30000,
-			60000
+			60000,
+			false,
+			15000
 		);
 
 		singleServer.startNettyServer();

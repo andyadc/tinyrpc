@@ -25,7 +25,8 @@
 		<module>tinyrpc-test</module>
 		<module>tinyrpc-demo</module>
 		<module>tinyrpc-spring-boot-starter</module>
-	</modules>
+        <module>tinyrpc-cache</module>
+    </modules>
 
 	<properties>
 		<jdk.version>1.8</jdk.version>

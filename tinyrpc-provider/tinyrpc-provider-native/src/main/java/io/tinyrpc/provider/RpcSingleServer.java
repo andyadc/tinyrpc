@@ -12,10 +12,12 @@ public class RpcSingleServer extends BaseServer {
 
 	private static final Logger logger = LoggerFactory.getLogger(RpcSingleServer.class);
 
-	public RpcSingleServer(String serverAddress, String registryAddress, String registryType, String registryLoadBalanceType, String scanPackage, String reflectType,
-						   int heartbeatInterval, int scanNotActiveChannelInterval) {
+	public RpcSingleServer(String serverAddress, String registryAddress, String registryType, String registryLoadBalanceType,
+						   String scanPackage, String reflectType,
+						   int heartbeatInterval, int scanNotActiveChannelInterval,
+						   boolean enableResultCache, int resultCacheExpire) {
 		super(serverAddress, registryAddress, registryType, registryLoadBalanceType, reflectType,
-			heartbeatInterval, scanNotActiveChannelInterval);
+			heartbeatInterval, scanNotActiveChannelInterval, enableResultCache, resultCacheExpire);
 
 		try {
 			this.handlerMap = RpcServiceScanner.doScannerWithRpcServiceAnnotationFilterAndRegistryService(
