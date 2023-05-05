@@ -2,6 +2,7 @@ package io.tinyrpc.consumer.spring;
 
 import io.tinyrpc.annotation.RpcReference;
 import io.tinyrpc.common.constants.RpcConstants;
+import io.tinyrpc.consumer.spring.context.RpcConsumerSpringContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -43,6 +44,7 @@ public class RpcConsumerPostProcessor implements ApplicationContextAware, BeanCl
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.context = applicationContext;
+		RpcConsumerSpringContext.getInstance().setContext(applicationContext);
 	}
 
 	@Override
@@ -75,7 +77,7 @@ public class RpcConsumerPostProcessor implements ApplicationContextAware, BeanCl
 		RpcReference annotation = AnnotationUtils.getAnnotation(field, RpcReference.class);
 		if (annotation != null) {
 			BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(RpcReferenceBean.class);
-			builder.setInitMethodName(RpcConstants.INIT_METHOD_NAME);
+			builder.setInitMethodName(RpcConstants.INIT_METHOD_NAME); // init()
 			builder.addPropertyValue("interfaceClass", field.getType());
 			builder.addPropertyValue("version", annotation.version());
 			builder.addPropertyValue("registryType", annotation.registryType());
@@ -91,6 +93,8 @@ public class RpcConsumerPostProcessor implements ApplicationContextAware, BeanCl
 			builder.addPropertyValue("heartbeatInterval", annotation.heartbeatInterval());
 			builder.addPropertyValue("retryInterval", annotation.retryInterval());
 			builder.addPropertyValue("retryTimes", annotation.retryTimes());
+			builder.addPropertyValue("enableResultCache", annotation.enableResultCache());
+			builder.addPropertyValue("resultCacheExpire", annotation.resultCacheExpire());
 
 			BeanDefinition beanDefinition = builder.getBeanDefinition();
 			rpcRefBeanDefinitions.put(field.getName(), beanDefinition);

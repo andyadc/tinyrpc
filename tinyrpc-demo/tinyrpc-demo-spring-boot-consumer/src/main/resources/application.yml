@@ -35,4 +35,7 @@ tinyrpc:
         retryInterval: 1000
         # retryTimes
         retryTimes: 3
-
+        # enableResultCache
+        enableResultCache: false
+        # resultCacheExpire
+        resultCacheExpire: 5000

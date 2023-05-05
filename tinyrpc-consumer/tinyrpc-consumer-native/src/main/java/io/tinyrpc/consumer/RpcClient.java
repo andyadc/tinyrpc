@@ -69,11 +69,17 @@ public class RpcClient {
 	//重试次数
 	private int retryTimes = 3;
 
+	// 是否开启结果缓存
+	private boolean enableResultCache;
+	// 缓存结果的时长，单位是毫秒
+	private int resultCacheExpire;
+
 	public RpcClient(String registryAddress, String registryType, String registryLoadBalanceType,
 					 String proxy, String serviceVersion, String serviceGroup, String serializationType, long timeout,
 					 boolean async, boolean oneway,
 					 int heartbeatInterval, int scanNotActiveChannelInterval,
-					 int retryInterval, int retryTimes) {
+					 int retryInterval, int retryTimes,
+					 boolean enableResultCache, int resultCacheExpire) {
 		this.serviceVersion = serviceVersion;
 		this.timeout = timeout;
 		this.serviceGroup = serviceGroup;
@@ -86,6 +92,8 @@ public class RpcClient {
 		this.retryInterval = retryInterval;
 		this.retryTimes = retryTimes;
 		this.registryService = this.getRegistryService(registryAddress, registryType, registryLoadBalanceType);
+		this.enableResultCache = enableResultCache;
+		this.resultCacheExpire = resultCacheExpire;
 	}
 
 	private RegistryService getRegistryService(String registryAddress, String registryType, String registryLoadBalanceType) {
@@ -107,7 +115,7 @@ public class RpcClient {
 		proxyFactory.init(new ProxyConfig<>(interfaceClass, serviceVersion, serviceGroup, serializationType, timeout,
 			registryService,
 			RpcConsumer.getInstance(heartbeatInterval, scanNotActiveChannelInterval, retryInterval, retryTimes),
-			async, oneway));
+			async, oneway, enableResultCache, resultCacheExpire));
 		return proxyFactory.getProxy(interfaceClass);
 	}
 
@@ -115,7 +123,7 @@ public class RpcClient {
 		return new ObjectProxy<>(interfaceClass, serviceVersion, serviceGroup, serializationType, timeout,
 			registryService,
 			RpcConsumer.getInstance(heartbeatInterval, scanNotActiveChannelInterval, retryInterval, retryTimes),
-			async, oneway);
+			async, oneway, enableResultCache, resultCacheExpire);
 	}
 
 	public void shutdown() {

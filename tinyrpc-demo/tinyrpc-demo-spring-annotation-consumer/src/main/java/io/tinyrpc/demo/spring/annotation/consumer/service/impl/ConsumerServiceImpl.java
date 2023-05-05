@@ -3,6 +3,7 @@ package io.tinyrpc.demo.spring.annotation.consumer.service.impl;
 import io.tinyrpc.annotation.RpcReference;
 import io.tinyrpc.demo.api.DemoService;
 import io.tinyrpc.demo.spring.annotation.consumer.service.ConsumerService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,8 +19,11 @@ public class ConsumerServiceImpl implements ConsumerService {
 		proxy = "cglib",
 		timeout = 30000,
 		async = false,
-		oneway = false
+		oneway = false,
+		enableResultCache = true,
+		resultCacheExpire = 5000
 	)
+	@Autowired
 	private DemoService demoService;
 
 	@Override

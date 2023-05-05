@@ -32,7 +32,10 @@ public class ConsumerNativeDemoMain {
 			30000,
 			60000,
 			1000,
-			3);
+			3,
+			true,
+			5000
+		);
 	}
 
 	@Test

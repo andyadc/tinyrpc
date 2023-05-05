@@ -63,13 +63,20 @@ public final class SpringBootConsumerConfig {
 	//重试次数
 	private int retryTimes = 3;
 
+	// 是否开启结果缓存
+	private boolean enableResultCache;
+
+	// 缓存结果的时长，单位是毫秒
+	private int resultCacheExpire;
+
 	public SpringBootConsumerConfig() {
 	}
 
 	public SpringBootConsumerConfig(final String registryAddress, final String registryType, final String loadBalanceType,
 									final String proxy, final String version, final String group, final String serializationType,
 									final int timeout, final boolean async, final boolean oneway, final int heartbeatInterval,
-									final int scanNotActiveChannelInterval, final int retryInterval, final int retryTimes) {
+									final int scanNotActiveChannelInterval, final int retryInterval, final int retryTimes,
+									final boolean enableResultCache, final int resultCacheExpire) {
 		this.registryAddress = registryAddress;
 		this.registryType = registryType;
 		this.loadBalanceType = loadBalanceType;
@@ -86,6 +93,8 @@ public final class SpringBootConsumerConfig {
 		this.scanNotActiveChannelInterval = scanNotActiveChannelInterval;
 		this.retryInterval = retryInterval;
 		this.retryTimes = retryTimes;
+		this.enableResultCache = enableResultCache;
+		this.resultCacheExpire = resultCacheExpire;
 	}
 
 	public String getRegistryAddress() {
@@ -198,5 +207,21 @@ public final class SpringBootConsumerConfig {
 
 	public void setScanNotActiveChannelInterval(int scanNotActiveChannelInterval) {
 		this.scanNotActiveChannelInterval = scanNotActiveChannelInterval;
+	}
+
+	public boolean getEnableResultCache() {
+		return enableResultCache;
+	}
+
+	public void setEnableResultCache(boolean enableResultCache) {
+		this.enableResultCache = enableResultCache;
+	}
+
+	public int getResultCacheExpire() {
+		return resultCacheExpire;
+	}
+
+	public void setResultCacheExpire(int resultCacheExpire) {
+		this.resultCacheExpire = resultCacheExpire;
 	}
 }

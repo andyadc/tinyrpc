@@ -1,5 +1,8 @@
 package io.tinyrpc.proxy.api.object;
 
+import io.tinyrpc.cache.result.CacheResultKey;
+import io.tinyrpc.cache.result.CacheResultManager;
+import io.tinyrpc.common.constants.RpcConstants;
 import io.tinyrpc.protocol.RpcProtocol;
 import io.tinyrpc.protocol.enumeration.RpcType;
 import io.tinyrpc.protocol.header.RpcHeaderFactory;
@@ -61,11 +64,24 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
 	 */
 	private boolean oneway;
 
+	/**
+	 * 是否开启结果缓存
+	 */
+	private boolean enableResultCache;
+
+	/**
+	 * 结果缓存管理器
+	 */
+	private CacheResultManager<Object> cacheResultManager;
+
 	public ObjectProxy(Class<T> clazz) {
 		this.clazz = clazz;
 	}
 
-	public ObjectProxy(Class<T> clazz, String serviceVersion, String serviceGroup, String serializationType, long timeout, RegistryService registryService, Consumer consumer, boolean async, boolean oneway) {
+	public ObjectProxy(Class<T> clazz, String serviceVersion, String serviceGroup, String serializationType,
+					   long timeout, RegistryService registryService, Consumer consumer,
+					   boolean async, boolean oneway,
+					   boolean enableResultCache, int resultCacheExpire) {
 		this.clazz = clazz;
 		this.serviceVersion = serviceVersion;
 		this.timeout = timeout;
@@ -75,6 +91,11 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
 		this.async = async;
 		this.oneway = oneway;
 		this.registryService = registryService;
+		this.enableResultCache = enableResultCache;
+		if (resultCacheExpire <= 0) {
+			resultCacheExpire = RpcConstants.RPC_SCAN_RESULT_CACHE_EXPIRE;
+		}
+		this.cacheResultManager = CacheResultManager.getInstance(resultCacheExpire, enableResultCache);
 	}
 
 	@Override
@@ -96,21 +117,47 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
 			}
 		}
 
+		if (enableResultCache) {
+			return invokeSendRequestMethodCache(method, args);
+		}
+		return invokeSendRequestMethod(method, args);
+	}
+
+	private Object invokeSendRequestMethodCache(Method method, Object[] args) throws Exception {
+		//开启缓存，则处理缓存
+		CacheResultKey cacheResultKey = new CacheResultKey(method.getDeclaringClass().getName(), method.getName(), method.getParameterTypes(), args, serviceVersion, serviceGroup);
+		Object obj = this.cacheResultManager.get(cacheResultKey);
+		if (obj == null) {
+			logger.info("--- cache is null ---");
+			obj = invokeSendRequestMethod(method, args);
+			if (obj != null) {
+				cacheResultKey.setCacheTimeStamp(System.currentTimeMillis());
+				this.cacheResultManager.put(cacheResultKey, obj);
+			}
+		} else {
+			logger.info("--- from cache ---");
+		}
+		return obj;
+	}
+
+	/**
+	 * 真正发送请求调用远程方法
+	 */
+	private Object invokeSendRequestMethod(Method method, Object[] args) throws Exception {
 		RpcProtocol<RpcRequest> requestRpcProtocol = new RpcProtocol<>();
 		requestRpcProtocol.setHeader(RpcHeaderFactory.getRequestHeader(serializationType, RpcType.REQUEST.getType()));
 
 		RpcRequest request = new RpcRequest();
 		request.setVersion(this.serviceVersion);
-		request.setGroup(this.serviceGroup);
 		request.setClassName(method.getDeclaringClass().getName());
 		request.setMethodName(method.getName());
 		request.setParameterTypes(method.getParameterTypes());
+		request.setGroup(this.serviceGroup);
 		request.setParameters(args);
 		request.setAsync(async);
 		request.setOneway(oneway);
 		requestRpcProtocol.setBody(request);
 
-		// Debug
 		if (logger.isDebugEnabled()) {
 			logger.debug("className: {}, methodName: {}", method.getDeclaringClass().getName(), method.getName());
 		}
