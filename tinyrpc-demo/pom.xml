@@ -21,7 +21,8 @@
 		<module>tinyrpc-demo-spring-xml-consumer</module>
 		<module>tinyrpc-demo-spring-annotation-consumer</module>
 		<module>tinyrpc-demo-spring-boot-provider</module>
-	</modules>
+        <module>tinyrpc-demo-spring-boot-consumer</module>
+    </modules>
 
 	<dependencies>
 		<dependency>
