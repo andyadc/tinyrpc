@@ -5,6 +5,7 @@ import io.tinyrpc.registry.api.config.RegistryConfig;
 import io.tinyrpc.spi.annotation.SPI;
 
 import java.io.IOException;
+import java.util.List;
 
 @SPI
 public interface RegistryService {
@@ -31,6 +32,13 @@ public interface RegistryService {
 	 * @return 服务元数据
 	 */
 	ServiceMeta discovery(String serviceName, int invokerHashCode, String sourceIp) throws Exception;
+
+	/**
+	 * 从多个元数据列表中根据一定的规则获取一个元数据
+	 * @param serviceMetaList 元数据列表
+	 * @return 某个特定的元数据
+	 */
+	ServiceMeta select(List<ServiceMeta> serviceMetaList, int invokerHashCode, String sourceIp);
 
 	/**
 	 * 服务销毁

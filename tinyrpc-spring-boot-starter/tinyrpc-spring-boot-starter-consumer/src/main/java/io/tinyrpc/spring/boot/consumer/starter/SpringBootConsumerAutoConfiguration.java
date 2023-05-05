@@ -105,6 +105,13 @@ public class SpringBootConsumerAutoConfiguration {
 			|| (RpcConstants.RPC_SCAN_RESULT_CACHE_EXPIRE == referenceBean.getResultCacheExpire() && springBootConsumerConfig.getResultCacheExpire() > 0)) {
 			referenceBean.setResultCacheExpire(springBootConsumerConfig.getResultCacheExpire());
 		}
+		if (!referenceBean.isEnableDirectServer()) {
+			referenceBean.setEnableDirectServer(springBootConsumerConfig.getEnableDirectServer());
+		}
+		if (StringUtil.isEmpty(referenceBean.getDirectServerUrl())
+			|| (RpcConstants.RPC_COMMON_DEFAULT_DIRECT_SERVER.equals(referenceBean.getDirectServerUrl()) && !StringUtil.isEmpty(springBootConsumerConfig.getDirectServerUrl()))) {
+			referenceBean.setDirectServerUrl(springBootConsumerConfig.getDirectServerUrl());
+		}
 
 		return referenceBean;
 	}

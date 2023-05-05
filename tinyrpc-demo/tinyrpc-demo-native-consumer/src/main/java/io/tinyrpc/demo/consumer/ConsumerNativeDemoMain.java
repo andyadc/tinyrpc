@@ -34,7 +34,9 @@ public class ConsumerNativeDemoMain {
 			1000,
 			3,
 			true,
-			5000
+			5000,
+			true,
+			"127.0.0.1:27880,127.0.0.1:27880,127.0.0.1:27880"
 		);
 	}
 

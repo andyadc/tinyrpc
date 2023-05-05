@@ -21,7 +21,9 @@ public class ConsumerServiceImpl implements ConsumerService {
 		async = false,
 		oneway = false,
 		enableResultCache = true,
-		resultCacheExpire = 5000
+		resultCacheExpire = 5000,
+		enableDirectServer = false,
+		directServerUrl = ""
 	)
 	@Autowired
 	private DemoService demoService;

@@ -24,7 +24,8 @@ public class RpcConsumerNativeTest {
 		RpcClient rpcClient = new RpcClient("127.0.0.1:2181", "zookeeper", "random",
 			"jdk", "1.0.0", "g-1", "jdk",
 			3000, false, false,
-			30000, 60000, 1000, 3);
+			30000, 60000, 1000, 3, false, 500,
+			false, "");
 
 		IAsyncObjectProxy testService = rpcClient.createAsync(TestService.class);
 		RPCFuture rpcFuture = testService.call("hello", "adc");
@@ -49,7 +50,12 @@ public class RpcConsumerNativeTest {
 			30000,
 			60000,
 			1000,
-			3);
+			3,
+			false,
+			5000,
+			false,
+			""
+		);
 	}
 
 	@Test

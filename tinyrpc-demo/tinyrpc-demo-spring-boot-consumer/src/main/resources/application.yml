@@ -39,3 +39,7 @@ tinyrpc:
         enableResultCache: false
         # resultCacheExpire
         resultCacheExpire: 5000
+        # enableDirectServer
+        enableDirectServer: false
+        # directServerUrl
+        directServerUrl:

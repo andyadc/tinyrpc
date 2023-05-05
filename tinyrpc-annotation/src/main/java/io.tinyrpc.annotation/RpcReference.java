@@ -88,4 +88,14 @@ public @interface RpcReference {
 	 * 缓存结果的时长，单位是毫秒
 	 */
 	int resultCacheExpire() default 15000;
+
+	/**
+	 * 是否开启直连服务
+	 */
+	boolean enableDirectServer() default false;
+
+	/**
+	 * 直连服务的地址
+	 */
+	String directServerUrl() default "";
 }
