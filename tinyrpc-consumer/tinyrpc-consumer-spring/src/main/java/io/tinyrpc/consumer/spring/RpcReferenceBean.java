@@ -98,6 +98,16 @@ public class RpcReferenceBean implements FactoryBean<Object> {
 	 */
 	private String directServerUrl;
 
+	/**
+	 * 并发线程池核心线程数
+	 */
+	private int corePoolSize;
+
+	/**
+	 * 并发线程池最大线程数
+	 */
+	private int maximumPoolSize;
+
 	private RpcClient rpcClient;
 
 	@Override
@@ -121,7 +131,7 @@ public class RpcReferenceBean implements FactoryBean<Object> {
 			heartbeatInterval, scanNotActiveChannelInterval,
 			retryInterval, retryTimes,
 			enableResultCache, resultCacheExpire,
-			enableDirectServer, directServerUrl);
+			enableDirectServer, directServerUrl, corePoolSize, maximumPoolSize);
 		this.object = rpcClient.create(interfaceClass);
 	}
 
@@ -275,5 +285,21 @@ public class RpcReferenceBean implements FactoryBean<Object> {
 
 	public void setDirectServerUrl(String directServerUrl) {
 		this.directServerUrl = directServerUrl;
+	}
+
+	public int getCorePoolSize() {
+		return corePoolSize;
+	}
+
+	public void setCorePoolSize(int corePoolSize) {
+		this.corePoolSize = corePoolSize;
+	}
+
+	public int getMaximumPoolSize() {
+		return maximumPoolSize;
+	}
+
+	public void setMaximumPoolSize(int maximumPoolSize) {
+		this.maximumPoolSize = maximumPoolSize;
 	}
 }

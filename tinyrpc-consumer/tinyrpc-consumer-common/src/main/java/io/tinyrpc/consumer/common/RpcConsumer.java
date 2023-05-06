@@ -9,7 +9,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.tinyrpc.common.constants.RpcConstants;
 import io.tinyrpc.common.exception.RpcException;
 import io.tinyrpc.common.helper.RpcServiceHelper;
-import io.tinyrpc.common.threadpool.ClientThreadPool;
+import io.tinyrpc.common.threadpool.ConcurrentThreadPool;
 import io.tinyrpc.common.utils.IPUtils;
 import io.tinyrpc.common.utils.JsonUtils;
 import io.tinyrpc.common.utils.StringUtil;
@@ -62,14 +62,13 @@ public class RpcConsumer implements Consumer {
 	//直连服务的地址
 	private String directServerUrl;
 
+	//并发处理线程池
+	private ConcurrentThreadPool concurrentThreadPool;
+
 	public RpcConsumer() {
 		localIp = IPUtils.getLocalHostIP();
 		bootstrap = new Bootstrap();
 		eventLoopGroup = new NioEventLoopGroup(4);
-		bootstrap.group(eventLoopGroup).channel(NioSocketChannel.class)
-			.handler(new RpcConsumerInitializer(heartbeatInterval));
-		//TODO 启动心跳，后续优化
-		this.startHeartbeat();
 	}
 
 	private RpcConsumer(int heartbeatInterval, int scanNotActiveChannelInterval, int retryInterval, int retryTimes) {
@@ -88,7 +87,7 @@ public class RpcConsumer implements Consumer {
 		bootstrap
 			.group(eventLoopGroup)
 			.channel(NioSocketChannel.class)
-			.handler(new RpcConsumerInitializer(heartbeatInterval));
+			.handler(new RpcConsumerInitializer(heartbeatInterval, concurrentThreadPool));
 		//TODO 启动心跳，后续优化
 		this.startHeartbeat();
 	}
@@ -132,7 +131,8 @@ public class RpcConsumer implements Consumer {
 	public void close() {
 		RpcConsumerHandlerHelper.closeRpcClientHandler();
 		eventLoopGroup.shutdownGracefully();
-		ClientThreadPool.shutdown();
+		concurrentThreadPool.stop();
+		scheduledExecutorService.shutdown();
 	}
 
 	@Override
@@ -398,6 +398,27 @@ public class RpcConsumer implements Consumer {
 
 	public RpcConsumer setRetryTimes(int retryTimes) {
 		this.retryTimes = retryTimes <= 0 ? RpcConstants.DEFAULT_RETRY_TIMES : retryTimes;
+		return this;
+	}
+
+	public RpcConsumer setConcurrentThreadPool(ConcurrentThreadPool concurrentThreadPool) {
+		this.concurrentThreadPool = concurrentThreadPool;
+		return this;
+	}
+
+	public RpcConsumer buildNettyGroup() {
+		bootstrap.group(eventLoopGroup).channel(NioSocketChannel.class)
+			.handler(new RpcConsumerInitializer(heartbeatInterval, concurrentThreadPool));
+		return this;
+	}
+
+	/**
+	 * // TODO 初始化连接
+	 */
+	public RpcConsumer buildConnection(RegistryService registryService) {
+
+		//TODO 启动心跳，后续优化
+		this.startHeartbeat();
 		return this;
 	}
 }

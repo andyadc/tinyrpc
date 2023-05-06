@@ -12,7 +12,7 @@ import io.tinyrpc.cache.result.CacheResultManager;
 import io.tinyrpc.common.constants.RpcConstants;
 import io.tinyrpc.common.exception.RpcException;
 import io.tinyrpc.common.helper.RpcServiceHelper;
-import io.tinyrpc.common.threadpool.ServerThreadPool;
+import io.tinyrpc.common.threadpool.ConcurrentThreadPool;
 import io.tinyrpc.common.utils.JsonUtils;
 import io.tinyrpc.protocol.RpcProtocol;
 import io.tinyrpc.protocol.enumeration.RpcStatus;
@@ -57,7 +57,12 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 	 */
 	private final CacheResultManager<RpcProtocol<RpcResponse>> cacheResultManager;
 
-	public RpcProviderHandler(String reflectType, boolean enableResultCache, int resultCacheExpire, Map<String, Object> handlerMap) {
+	/**
+	 * 线程池
+	 */
+	private final ConcurrentThreadPool concurrentThreadPool;
+
+	public RpcProviderHandler(String reflectType, boolean enableResultCache, int resultCacheExpire, int corePoolSize, int maximumPoolSize, Map<String, Object> handlerMap) {
 		this.handlerMap = handlerMap;
 		this.reflectInvoker = ExtensionLoader.getExtension(ReflectInvoker.class, reflectType);
 		this.enableResultCache = enableResultCache;
@@ -65,13 +70,14 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 			resultCacheExpire = RpcConstants.RPC_SCAN_RESULT_CACHE_EXPIRE;
 		}
 		this.cacheResultManager = CacheResultManager.getInstance(resultCacheExpire, enableResultCache);
+		this.concurrentThreadPool = ConcurrentThreadPool.getInstance(corePoolSize, maximumPoolSize);
 	}
 
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, RpcProtocol<RpcRequest> protocol) {
 
 		// 异步 ServerThreadPool.submit(() -> {})
-		ServerThreadPool.submit(() -> {
+		concurrentThreadPool.submit(() -> {
 			RpcProtocol<RpcResponse> responseRpcProtocol = handleMessage(protocol, ctx.channel());
 
 			ctx.writeAndFlush(responseRpcProtocol).addListener(new ChannelFutureListener() {

@@ -1,7 +1,7 @@
 package io.tinyrpc.proxy.api.future;
 
 import io.tinyrpc.common.exception.RpcException;
-import io.tinyrpc.common.threadpool.ClientThreadPool;
+import io.tinyrpc.common.threadpool.ConcurrentThreadPool;
 import io.tinyrpc.protocol.RpcProtocol;
 import io.tinyrpc.protocol.request.RpcRequest;
 import io.tinyrpc.protocol.response.RpcResponse;
@@ -32,8 +32,9 @@ public class RPCFuture extends CompletableFuture<Object> {
 	private final List<AsyncRPCCallback> pendingCallbacks = new ArrayList<>();
 	private final ReentrantLock lock = new ReentrantLock();
 	private RpcProtocol<RpcResponse> responseRpcProtocol;
+	private ConcurrentThreadPool concurrentThreadPool;
 
-	public RPCFuture(RpcProtocol<RpcRequest> requestRpcProtocol) {
+	public RPCFuture(RpcProtocol<RpcRequest> requestRpcProtocol, ConcurrentThreadPool concurrentThreadPool) {
 		this.sync = new Sync();
 		this.requestRpcProtocol = requestRpcProtocol;
 		this.startTime = System.currentTimeMillis();
@@ -119,7 +120,7 @@ public class RPCFuture extends CompletableFuture<Object> {
 
 	private void runCallback(final AsyncRPCCallback callback) {
 		final RpcResponse res = this.responseRpcProtocol.getBody();
-		ClientThreadPool.submit(() -> {
+		concurrentThreadPool.submit(() -> {
 			if (!res.isError()) {
 				callback.onSuccess(res.getResult());
 			} else {

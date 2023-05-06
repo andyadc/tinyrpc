@@ -5,6 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+// TODO
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface RpcReference {
@@ -98,4 +99,14 @@ public @interface RpcReference {
 	 * 直连服务的地址
 	 */
 	String directServerUrl() default "";
+
+	/**
+	 * 默认并发线程池核心线程数
+	 */
+	int corePoolSize() default 10;
+
+	/**
+	 * 默认并发线程池最大线程数
+	 */
+	int maximumPoolSize() default 20;
 }

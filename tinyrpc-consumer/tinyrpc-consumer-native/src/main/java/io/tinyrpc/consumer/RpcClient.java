@@ -1,6 +1,7 @@
 package io.tinyrpc.consumer;
 
 import io.tinyrpc.common.exception.RegistryException;
+import io.tinyrpc.common.threadpool.ConcurrentThreadPool;
 import io.tinyrpc.consumer.common.RpcConsumer;
 import io.tinyrpc.proxy.api.ProxyFactory;
 import io.tinyrpc.proxy.api.async.IAsyncObjectProxy;
@@ -79,13 +80,19 @@ public class RpcClient {
 	// 直连服务的地址
 	private String directServerUrl;
 
+	/**
+	 * 并发线程池
+	 */
+	private ConcurrentThreadPool concurrentThreadPool;
+
 	public RpcClient(String registryAddress, String registryType, String registryLoadBalanceType,
 					 String proxy, String serviceVersion, String serviceGroup, String serializationType, long timeout,
 					 boolean async, boolean oneway,
 					 int heartbeatInterval, int scanNotActiveChannelInterval,
 					 int retryInterval, int retryTimes,
 					 boolean enableResultCache, int resultCacheExpire,
-					 boolean enableDirectServer, String directServerUrl) {
+					 boolean enableDirectServer, String directServerUrl,
+					 int corePoolSize, int maximumPoolSize) {
 		this.serviceVersion = serviceVersion;
 		this.timeout = timeout;
 		this.serviceGroup = serviceGroup;
@@ -102,6 +109,7 @@ public class RpcClient {
 		this.resultCacheExpire = resultCacheExpire;
 		this.enableDirectServer = enableDirectServer;
 		this.directServerUrl = directServerUrl;
+		this.concurrentThreadPool = ConcurrentThreadPool.getInstance(corePoolSize, maximumPoolSize);
 	}
 
 	private RegistryService getRegistryService(String registryAddress, String registryType, String registryLoadBalanceType) {
@@ -128,7 +136,10 @@ public class RpcClient {
 				.setRetryInterval(retryInterval)
 				.setRetryTimes(retryTimes)
 				.setEnableDirectServer(enableDirectServer)
-				.setDirectServerUrl(directServerUrl),
+				.setDirectServerUrl(directServerUrl)
+				.setConcurrentThreadPool(concurrentThreadPool)
+				.buildNettyGroup()
+				.buildConnection(registryService),
 			async, oneway, enableResultCache, resultCacheExpire));
 		return proxyFactory.getProxy(interfaceClass);
 	}
@@ -142,7 +153,10 @@ public class RpcClient {
 				.setRetryInterval(retryInterval)
 				.setRetryTimes(retryTimes)
 				.setEnableDirectServer(enableDirectServer)
-				.setDirectServerUrl(directServerUrl),
+				.setDirectServerUrl(directServerUrl)
+				.setConcurrentThreadPool(concurrentThreadPool)
+				.buildNettyGroup()
+				.buildConnection(registryService),
 			async, oneway, enableResultCache, resultCacheExpire);
 	}
 

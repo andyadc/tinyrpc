@@ -23,7 +23,9 @@ public class ConsumerServiceImpl implements ConsumerService {
 		enableResultCache = true,
 		resultCacheExpire = 5000,
 		enableDirectServer = false,
-		directServerUrl = ""
+		directServerUrl = "",
+		corePoolSize = 3,
+		maximumPoolSize = 5
 	)
 	@Autowired
 	private DemoService demoService;

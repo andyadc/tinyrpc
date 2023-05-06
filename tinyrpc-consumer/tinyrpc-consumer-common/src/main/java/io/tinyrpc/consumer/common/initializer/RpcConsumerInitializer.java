@@ -7,6 +7,7 @@ import io.netty.handler.timeout.IdleStateHandler;
 import io.tinyrpc.codec.RpcDecoder;
 import io.tinyrpc.codec.RpcEncoder;
 import io.tinyrpc.common.constants.RpcConstants;
+import io.tinyrpc.common.threadpool.ConcurrentThreadPool;
 import io.tinyrpc.consumer.common.handler.RpcConsumerHandler;
 
 import java.util.concurrent.TimeUnit;
@@ -16,10 +17,14 @@ import java.util.concurrent.TimeUnit;
  */
 public class RpcConsumerInitializer extends ChannelInitializer<SocketChannel> {
 
-	private final int heartbeatInterval;
+	private final ConcurrentThreadPool concurrentThreadPool;
+	private int heartbeatInterval;
 
-	public RpcConsumerInitializer(int heartbeatInterval) {
-		this.heartbeatInterval = heartbeatInterval;
+	public RpcConsumerInitializer(int heartbeatInterval, ConcurrentThreadPool concurrentThreadPool) {
+		if (heartbeatInterval > 0) {
+			this.heartbeatInterval = heartbeatInterval;
+		}
+		this.concurrentThreadPool = concurrentThreadPool;
 	}
 
 	@Override
@@ -29,6 +34,6 @@ public class RpcConsumerInitializer extends ChannelInitializer<SocketChannel> {
 		pipeline.addLast(RpcConstants.CODEC_DECODER, new RpcDecoder());
 		pipeline.addLast(RpcConstants.CODEC_CLIENT_IDLE_HANDLER,
 			new IdleStateHandler(heartbeatInterval, 0, 0, TimeUnit.MILLISECONDS));
-		pipeline.addLast(RpcConstants.CODEC_HANDLER, new RpcConsumerHandler());
+		pipeline.addLast(RpcConstants.CODEC_HANDLER, new RpcConsumerHandler(concurrentThreadPool));
 	}
 }

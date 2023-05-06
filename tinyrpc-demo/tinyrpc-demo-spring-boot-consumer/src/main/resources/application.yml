@@ -43,3 +43,7 @@ tinyrpc:
         enableDirectServer: false
         # directServerUrl
         directServerUrl:
+        # corePoolSize
+        corePoolSize: 3
+        # maximumPoolSize
+        maximumPoolSize: 5

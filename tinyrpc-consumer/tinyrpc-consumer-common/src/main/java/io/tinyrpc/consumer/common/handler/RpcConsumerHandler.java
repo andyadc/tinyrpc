@@ -7,6 +7,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.tinyrpc.common.constants.RpcConstants;
+import io.tinyrpc.common.threadpool.ConcurrentThreadPool;
 import io.tinyrpc.common.utils.JsonUtils;
 import io.tinyrpc.consumer.common.cache.ConsumerChannelCache;
 import io.tinyrpc.consumer.common.context.RpcContext;
@@ -38,6 +39,12 @@ public class RpcConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<
 //	private final Map<Long, RpcProtocol<RpcResponse>> pendingResponse = new ConcurrentHashMap<>();
 	private SocketAddress remotePeer;
 
+	private ConcurrentThreadPool concurrentThreadPool;
+
+	public RpcConsumerHandler(ConcurrentThreadPool concurrentThreadPool) {
+		this.concurrentThreadPool = concurrentThreadPool;
+	}
+
 	public Channel getChannel() {
 		return channel;
 	}
@@ -65,7 +72,9 @@ public class RpcConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<
 		if (protocol == null) {
 			return;
 		}
-		handleMessage(protocol, channelHandlerContext.channel());
+		concurrentThreadPool.submit(() -> {
+			handleMessage(protocol, channelHandlerContext.channel());
+		});
 	}
 
 	@Override
@@ -155,9 +164,11 @@ public class RpcConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<
 	public RPCFuture sendRequest(RpcProtocol<RpcRequest> protocol, boolean async, boolean oneway) {
 		logger.info("Consumer sending request ===>>> {}", JsonUtils.toJSONString(protocol));
 
-		return oneway ? sendRequestOneway(protocol)
-			: async ? sendRequestAsync(protocol)
-			: sendRequestSync(protocol);
+		return concurrentThreadPool.submit(() -> {
+			return oneway ? sendRequestOneway(protocol)
+				: async ? sendRequestAsync(protocol)
+				: sendRequestSync(protocol);
+		});
 	}
 
 	private RPCFuture sendRequestSync(RpcProtocol<RpcRequest> protocol) {
@@ -183,7 +194,7 @@ public class RpcConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<
 	}
 
 	private RPCFuture getRpcFuture(RpcProtocol<RpcRequest> protocol) {
-		RPCFuture rpcFuture = new RPCFuture(protocol);
+		RPCFuture rpcFuture = new RPCFuture(protocol, concurrentThreadPool);
 		RpcHeader header = protocol.getHeader();
 		long requestId = header.getRequestId();
 		pendingRPC.put(requestId, rpcFuture);

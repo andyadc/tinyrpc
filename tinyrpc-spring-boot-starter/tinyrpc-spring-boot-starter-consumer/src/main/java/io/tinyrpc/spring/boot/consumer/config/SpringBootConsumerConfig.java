@@ -78,6 +78,16 @@ public final class SpringBootConsumerConfig {
 	 */
 	private String directServerUrl;
 
+	/**
+	 * 并发线程池核心线程数
+	 */
+	private int corePoolSize;
+
+	/**
+	 * 并发线程池最大线程数
+	 */
+	private int maximumPoolSize;
+
 	public SpringBootConsumerConfig() {
 	}
 
@@ -86,7 +96,8 @@ public final class SpringBootConsumerConfig {
 									final int timeout, final boolean async, final boolean oneway, final int heartbeatInterval,
 									final int scanNotActiveChannelInterval, final int retryInterval, final int retryTimes,
 									final boolean enableResultCache, final int resultCacheExpire,
-									final boolean enableDirectServer, final String directServerUrl) {
+									final boolean enableDirectServer, final String directServerUrl,
+									final int corePoolSize, final int maximumPoolSize) {
 		this.registryAddress = registryAddress;
 		this.registryType = registryType;
 		this.loadBalanceType = loadBalanceType;
@@ -107,6 +118,8 @@ public final class SpringBootConsumerConfig {
 		this.resultCacheExpire = resultCacheExpire;
 		this.enableDirectServer = enableDirectServer;
 		this.directServerUrl = directServerUrl;
+		this.corePoolSize = corePoolSize;
+		this.maximumPoolSize = maximumPoolSize;
 	}
 
 	public String getRegistryAddress() {
@@ -251,5 +264,21 @@ public final class SpringBootConsumerConfig {
 
 	public void setDirectServerUrl(String directServerUrl) {
 		this.directServerUrl = directServerUrl;
+	}
+
+	public int getCorePoolSize() {
+		return corePoolSize;
+	}
+
+	public void setCorePoolSize(int corePoolSize) {
+		this.corePoolSize = corePoolSize;
+	}
+
+	public int getMaximumPoolSize() {
+		return maximumPoolSize;
+	}
+
+	public void setMaximumPoolSize(int maximumPoolSize) {
+		this.maximumPoolSize = maximumPoolSize;
 	}
 }

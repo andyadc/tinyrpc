@@ -36,6 +36,8 @@ public class BaseServer implements Server {
 	private final Logger logger = LoggerFactory.getLogger(BaseServer.class);
 
 	private final String reflectType;
+	// 是否开启结果缓存
+	private final boolean enableResultCache;
 	// 默认主机域名或者IP地址
 	protected String host = "127.0.0.1";
 	// 默认端口号
@@ -43,22 +45,23 @@ public class BaseServer implements Server {
 	// 存储的是实体类关系
 	protected Map<String, Object> handlerMap = new HashMap<>();
 	protected RegistryService registryService;
-
-	//心跳定时任务线程池
+	// 心跳定时任务线程池
 	private ScheduledExecutorService scheduledExecutorService;
-
-	//心跳间隔时间，默认30秒
+	// 心跳间隔时间，默认30秒
 	private int heartbeatInterval = 30000;
-	//扫描并移除空闲连接时间，默认60秒
+	// 扫描并移除空闲连接时间，默认60秒
 	private int scanNotActiveChannelInterval = 60000;
-
-	//结果缓存过期时长，默认5秒
+	// 结果缓存过期时长，默认5秒
 	private int resultCacheExpire = 5000;
-	//是否开启结果缓存
-	private boolean enableResultCache;
+
+	// 核心线程数
+	private int corePoolSize;
+	// 最大线程数
+	private int maximumPoolSize;
 
 	public BaseServer(String serverAddress, String registryAddress, String registryType, String registryLoadBalanceType, String reflectType,
-					  int heartbeatInterval, int scanNotActiveChannelInterval, boolean enableResultCache, int resultCacheExpire) {
+					  int heartbeatInterval, int scanNotActiveChannelInterval, boolean enableResultCache, int resultCacheExpire,
+					  int corePoolSize, int maximumPoolSize) {
 		if (!Strings.isNullOrEmpty(serverAddress)) {
 			String[] serverArray = serverAddress.split(":");
 			this.host = serverArray[0];
@@ -79,6 +82,8 @@ public class BaseServer implements Server {
 			this.resultCacheExpire = resultCacheExpire;
 		}
 		this.enableResultCache = enableResultCache;
+		this.corePoolSize = corePoolSize;
+		this.maximumPoolSize = maximumPoolSize;
 	}
 
 	private RegistryService getRegistryService(String registryAddress, String registryType, String registryLoadBalanceType) {
@@ -112,7 +117,7 @@ public class BaseServer implements Server {
 							.addLast(RpcConstants.CODEC_SERVER_IDLE_HANDLER,
 								new IdleStateHandler(0, 0, heartbeatInterval, TimeUnit.MILLISECONDS))
 							.addLast(RpcConstants.CODEC_HANDLER,
-								new RpcProviderHandler(reflectType, enableResultCache, resultCacheExpire, handlerMap));
+								new RpcProviderHandler(reflectType, enableResultCache, resultCacheExpire, corePoolSize, maximumPoolSize, handlerMap));
 					}
 				})
 				.option(ChannelOption.SO_BACKLOG, 128)
