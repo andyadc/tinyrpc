@@ -281,4 +281,9 @@ public final class RpcConstants {
 	 * 默认线程池名称前缀
 	 */
 	public static final String DEFAULT_THREADPOOL_NAME_PREFIX="tinyrpc";
+
+	/**
+	 * 打印流量
+	 */
+	public static final String FLOW_POST_PROCESSOR_PRINT = "print";
 }

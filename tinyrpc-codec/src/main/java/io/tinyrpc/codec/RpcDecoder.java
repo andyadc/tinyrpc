@@ -6,6 +6,7 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.util.CharsetUtil;
 import io.tinyrpc.common.utils.SerializationUtils;
 import io.tinyrpc.constant.RpcConstants;
+import io.tinyrpc.flow.processor.FlowPostProcessor;
 import io.tinyrpc.protocol.RpcProtocol;
 import io.tinyrpc.protocol.enumeration.RpcType;
 import io.tinyrpc.protocol.header.RpcHeader;
@@ -19,6 +20,12 @@ import java.util.List;
  * 实现RPC解码操作
  */
 public class RpcDecoder extends ByteToMessageDecoder implements RpcCodec {
+
+	private final FlowPostProcessor postProcessor;
+
+	public RpcDecoder(FlowPostProcessor postProcessor) {
+		this.postProcessor = postProcessor;
+	}
 
 	@Override
 	protected void decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, List<Object> list) throws Exception {
@@ -91,5 +98,7 @@ public class RpcDecoder extends ByteToMessageDecoder implements RpcCodec {
 				}
 				break;
 		}
+
+		this.postFlowProcessor(postProcessor, header);
 	}
 }

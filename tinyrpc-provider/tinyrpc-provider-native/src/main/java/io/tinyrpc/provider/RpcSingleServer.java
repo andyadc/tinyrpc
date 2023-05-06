@@ -16,10 +16,10 @@ public class RpcSingleServer extends BaseServer {
 						   String scanPackage, String reflectType,
 						   int heartbeatInterval, int scanNotActiveChannelInterval,
 						   boolean enableResultCache, int resultCacheExpire,
-						   int corePoolSize, int maximumPoolSize) {
+						   int corePoolSize, int maximumPoolSize, String flowType) {
 		super(serverAddress, registryAddress, registryType, registryLoadBalanceType, reflectType,
 			heartbeatInterval, scanNotActiveChannelInterval, enableResultCache, resultCacheExpire,
-			corePoolSize, maximumPoolSize);
+			corePoolSize, maximumPoolSize, flowType);
 
 		try {
 			this.handlerMap = RpcServiceScanner.doScannerWithRpcServiceAnnotationFilterAndRegistryService(

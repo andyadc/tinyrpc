@@ -6,17 +6,18 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.tinyrpc.constant.RpcConstants;
 import io.tinyrpc.common.exception.RpcException;
 import io.tinyrpc.common.helper.RpcServiceHelper;
 import io.tinyrpc.common.threadpool.ConcurrentThreadPool;
 import io.tinyrpc.common.utils.IPUtils;
 import io.tinyrpc.common.utils.JsonUtils;
 import io.tinyrpc.common.utils.StringUtil;
+import io.tinyrpc.constant.RpcConstants;
 import io.tinyrpc.consumer.common.handler.RpcConsumerHandler;
 import io.tinyrpc.consumer.common.helper.RpcConsumerHandlerHelper;
 import io.tinyrpc.consumer.common.initializer.RpcConsumerInitializer;
 import io.tinyrpc.consumer.common.manager.ConsumerConnectionManager;
+import io.tinyrpc.flow.processor.FlowPostProcessor;
 import io.tinyrpc.loadbalancer.context.ConnectionsContext;
 import io.tinyrpc.protocol.RpcProtocol;
 import io.tinyrpc.protocol.meta.ServiceMeta;
@@ -24,6 +25,7 @@ import io.tinyrpc.protocol.request.RpcRequest;
 import io.tinyrpc.proxy.api.consumer.Consumer;
 import io.tinyrpc.proxy.api.future.RPCFuture;
 import io.tinyrpc.registry.api.RegistryService;
+import io.tinyrpc.spi.loader.ExtensionLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,12 +67,16 @@ public class RpcConsumer implements Consumer {
 	//并发处理线程池
 	private ConcurrentThreadPool concurrentThreadPool;
 
+	//流控分析后置处理器
+	private FlowPostProcessor flowPostProcessor;
+
 	public RpcConsumer() {
 		localIp = IPUtils.getLocalHostIP();
 		bootstrap = new Bootstrap();
 		eventLoopGroup = new NioEventLoopGroup(4);
 	}
 
+	// TODO delete
 	private RpcConsumer(int heartbeatInterval, int scanNotActiveChannelInterval, int retryInterval, int retryTimes) {
 		if (heartbeatInterval > 0) {
 			this.heartbeatInterval = heartbeatInterval;
@@ -87,7 +93,7 @@ public class RpcConsumer implements Consumer {
 		bootstrap
 			.group(eventLoopGroup)
 			.channel(NioSocketChannel.class)
-			.handler(new RpcConsumerInitializer(heartbeatInterval, concurrentThreadPool));
+			.handler(new RpcConsumerInitializer(heartbeatInterval, concurrentThreadPool, flowPostProcessor));
 		//TODO 启动心跳，后续优化
 		this.startHeartbeat();
 	}
@@ -406,9 +412,17 @@ public class RpcConsumer implements Consumer {
 		return this;
 	}
 
+	public RpcConsumer setFlowPostProcessor(String flowType) {
+		if (StringUtil.isEmpty(flowType)) {
+			flowType = RpcConstants.FLOW_POST_PROCESSOR_PRINT;
+		}
+		this.flowPostProcessor = ExtensionLoader.getExtension(FlowPostProcessor.class, flowType);
+		return this;
+	}
+
 	public RpcConsumer buildNettyGroup() {
 		bootstrap.group(eventLoopGroup).channel(NioSocketChannel.class)
-			.handler(new RpcConsumerInitializer(heartbeatInterval, concurrentThreadPool));
+			.handler(new RpcConsumerInitializer(heartbeatInterval, concurrentThreadPool, flowPostProcessor));
 		return this;
 	}
 

@@ -25,7 +25,8 @@ public class ConsumerServiceImpl implements ConsumerService {
 		enableDirectServer = false,
 		directServerUrl = "",
 		corePoolSize = 3,
-		maximumPoolSize = 5
+		maximumPoolSize = 5,
+		flowType = "print"
 	)
 	@Autowired
 	private DemoService demoService;

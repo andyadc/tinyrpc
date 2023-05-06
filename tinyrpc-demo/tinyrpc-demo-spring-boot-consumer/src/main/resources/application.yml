@@ -47,3 +47,5 @@ tinyrpc:
         corePoolSize: 3
         # maximumPoolSize
         maximumPoolSize: 5
+        # flowType
+        flowType: print

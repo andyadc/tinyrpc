@@ -28,7 +28,8 @@ public class SpringBootProviderAutoConfiguration {
 			springBootProviderConfig.isEnableResultCache(),
 			springBootProviderConfig.getResultCacheExpire(),
 			springBootProviderConfig.getCorePoolSize(),
-			springBootProviderConfig.getMaximumPoolSize()
+			springBootProviderConfig.getMaximumPoolSize(),
+			springBootProviderConfig.getFlowType()
 		);
 	}
 }

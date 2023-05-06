@@ -110,4 +110,9 @@ public @interface RpcReference {
 	 * 默认并发线程池最大线程数
 	 */
 	int maximumPoolSize() default DEFAULT_MAXI_NUM_POOL_SIZE;
+
+	/**
+	 * 流控分析类型
+	 */
+	String flowType() default FLOW_POST_PROCESSOR_PRINT;
 }

@@ -13,6 +13,7 @@ import io.netty.handler.timeout.IdleStateHandler;
 import io.tinyrpc.codec.RpcDecoder;
 import io.tinyrpc.codec.RpcEncoder;
 import io.tinyrpc.constant.RpcConstants;
+import io.tinyrpc.flow.processor.FlowPostProcessor;
 import io.tinyrpc.provider.common.handler.RpcProviderHandler;
 import io.tinyrpc.provider.common.manager.ProviderConnectionManager;
 import io.tinyrpc.provider.common.server.api.Server;
@@ -59,9 +60,12 @@ public class BaseServer implements Server {
 	// 最大线程数
 	private int maximumPoolSize;
 
+	// 流控分析后置处理器
+	private final FlowPostProcessor flowPostProcessor;
+
 	public BaseServer(String serverAddress, String registryAddress, String registryType, String registryLoadBalanceType, String reflectType,
 					  int heartbeatInterval, int scanNotActiveChannelInterval, boolean enableResultCache, int resultCacheExpire,
-					  int corePoolSize, int maximumPoolSize) {
+					  int corePoolSize, int maximumPoolSize, String flowType) {
 		if (!Strings.isNullOrEmpty(serverAddress)) {
 			String[] serverArray = serverAddress.split(":");
 			this.host = serverArray[0];
@@ -84,6 +88,7 @@ public class BaseServer implements Server {
 		this.enableResultCache = enableResultCache;
 		this.corePoolSize = corePoolSize;
 		this.maximumPoolSize = maximumPoolSize;
+		this.flowPostProcessor = ExtensionLoader.getExtension(FlowPostProcessor.class, flowType);
 	}
 
 	private RegistryService getRegistryService(String registryAddress, String registryType, String registryLoadBalanceType) {
@@ -112,8 +117,8 @@ public class BaseServer implements Server {
 					@Override
 					protected void initChannel(SocketChannel ch) throws Exception {
 						ch.pipeline()
-							.addLast(RpcConstants.CODEC_DECODER, new RpcDecoder())
-							.addLast(RpcConstants.CODEC_ENCODER, new RpcEncoder())
+							.addLast(RpcConstants.CODEC_DECODER, new RpcDecoder(flowPostProcessor))
+							.addLast(RpcConstants.CODEC_ENCODER, new RpcEncoder(flowPostProcessor))
 							.addLast(RpcConstants.CODEC_SERVER_IDLE_HANDLER,
 								new IdleStateHandler(0, 0, heartbeatInterval, TimeUnit.MILLISECONDS))
 							.addLast(RpcConstants.CODEC_HANDLER,

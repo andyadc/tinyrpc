@@ -29,5 +29,6 @@
 		<constructor-arg name="directServerUrl" value="${consumer.directServerUrl}"/>
 		<constructor-arg name="corePoolSize" value="${consumer.corePoolSize}"/>
 		<constructor-arg name="maximumPoolSize" value="${consumer.maximumPoolSize}"/>
+		<constructor-arg name="flowType" value="${consumer.flowType}"/>
 	</bean>
 </beans>

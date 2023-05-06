@@ -1,5 +1,8 @@
 package io.tinyrpc.codec;
 
+import io.tinyrpc.common.threadpool.FlowPostProcessorThreadPool;
+import io.tinyrpc.flow.processor.FlowPostProcessor;
+import io.tinyrpc.protocol.header.RpcHeader;
 import io.tinyrpc.serialization.api.Serialization;
 import io.tinyrpc.spi.loader.ExtensionLoader;
 
@@ -16,5 +19,17 @@ public interface RpcCodec {
 	 */
 	default Serialization getJdkSerialization(String serializationType) {
 		return ExtensionLoader.getExtension(Serialization.class, serializationType);
+	}
+
+	/**
+	 * 调用RPC框架流量分析后置处理器
+	 *
+	 * @param postProcessor 后置处理器
+	 * @param header        封装了流量信息的消息头
+	 */
+	default void postFlowProcessor(FlowPostProcessor postProcessor, RpcHeader header) {
+		FlowPostProcessorThreadPool.submit(() -> {
+			postProcessor.postRpcHeaderProcessor(header);
+		});
 	}
 }
