@@ -1,6 +1,6 @@
 package io.tinyrpc.loadbalancer.api;
 
-import io.tinyrpc.common.constants.RpcConstants;
+import io.tinyrpc.constant.RpcConstants;
 import io.tinyrpc.spi.annotation.SPI;
 
 import java.util.List;

@@ -1,6 +1,6 @@
 package io.tinyrpc.spring.boot.consumer.starter;
 
-import io.tinyrpc.common.constants.RpcConstants;
+import io.tinyrpc.constant.RpcConstants;
 import io.tinyrpc.common.utils.StringUtil;
 import io.tinyrpc.consumer.RpcClient;
 import io.tinyrpc.consumer.spring.RpcReferenceBean;

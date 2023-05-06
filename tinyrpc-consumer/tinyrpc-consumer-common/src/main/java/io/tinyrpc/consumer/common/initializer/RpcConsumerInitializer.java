@@ -6,7 +6,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.tinyrpc.codec.RpcDecoder;
 import io.tinyrpc.codec.RpcEncoder;
-import io.tinyrpc.common.constants.RpcConstants;
+import io.tinyrpc.constant.RpcConstants;
 import io.tinyrpc.common.threadpool.ConcurrentThreadPool;
 import io.tinyrpc.consumer.common.handler.RpcConsumerHandler;
 

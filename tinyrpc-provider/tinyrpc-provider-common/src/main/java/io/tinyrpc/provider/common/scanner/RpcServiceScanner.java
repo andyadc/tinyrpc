@@ -1,7 +1,7 @@
 package io.tinyrpc.provider.common.scanner;
 
 import io.tinyrpc.annotation.RpcService;
-import io.tinyrpc.common.constants.RpcConstants;
+import io.tinyrpc.constant.RpcConstants;
 import io.tinyrpc.common.helper.RpcServiceHelper;
 import io.tinyrpc.common.scanner.ClassScanner;
 import io.tinyrpc.protocol.meta.ServiceMeta;

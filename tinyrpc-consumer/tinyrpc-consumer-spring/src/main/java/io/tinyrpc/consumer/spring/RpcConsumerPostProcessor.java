@@ -1,7 +1,7 @@
 package io.tinyrpc.consumer.spring;
 
 import io.tinyrpc.annotation.RpcReference;
-import io.tinyrpc.common.constants.RpcConstants;
+import io.tinyrpc.constant.RpcConstants;
 import io.tinyrpc.consumer.spring.context.RpcConsumerSpringContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

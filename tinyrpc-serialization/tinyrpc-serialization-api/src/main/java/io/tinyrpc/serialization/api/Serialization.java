@@ -1,6 +1,6 @@
 package io.tinyrpc.serialization.api;
 
-import io.tinyrpc.common.constants.RpcConstants;
+import io.tinyrpc.constant.RpcConstants;
 import io.tinyrpc.spi.annotation.SPI;
 
 /**

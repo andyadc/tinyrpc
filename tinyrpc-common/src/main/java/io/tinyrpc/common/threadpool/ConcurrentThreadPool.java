@@ -1,6 +1,6 @@
 package io.tinyrpc.common.threadpool;
 
-import io.tinyrpc.common.constants.RpcConstants;
+import io.tinyrpc.constant.RpcConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

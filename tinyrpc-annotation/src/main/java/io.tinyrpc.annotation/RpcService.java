@@ -1,5 +1,7 @@
 package io.tinyrpc.annotation;
 
+import io.tinyrpc.constant.RpcConstants;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -22,7 +24,7 @@ public @interface RpcService {
 	/**
 	 * 版本号
 	 */
-	String version() default "1.0.0";
+	String version() default RpcConstants.RPC_COMMON_DEFAULT_VERSION;
 
 	/**
 	 * 服务分组，默认为空
@@ -32,5 +34,5 @@ public @interface RpcService {
 	/**
 	 * 权重
 	 */
-	int weight() default 0;
+	int weight() default RpcConstants.SERVICE_WEIGHT_MIN;
 }

@@ -9,7 +9,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.tinyrpc.cache.result.CacheResultKey;
 import io.tinyrpc.cache.result.CacheResultManager;
-import io.tinyrpc.common.constants.RpcConstants;
+import io.tinyrpc.constant.RpcConstants;
 import io.tinyrpc.common.exception.RpcException;
 import io.tinyrpc.common.helper.RpcServiceHelper;
 import io.tinyrpc.common.threadpool.ConcurrentThreadPool;

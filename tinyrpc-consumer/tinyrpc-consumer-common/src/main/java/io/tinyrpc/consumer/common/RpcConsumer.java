@@ -6,7 +6,7 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.tinyrpc.common.constants.RpcConstants;
+import io.tinyrpc.constant.RpcConstants;
 import io.tinyrpc.common.exception.RpcException;
 import io.tinyrpc.common.helper.RpcServiceHelper;
 import io.tinyrpc.common.threadpool.ConcurrentThreadPool;

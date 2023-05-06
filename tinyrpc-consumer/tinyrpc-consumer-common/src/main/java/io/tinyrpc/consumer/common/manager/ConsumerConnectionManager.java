@@ -1,7 +1,7 @@
 package io.tinyrpc.consumer.common.manager;
 
 import io.netty.channel.Channel;
-import io.tinyrpc.common.constants.RpcConstants;
+import io.tinyrpc.constant.RpcConstants;
 import io.tinyrpc.consumer.common.cache.ConsumerChannelCache;
 import io.tinyrpc.protocol.RpcProtocol;
 import io.tinyrpc.protocol.enumeration.RpcType;

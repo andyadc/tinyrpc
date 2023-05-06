@@ -10,6 +10,7 @@
 	<version>0.0.1</version>
 
 	<modules>
+		<module>tinyrpc-const</module>
 		<module>tinyrpc-common</module>
 		<module>tinyrpc-proxy</module>
 		<module>tinyrpc-reflect</module>
@@ -26,7 +27,7 @@
 		<module>tinyrpc-demo</module>
 		<module>tinyrpc-spring-boot-starter</module>
         <module>tinyrpc-cache</module>
-    </modules>
+	</modules>
 
 	<properties>
 		<jdk.version>1.8</jdk.version>

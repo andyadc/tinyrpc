@@ -1,4 +1,4 @@
-package io.tinyrpc.common.constants;
+package io.tinyrpc.constant;
 
 public final class RpcConstants {
 
@@ -215,7 +215,7 @@ public final class RpcConstants {
 	/**
 	 * 服务消费者默认的超时时间
 	 */
-	public static final int RPC_REFERENCE_DEFAULT_TIMEOUT = 5000;
+	public static final long RPC_REFERENCE_DEFAULT_TIMEOUT = 5000L;
 
 	/**
 	 * 服务消费者默认的代理
@@ -260,7 +260,7 @@ public final class RpcConstants {
 	/**
 	 * 默认的核心线程数
 	 */
-	public static final int DEFAULT_CORE_POOL_SIZE = 16;
+	public static final int DEFAULT_CORE_POOL_SIZE = 8;
 
 	/**
 	 * 默认的最大线程数

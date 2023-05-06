@@ -2,7 +2,7 @@ package io.tinyrpc.proxy.api.object;
 
 import io.tinyrpc.cache.result.CacheResultKey;
 import io.tinyrpc.cache.result.CacheResultManager;
-import io.tinyrpc.common.constants.RpcConstants;
+import io.tinyrpc.constant.RpcConstants;
 import io.tinyrpc.protocol.RpcProtocol;
 import io.tinyrpc.protocol.enumeration.RpcType;
 import io.tinyrpc.protocol.header.RpcHeaderFactory;

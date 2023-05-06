@@ -6,7 +6,7 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleStateEvent;
-import io.tinyrpc.common.constants.RpcConstants;
+import io.tinyrpc.constant.RpcConstants;
 import io.tinyrpc.common.threadpool.ConcurrentThreadPool;
 import io.tinyrpc.common.utils.JsonUtils;
 import io.tinyrpc.consumer.common.cache.ConsumerChannelCache;

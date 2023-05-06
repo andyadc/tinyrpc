@@ -1,6 +1,6 @@
 package io.tinyrpc.protocol.header;
 
-import io.tinyrpc.common.constants.RpcConstants;
+import io.tinyrpc.constant.RpcConstants;
 import io.tinyrpc.common.id.IdFactory;
 
 /**

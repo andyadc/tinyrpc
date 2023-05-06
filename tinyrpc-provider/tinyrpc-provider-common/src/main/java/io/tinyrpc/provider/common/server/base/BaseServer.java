@@ -12,7 +12,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.tinyrpc.codec.RpcDecoder;
 import io.tinyrpc.codec.RpcEncoder;
-import io.tinyrpc.common.constants.RpcConstants;
+import io.tinyrpc.constant.RpcConstants;
 import io.tinyrpc.provider.common.handler.RpcProviderHandler;
 import io.tinyrpc.provider.common.manager.ProviderConnectionManager;
 import io.tinyrpc.provider.common.server.api.Server;

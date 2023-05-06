@@ -1,6 +1,6 @@
 package io.tinyrpc.registry.zookeeper;
 
-import io.tinyrpc.common.constants.RpcConstants;
+import io.tinyrpc.constant.RpcConstants;
 import io.tinyrpc.common.helper.RpcServiceHelper;
 import io.tinyrpc.loadbalancer.api.ServiceLoadBalancer;
 import io.tinyrpc.loadbalancer.helper.ServiceLoadBalancerHelper;
