@@ -1,5 +1,6 @@
-package io.tinyrpc.disuse.defaultstrategy;
+package io.tinyrpc.disuse.strategy.refuse;
 
+import io.tinyrpc.common.exception.RefuseException;
 import io.tinyrpc.disuse.api.DisuseStrategy;
 import io.tinyrpc.disuse.api.connection.ConnectionInfo;
 import io.tinyrpc.spi.annotation.SPIClass;
@@ -9,19 +10,19 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * 默认连接，获取列表中的第一个元素
+ * 拒绝新连接
  */
 @SPIClass
-public class DefaultDisuseStrategy implements DisuseStrategy {
+public class RefuseDisuseStrategy implements DisuseStrategy {
 
-	private static final Logger logger = LoggerFactory.getLogger(DefaultDisuseStrategy.class);
+	private static final Logger logger = LoggerFactory.getLogger(RefuseDisuseStrategy.class);
 
 	@Override
 	public ConnectionInfo selectConnection(List<ConnectionInfo> connectionList) {
-		logger.info("--- default disuse strategy ---");
+		logger.info("--- refuse disuse strategy ---");
 		if (connectionList.isEmpty()) {
 			return null;
 		}
-		return connectionList.get(0);
+		throw new RefuseException("refuse new connection...");
 	}
 }

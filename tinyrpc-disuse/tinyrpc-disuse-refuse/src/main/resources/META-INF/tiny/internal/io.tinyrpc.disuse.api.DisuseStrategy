@@ -1,0 +1,1 @@
+strategy_refuse=io.tinyrpc.disuse.strategy.refuse.RefuseDisuseStrategy

@@ -1,4 +1,4 @@
-package io.tinyrpc.disuse.defaultstrategy;
+package io.tinyrpc.disuse.strategy.random;
 
 import io.tinyrpc.disuse.api.DisuseStrategy;
 import io.tinyrpc.disuse.api.connection.ConnectionInfo;
@@ -6,22 +6,23 @@ import io.tinyrpc.spi.annotation.SPIClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.security.SecureRandom;
 import java.util.List;
 
 /**
- * 默认连接，获取列表中的第一个元素
+ * 从列表中随机获取一个
  */
 @SPIClass
-public class DefaultDisuseStrategy implements DisuseStrategy {
+public class RandomDisuseStrategy implements DisuseStrategy {
 
-	private static final Logger logger = LoggerFactory.getLogger(DefaultDisuseStrategy.class);
+	private static final Logger logger = LoggerFactory.getLogger(RandomDisuseStrategy.class);
 
 	@Override
 	public ConnectionInfo selectConnection(List<ConnectionInfo> connectionList) {
-		logger.info("--- default disuse strategy ---");
+		logger.info("--- random disuse strategy ---");
 		if (connectionList.isEmpty()) {
 			return null;
 		}
-		return connectionList.get(0);
+		return connectionList.get(new SecureRandom().nextInt(connectionList.size()));
 	}
 }

@@ -1,5 +1,10 @@
 package io.tinyrpc.common.exception;
 
-public class RefuseException extends RpcException{
+public class RefuseException extends RpcException {
+
 	private static final long serialVersionUID = 3246766938564407840L;
+
+	public RefuseException(String message) {
+		super(message);
+	}
 }

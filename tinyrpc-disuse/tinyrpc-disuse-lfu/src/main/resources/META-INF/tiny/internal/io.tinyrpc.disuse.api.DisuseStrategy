@@ -1,0 +1,1 @@
+strategy_lfu=io.tinyrpc.disuse.strategy.lfu.LfuDisuseStrategy

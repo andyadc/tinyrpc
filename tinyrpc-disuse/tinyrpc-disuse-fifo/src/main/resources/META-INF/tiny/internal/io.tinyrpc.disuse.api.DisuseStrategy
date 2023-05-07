@@ -1,0 +1,1 @@
+strategy_fifo=io.tinyrpc.disuse.strategy.fifo.FifoDisuseStrategy

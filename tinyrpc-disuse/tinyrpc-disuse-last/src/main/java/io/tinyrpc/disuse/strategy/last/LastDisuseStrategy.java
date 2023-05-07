@@ -1,4 +1,4 @@
-package io.tinyrpc.disuse.defaultstrategy;
+package io.tinyrpc.disuse.strategy.last;
 
 import io.tinyrpc.disuse.api.DisuseStrategy;
 import io.tinyrpc.disuse.api.connection.ConnectionInfo;
@@ -9,19 +9,19 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * 默认连接，获取列表中的第一个元素
+ * 获取连接列表中最后一个连接信息
  */
 @SPIClass
-public class DefaultDisuseStrategy implements DisuseStrategy {
+public class LastDisuseStrategy implements DisuseStrategy {
 
-	private static final Logger logger = LoggerFactory.getLogger(DefaultDisuseStrategy.class);
+	private static final Logger logger = LoggerFactory.getLogger(LastDisuseStrategy.class);
 
 	@Override
 	public ConnectionInfo selectConnection(List<ConnectionInfo> connectionList) {
-		logger.info("--- default disuse strategy ---");
+		logger.info("--- last disuse strategy ---");
 		if (connectionList.isEmpty()) {
 			return null;
 		}
-		return connectionList.get(0);
+		return connectionList.get(connectionList.size() - 1);
 	}
 }

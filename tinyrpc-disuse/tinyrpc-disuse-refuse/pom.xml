@@ -9,21 +9,26 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>tinyrpc-disuse-default</artifactId>
+	<artifactId>tinyrpc-disuse-refuse</artifactId>
+
+	<description>
+		拒绝连接淘汰策略实现工程
+	</description>
 
 	<properties>
 		<maven.compiler.source>8</maven.compiler.source>
 		<maven.compiler.target>8</maven.compiler.target>
 	</properties>
 
-	<description>
-		默认淘汰策略实现工程
-	</description>
-
 	<dependencies>
 		<dependency>
 			<groupId>io.tinyrpc</groupId>
 			<artifactId>tinyrpc-disuse-api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.tinyrpc</groupId>
+			<artifactId>tinyrpc-common</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>

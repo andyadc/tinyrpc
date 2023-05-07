@@ -24,6 +24,13 @@
 	<modules>
 		<module>tinyrpc-disuse-api</module>
 		<module>tinyrpc-disuse-default</module>
+        <module>tinyrpc-disuse-first</module>
+		<module>tinyrpc-disuse-last</module>
+		<module>tinyrpc-disuse-fifo</module>
+		<module>tinyrpc-disuse-lfu</module>
+		<module>tinyrpc-disuse-lru</module>
+		<module>tinyrpc-disuse-random</module>
+		<module>tinyrpc-disuse-refuse</module>
 	</modules>
 
 </project>
