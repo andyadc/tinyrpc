@@ -25,3 +25,11 @@ tinyrpc:
         enableResultCache: true
         # resultCacheExpire
         resultCacheExpire: 5000
+        # corePoolSize
+        corePoolSize: 5
+        # maximumPoolSize
+        maximumPoolSize: 10
+        # maxConnections
+        maxConnections: 10
+        # disuseStrategyType
+        disuseStrategyType:

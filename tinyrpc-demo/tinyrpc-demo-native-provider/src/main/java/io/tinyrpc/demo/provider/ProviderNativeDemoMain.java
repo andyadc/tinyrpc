@@ -18,7 +18,9 @@ public class ProviderNativeDemoMain {
 			15000,
 			5,
 			10,
-			"print"
+			"print",
+			1,
+			"strategy_default"
 		);
 
 		singleServer.startNettyServer();

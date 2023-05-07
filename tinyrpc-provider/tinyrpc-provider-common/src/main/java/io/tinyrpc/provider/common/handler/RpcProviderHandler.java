@@ -9,11 +9,12 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.tinyrpc.cache.result.CacheResultKey;
 import io.tinyrpc.cache.result.CacheResultManager;
-import io.tinyrpc.constant.RpcConstants;
 import io.tinyrpc.common.exception.RpcException;
 import io.tinyrpc.common.helper.RpcServiceHelper;
 import io.tinyrpc.common.threadpool.ConcurrentThreadPool;
 import io.tinyrpc.common.utils.JsonUtils;
+import io.tinyrpc.connection.manager.ConnectionManager;
+import io.tinyrpc.constant.RpcConstants;
 import io.tinyrpc.protocol.RpcProtocol;
 import io.tinyrpc.protocol.enumeration.RpcStatus;
 import io.tinyrpc.protocol.enumeration.RpcType;
@@ -62,7 +63,15 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 	 */
 	private final ConcurrentThreadPool concurrentThreadPool;
 
-	public RpcProviderHandler(String reflectType, boolean enableResultCache, int resultCacheExpire, int corePoolSize, int maximumPoolSize, Map<String, Object> handlerMap) {
+	/**
+	 * 连接管理器
+	 */
+	private ConnectionManager connectionManager;
+
+	public RpcProviderHandler(String reflectType, boolean enableResultCache, int resultCacheExpire,
+							  int corePoolSize, int maximumPoolSize,
+							  int maxConnections, String disuseStrategyType,
+							  Map<String, Object> handlerMap) {
 		this.handlerMap = handlerMap;
 		this.reflectInvoker = ExtensionLoader.getExtension(ReflectInvoker.class, reflectType);
 		this.enableResultCache = enableResultCache;
@@ -71,6 +80,7 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 		}
 		this.cacheResultManager = CacheResultManager.getInstance(resultCacheExpire, enableResultCache);
 		this.concurrentThreadPool = ConcurrentThreadPool.getInstance(corePoolSize, maximumPoolSize);
+		this.connectionManager = ConnectionManager.getInstance(maxConnections, disuseStrategyType);
 	}
 
 	@Override
@@ -78,6 +88,7 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 
 		// 异步 ServerThreadPool.submit(() -> {})
 		concurrentThreadPool.submit(() -> {
+			connectionManager.update(ctx.channel());
 			RpcProtocol<RpcResponse> responseRpcProtocol = handleMessage(protocol, ctx.channel());
 
 			ctx.writeAndFlush(responseRpcProtocol).addListener(new ChannelFutureListener() {
@@ -228,6 +239,7 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 			Channel channel = ctx.channel();
 			try {
 				logger.info("IdleStateEvent triggered, close channel " + channel.remoteAddress());
+				connectionManager.remove(ctx.channel());
 				channel.close();
 			} finally {
 				channel.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
@@ -240,27 +252,49 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
 		super.channelActive(ctx);
 
-		ProviderChannelCache.add(ctx.channel());
+		Channel channel = ctx.channel();
+		ProviderChannelCache.add(channel);
+		connectionManager.add(channel);
+		if (logger.isDebugEnabled()) {
+			logger.debug("channelActive: {}", channel.id().asLongText());
+		}
 	}
 
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 		super.channelInactive(ctx);
 
-		ProviderChannelCache.remove(ctx.channel());
+		Channel channel = ctx.channel();
+		ProviderChannelCache.remove(channel);
+		connectionManager.remove(channel);
+		if (logger.isDebugEnabled()) {
+			logger.debug("channelInactive: {}", channel.id().asLongText());
+		}
 	}
 
 	@Override
 	public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
 		super.channelUnregistered(ctx);
 
-		ProviderChannelCache.remove(ctx.channel());
+		Channel channel = ctx.channel();
+		ProviderChannelCache.remove(channel);
+		connectionManager.remove(channel);
+		if (logger.isDebugEnabled()) {
+			logger.debug("channelUnregistered: {}", channel.id().asLongText());
+		}
 	}
 
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
 		logger.error("Server caught exception.", cause);
-		ProviderChannelCache.remove(ctx.channel());
+
+		Channel channel = ctx.channel();
+		ProviderChannelCache.remove(channel);
+		connectionManager.remove(channel);
+		if (logger.isDebugEnabled()) {
+			logger.debug("exceptionCaught: {}", channel.id().asLongText());
+		}
+
 		ctx.close();
 	}
 }

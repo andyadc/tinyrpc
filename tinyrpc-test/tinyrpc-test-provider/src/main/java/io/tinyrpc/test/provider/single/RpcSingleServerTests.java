@@ -20,7 +20,9 @@ public class RpcSingleServerTests {
 			5000,
 			5,
 			10,
-			"print"
+			"print",
+			10,
+			"strategy_default"
 		);
 
 		singleServer.startNettyServer();

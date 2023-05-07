@@ -28,6 +28,8 @@
 		<module>tinyrpc-spring-boot-starter</module>
         <module>tinyrpc-cache</module>
 		<module>tinyrpc-flow</module>
+        <module>tinyrpc-connection</module>
+		<module>tinyrpc-disuse</module>
 	</modules>
 
 	<properties>

@@ -1,8 +1,8 @@
 package io.tinyrpc.provider.spring;
 
 import io.tinyrpc.annotation.RpcService;
-import io.tinyrpc.constant.RpcConstants;
 import io.tinyrpc.common.helper.RpcServiceHelper;
+import io.tinyrpc.constant.RpcConstants;
 import io.tinyrpc.protocol.meta.ServiceMeta;
 import io.tinyrpc.provider.common.server.base.BaseServer;
 import org.slf4j.Logger;
@@ -26,12 +26,14 @@ public class RpcSpringServer extends BaseServer implements ApplicationContextAwa
 						   String reflectType,
 						   int heartbeatInterval, int scanNotActiveChannelInterval,
 						   boolean enableResultCache, int resultCacheExpire,
-						   int corePoolSize, int maximumPoolSize, String flowType) {
+						   int corePoolSize, int maximumPoolSize, String flowType,
+						   int maxConnections, String disuseStrategyType) {
 		super(serverAddress, registryAddress, registryType, registryLoadBalanceType,
 			reflectType,
 			heartbeatInterval, scanNotActiveChannelInterval,
 			enableResultCache, resultCacheExpire,
-			corePoolSize, maximumPoolSize, flowType);
+			corePoolSize, maximumPoolSize, flowType,
+			maxConnections, disuseStrategyType);
 	}
 
 	@Override
