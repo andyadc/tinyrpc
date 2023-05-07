@@ -88,7 +88,16 @@ public class RpcClient {
 	/**
 	 * 流控分析类型
 	 */
-	private String flowType;
+	private final String flowType;
+
+	/**
+	 * 是否开启数据缓冲
+	 */
+	private boolean enableBuffer;
+	/**
+	 * 缓冲区大小
+	 */
+	private int bufferSize;
 
 	public RpcClient(String registryAddress, String registryType, String registryLoadBalanceType,
 					 String proxy, String serviceVersion, String serviceGroup, String serializationType, long timeout,
@@ -97,7 +106,8 @@ public class RpcClient {
 					 int retryInterval, int retryTimes,
 					 boolean enableResultCache, int resultCacheExpire,
 					 boolean enableDirectServer, String directServerUrl,
-					 int corePoolSize, int maximumPoolSize, String flowType) {
+					 int corePoolSize, int maximumPoolSize, String flowType,
+					 boolean enableBuffer, int bufferSize) {
 		this.serviceVersion = serviceVersion;
 		this.timeout = timeout;
 		this.serviceGroup = serviceGroup;
@@ -116,6 +126,8 @@ public class RpcClient {
 		this.directServerUrl = directServerUrl;
 		this.concurrentThreadPool = ConcurrentThreadPool.getInstance(corePoolSize, maximumPoolSize);
 		this.flowType = flowType;
+		this.enableBuffer = enableBuffer;
+		this.bufferSize = bufferSize;
 	}
 
 	private RegistryService getRegistryService(String registryAddress, String registryType, String registryLoadBalanceType) {
@@ -145,6 +157,8 @@ public class RpcClient {
 				.setDirectServerUrl(directServerUrl)
 				.setConcurrentThreadPool(concurrentThreadPool)
 				.setFlowPostProcessor(flowType)
+				.setEnableBuffer(enableBuffer)
+				.setBufferSize(bufferSize)
 				.buildNettyGroup()
 				.buildConnection(registryService),
 			async, oneway, enableResultCache, resultCacheExpire));
@@ -163,6 +177,8 @@ public class RpcClient {
 				.setDirectServerUrl(directServerUrl)
 				.setConcurrentThreadPool(concurrentThreadPool)
 				.setFlowPostProcessor(flowType)
+				.setEnableBuffer(enableBuffer)
+				.setBufferSize(bufferSize)
 				.buildNettyGroup()
 				.buildConnection(registryService),
 			async, oneway, enableResultCache, resultCacheExpire);

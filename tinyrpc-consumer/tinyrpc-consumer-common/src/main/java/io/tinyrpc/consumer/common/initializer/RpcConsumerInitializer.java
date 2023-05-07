@@ -6,8 +6,8 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
 import io.tinyrpc.codec.RpcDecoder;
 import io.tinyrpc.codec.RpcEncoder;
-import io.tinyrpc.constant.RpcConstants;
 import io.tinyrpc.common.threadpool.ConcurrentThreadPool;
+import io.tinyrpc.constant.RpcConstants;
 import io.tinyrpc.consumer.common.handler.RpcConsumerHandler;
 import io.tinyrpc.flow.processor.FlowPostProcessor;
 
@@ -21,8 +21,11 @@ public class RpcConsumerInitializer extends ChannelInitializer<SocketChannel> {
 	private final ConcurrentThreadPool concurrentThreadPool;
 	private final FlowPostProcessor flowPostProcessor;
 	private int heartbeatInterval;
+	private final boolean enableBuffer;
+	private final int bufferSize;
 
 	public RpcConsumerInitializer(int heartbeatInterval,
+								  boolean enableBuffer, int bufferSize,
 								  ConcurrentThreadPool concurrentThreadPool,
 								  FlowPostProcessor flowPostProcessor) {
 		if (heartbeatInterval > 0) {
@@ -30,6 +33,8 @@ public class RpcConsumerInitializer extends ChannelInitializer<SocketChannel> {
 		}
 		this.concurrentThreadPool = concurrentThreadPool;
 		this.flowPostProcessor = flowPostProcessor;
+		this.enableBuffer = enableBuffer;
+		this.bufferSize = bufferSize;
 	}
 
 	@Override
@@ -39,6 +44,7 @@ public class RpcConsumerInitializer extends ChannelInitializer<SocketChannel> {
 		pipeline.addLast(RpcConstants.CODEC_DECODER, new RpcDecoder(flowPostProcessor));
 		pipeline.addLast(RpcConstants.CODEC_CLIENT_IDLE_HANDLER,
 			new IdleStateHandler(heartbeatInterval, 0, 0, TimeUnit.MILLISECONDS));
-		pipeline.addLast(RpcConstants.CODEC_HANDLER, new RpcConsumerHandler(concurrentThreadPool));
+		pipeline.addLast(RpcConstants.CODEC_HANDLER,
+			new RpcConsumerHandler(enableBuffer, bufferSize, concurrentThreadPool));
 	}
 }

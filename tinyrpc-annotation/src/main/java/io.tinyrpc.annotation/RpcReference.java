@@ -115,4 +115,14 @@ public @interface RpcReference {
 	 * 流控分析类型
 	 */
 	String flowType() default FLOW_POST_PROCESSOR_PRINT;
+
+	/**
+	 * 是否开启缓冲区
+	 */
+	boolean enableBuffer() default false;
+
+	/**
+	 * 缓冲区大小
+	 */
+	int bufferSize() default DEFAULT_BUFFER_SIZE;
 }

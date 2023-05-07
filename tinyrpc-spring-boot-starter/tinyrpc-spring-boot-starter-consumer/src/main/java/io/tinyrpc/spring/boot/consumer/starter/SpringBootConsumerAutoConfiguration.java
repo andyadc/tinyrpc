@@ -1,7 +1,7 @@
 package io.tinyrpc.spring.boot.consumer.starter;
 
-import io.tinyrpc.constant.RpcConstants;
 import io.tinyrpc.common.utils.StringUtil;
+import io.tinyrpc.constant.RpcConstants;
 import io.tinyrpc.consumer.RpcClient;
 import io.tinyrpc.consumer.spring.RpcReferenceBean;
 import io.tinyrpc.consumer.spring.context.RpcConsumerSpringContext;
@@ -99,14 +99,14 @@ public class SpringBootConsumerAutoConfiguration {
 			referenceBean.setScanNotActiveChannelInterval(springBootConsumerConfig().getScanNotActiveChannelInterval());
 		}
 		if (!referenceBean.isEnableResultCache()) {
-			referenceBean.setEnableResultCache(springBootConsumerConfig.getEnableResultCache());
+			referenceBean.setEnableResultCache(springBootConsumerConfig.isEnableResultCache());
 		}
 		if (referenceBean.getResultCacheExpire() <= 0
 			|| (RpcConstants.RPC_SCAN_RESULT_CACHE_EXPIRE == referenceBean.getResultCacheExpire() && springBootConsumerConfig.getResultCacheExpire() > 0)) {
 			referenceBean.setResultCacheExpire(springBootConsumerConfig.getResultCacheExpire());
 		}
 		if (!referenceBean.isEnableDirectServer()) {
-			referenceBean.setEnableDirectServer(springBootConsumerConfig.getEnableDirectServer());
+			referenceBean.setEnableDirectServer(springBootConsumerConfig.isEnableDirectServer());
 		}
 		if (StringUtil.isEmpty(referenceBean.getDirectServerUrl())
 			|| (RpcConstants.RPC_COMMON_DEFAULT_DIRECT_SERVER.equals(referenceBean.getDirectServerUrl()) && !StringUtil.isEmpty(springBootConsumerConfig.getDirectServerUrl()))) {
@@ -121,8 +121,15 @@ public class SpringBootConsumerAutoConfiguration {
 			referenceBean.setMaximumPoolSize(springBootConsumerConfig.getMaximumPoolSize());
 		}
 		if (StringUtil.isEmpty(referenceBean.getFlowType())
-			|| (RpcConstants.FLOW_POST_PROCESSOR_PRINT.equals(referenceBean.getFlowType()) && !StringUtil.isEmpty(springBootConsumerConfig.getFlowType()))){
+			|| (RpcConstants.FLOW_POST_PROCESSOR_PRINT.equals(referenceBean.getFlowType()) && !StringUtil.isEmpty(springBootConsumerConfig.getFlowType()))) {
 			referenceBean.setFlowType(springBootConsumerConfig.getFlowType());
+		}
+		if (!referenceBean.isEnableBuffer()) {
+			referenceBean.setEnableBuffer(springBootConsumerConfig.isEnableBuffer());
+		}
+		if (referenceBean.getBufferSize() <= 0
+			|| (RpcConstants.DEFAULT_BUFFER_SIZE == referenceBean.getBufferSize() && springBootConsumerConfig.getBufferSize() > 0)) {
+			referenceBean.setBufferSize(springBootConsumerConfig.getBufferSize());
 		}
 
 		return referenceBean;

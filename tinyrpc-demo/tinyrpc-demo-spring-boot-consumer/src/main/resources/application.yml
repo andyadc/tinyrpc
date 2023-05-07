@@ -49,3 +49,7 @@ tinyrpc:
         maximumPoolSize: 5
         # flowType
         flowType: print
+        # enableBuffer
+        enableBuffer: false
+        # bufferSize
+        bufferSize: 6

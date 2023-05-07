@@ -26,7 +26,7 @@ public class BufferCacheThreadPool {
 
 				@Override
 				public Thread newThread(Runnable r) {
-					return new Thread(r, "BufferCache" + "-" + (count++));
+					return new Thread(r, "BufferCacheManager" + "-" + (count++));
 				}
 			}
 		);

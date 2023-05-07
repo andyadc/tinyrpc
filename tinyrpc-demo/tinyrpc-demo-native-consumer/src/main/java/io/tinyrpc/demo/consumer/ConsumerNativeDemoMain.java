@@ -39,7 +39,9 @@ public class ConsumerNativeDemoMain {
 			"127.0.0.1:27880,127.0.0.1:27880,127.0.0.1:27880",
 			2,
 			3,
-			"print"
+			"print",
+			true,
+			2
 		);
 	}
 
