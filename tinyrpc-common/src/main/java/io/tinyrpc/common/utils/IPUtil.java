@@ -6,15 +6,15 @@ import org.slf4j.LoggerFactory;
 import java.net.InetAddress;
 import java.util.Objects;
 
-public class IPUtils {
+public class IPUtil {
 
-	private static final Logger logger = LoggerFactory.getLogger(IPUtils.class);
+	private static final Logger logger = LoggerFactory.getLogger(IPUtil.class);
 
 	public static InetAddress getLocalInetAddress() {
 		try {
 			return InetAddress.getLocalHost();
 		} catch (Exception e) {
-			logger.error("Get local IP address error. ", e);
+			logger.error("Get local IP address error.", e);
 		}
 		return null;
 	}

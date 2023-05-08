@@ -9,8 +9,8 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.tinyrpc.common.exception.RpcException;
 import io.tinyrpc.common.helper.RpcServiceHelper;
 import io.tinyrpc.common.threadpool.ConcurrentThreadPool;
-import io.tinyrpc.common.utils.IPUtils;
-import io.tinyrpc.common.utils.JsonUtils;
+import io.tinyrpc.common.utils.IPUtil;
+import io.tinyrpc.common.utils.JsonUtil;
 import io.tinyrpc.common.utils.StringUtil;
 import io.tinyrpc.constant.RpcConstants;
 import io.tinyrpc.consumer.common.handler.RpcConsumerHandler;
@@ -43,6 +43,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class RpcConsumer implements Consumer {
 
 	private static final Logger logger = LoggerFactory.getLogger(RpcConsumer.class);
+
 	private static volatile RpcConsumer instance;
 	private final Bootstrap bootstrap;
 	private final EventLoopGroup eventLoopGroup;
@@ -76,7 +77,7 @@ public class RpcConsumer implements Consumer {
 	private int bufferSize;
 
 	public RpcConsumer() {
-		localIp = IPUtils.getLocalHostIP();
+		localIp = IPUtil.getLocalHostIP();
 		bootstrap = new Bootstrap();
 		eventLoopGroup = new NioEventLoopGroup(4);
 	}
@@ -92,7 +93,7 @@ public class RpcConsumer implements Consumer {
 		this.retryInterval = retryInterval <= 0 ? RpcConstants.DEFAULT_RETRY_INTERVAL : retryInterval;
 		this.retryTimes = retryTimes <= 0 ? RpcConstants.DEFAULT_RETRY_TIMES : retryTimes;
 
-		localIp = IPUtils.getLocalHostIP();
+		localIp = IPUtil.getLocalHostIP();
 		bootstrap = new Bootstrap();
 		eventLoopGroup = new NioEventLoopGroup(4);
 		bootstrap
@@ -289,7 +290,7 @@ public class RpcConsumer implements Consumer {
 		ServiceMeta serviceMeta = this.getDirectServiceMetaOrWithRetry(registryService, serviceKey, invokerHashCode);
 		RpcConsumerHandler handler = null;
 		if (serviceMeta != null) {
-			logger.info(">>> serviceKey={}, serviceMeta={}", serviceKey, JsonUtils.toJSONString(serviceMeta));
+			logger.info("--- serviceKey={}, serviceMeta={} ---", serviceKey, JsonUtil.toJSONString(serviceMeta));
 			handler = getRpcConsumerHandlerWithRetry(serviceMeta);
 		}
 		return handler;

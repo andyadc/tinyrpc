@@ -26,18 +26,21 @@ public class RPCFuture extends CompletableFuture<Object> {
 	private static final Logger logger = LoggerFactory.getLogger(RPCFuture.class);
 
 	private final Sync sync;
+	private final ReentrantLock lock = new ReentrantLock();
+
 	private final long startTime;
 	private final long responseTimeThreshold = 5000;
+
 	private final RpcProtocol<RpcRequest> requestRpcProtocol;
 	private final List<AsyncRPCCallback> pendingCallbacks = new ArrayList<>();
-	private final ReentrantLock lock = new ReentrantLock();
+	private final ConcurrentThreadPool concurrentThreadPool;
 	private RpcProtocol<RpcResponse> responseRpcProtocol;
-	private ConcurrentThreadPool concurrentThreadPool;
 
 	public RPCFuture(RpcProtocol<RpcRequest> requestRpcProtocol, ConcurrentThreadPool concurrentThreadPool) {
+		this.startTime = System.currentTimeMillis();
 		this.sync = new Sync();
 		this.requestRpcProtocol = requestRpcProtocol;
-		this.startTime = System.currentTimeMillis();
+		this.concurrentThreadPool = concurrentThreadPool;
 	}
 
 	@Override

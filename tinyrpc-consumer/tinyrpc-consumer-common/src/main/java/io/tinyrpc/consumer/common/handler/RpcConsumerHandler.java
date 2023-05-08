@@ -9,7 +9,7 @@ import io.netty.handler.timeout.IdleStateEvent;
 import io.tinyrpc.buffer.cache.BufferCacheManager;
 import io.tinyrpc.common.threadpool.BufferCacheThreadPool;
 import io.tinyrpc.common.threadpool.ConcurrentThreadPool;
-import io.tinyrpc.common.utils.JsonUtils;
+import io.tinyrpc.common.utils.JsonUtil;
 import io.tinyrpc.constant.RpcConstants;
 import io.tinyrpc.consumer.common.cache.ConsumerChannelCache;
 import io.tinyrpc.consumer.common.context.RpcContext;
@@ -36,17 +36,14 @@ public class RpcConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<
 	private static final Logger logger = LoggerFactory.getLogger(RpcConsumerHandler.class);
 	private final Map<Long, RPCFuture> pendingRPC = new ConcurrentHashMap<>();
 	private final ConcurrentThreadPool concurrentThreadPool;
-	/**
-	 * 是否开启缓冲区
-	 */
+
+	// 是否开启缓冲区
 	private final boolean enableBuffer;
 	private volatile Channel channel;
-	//存储请求ID与RpcResponse协议的映射关系
+	// 存储请求ID与RpcResponse协议的映射关系
 //	private final Map<Long, RpcProtocol<RpcResponse>> pendingResponse = new ConcurrentHashMap<>();
 	private SocketAddress remotePeer;
-	/**
-	 * 缓冲区管理器
-	 */
+	// 缓冲区管理器
 	private BufferCacheManager<RpcProtocol<RpcResponse>> bufferCacheManager;
 
 	public RpcConsumerHandler(boolean enableBuffer, int bufferSize, ConcurrentThreadPool concurrentThreadPool) {
@@ -146,7 +143,7 @@ public class RpcConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<
 	}
 
 	private void handleMessage(RpcProtocol<RpcResponse> protocol, Channel channel) {
-		logger.info("Consumer received request ===>>> {}", JsonUtils.toJSONString(protocol));
+		logger.info("Consumer received request ===>>> {}", JsonUtil.toJSONString(protocol));
 
 		RpcHeader header = protocol.getHeader();
 
@@ -201,7 +198,7 @@ public class RpcConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<
 	}
 
 	public RPCFuture sendRequest(RpcProtocol<RpcRequest> protocol, boolean async, boolean oneway) {
-		logger.info("Consumer sending request ===>>> {}", JsonUtils.toJSONString(protocol));
+		logger.info("Consumer sending request ===>>> {}", JsonUtil.toJSONString(protocol));
 
 		return concurrentThreadPool.submit(() -> {
 			return oneway ? sendRequestOneway(protocol)

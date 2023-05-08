@@ -162,18 +162,6 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
 			logger.debug("className: {}, methodName: {}", method.getDeclaringClass().getName(), method.getName());
 		}
 
-		if (method.getParameterTypes().length > 0) {
-			for (int i = 0; i < method.getParameterTypes().length; ++i) {
-				logger.debug(method.getParameterTypes()[i].getName());
-			}
-		}
-
-		if (args != null && args.length > 0) {
-			for (Object arg : args) {
-				logger.debug(arg.toString());
-			}
-		}
-
 		RPCFuture rpcFuture = this.consumer.sendRequest(requestRpcProtocol, registryService);
 		return rpcFuture == null ? null
 			: timeout > 0 ? rpcFuture.get(timeout, TimeUnit.MILLISECONDS)
@@ -187,7 +175,7 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
 		try {
 			rpcFuture = this.consumer.sendRequest(request, registryService);
 		} catch (Exception e) {
-			logger.error("async call throws exception", e);
+			logger.error("async call error", e);
 		}
 		return rpcFuture;
 	}
@@ -214,15 +202,6 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
 		if (logger.isDebugEnabled()) {
 			logger.debug("className: {}, methodName: {}", className, methodName);
 		}
-
-		for (Class<?> parameterType : parameterTypes) {
-			logger.debug(parameterType.getName());
-		}
-
-		for (Object arg : args) {
-			logger.debug(arg.toString());
-		}
-
 		return requestRpcProtocol;
 	}
 

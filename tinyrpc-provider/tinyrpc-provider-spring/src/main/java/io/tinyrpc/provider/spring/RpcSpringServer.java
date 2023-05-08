@@ -59,6 +59,7 @@ public class RpcSpringServer extends BaseServer implements ApplicationContextAwa
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		logger.info("Starting RPC server...");
 		this.startNettyServer();
 	}
 

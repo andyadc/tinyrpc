@@ -47,7 +47,7 @@ public class RpcServiceScanner extends ClassScanner {
 					registryService.register(serviceMeta);
 				}
 			} catch (Exception e) {
-				logger.error("RpcService Scanner throws exception.", e);
+				logger.error("RpcService Scanner error.", e);
 			}
 		}
 		return handlerMap;

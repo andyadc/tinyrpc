@@ -10,7 +10,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  */
 public class ProviderChannelCache {
 
-	private static volatile Set<Channel> channelCache = new CopyOnWriteArraySet<>();
+	private static final Set<Channel> channelCache = new CopyOnWriteArraySet<>();
 
 	public static void add(Channel channel) {
 		channelCache.add(channel);

@@ -15,7 +15,7 @@ import io.tinyrpc.common.exception.RpcException;
 import io.tinyrpc.common.helper.RpcServiceHelper;
 import io.tinyrpc.common.threadpool.BufferCacheThreadPool;
 import io.tinyrpc.common.threadpool.ConcurrentThreadPool;
-import io.tinyrpc.common.utils.JsonUtils;
+import io.tinyrpc.common.utils.JsonUtil;
 import io.tinyrpc.connection.manager.ConnectionManager;
 import io.tinyrpc.constant.RpcConstants;
 import io.tinyrpc.protocol.RpcProtocol;
@@ -175,7 +175,7 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 	 * 处理消息
 	 */
 	private RpcProtocol<RpcResponse> handleMessage(RpcProtocol<RpcRequest> protocol, Channel channel) {
-		logger.info("Provider received request ===>>> {}", JsonUtils.toJSONString(protocol));
+		logger.info("Provider received request ===>>> {}", JsonUtil.toJSONString(protocol));
 		RpcProtocol<RpcResponse> responseRpcProtocol = null;
 		RpcHeader header = protocol.getHeader();
 

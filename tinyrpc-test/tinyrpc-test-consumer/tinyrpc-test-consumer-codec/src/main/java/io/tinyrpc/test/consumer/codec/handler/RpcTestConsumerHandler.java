@@ -2,7 +2,7 @@ package io.tinyrpc.test.consumer.codec.handler;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.tinyrpc.common.utils.JsonUtils;
+import io.tinyrpc.common.utils.JsonUtil;
 import io.tinyrpc.protocol.RpcProtocol;
 import io.tinyrpc.protocol.enumeration.RpcType;
 import io.tinyrpc.protocol.header.RpcHeaderFactory;
@@ -32,13 +32,13 @@ public class RpcTestConsumerHandler extends SimpleChannelInboundHandler<RpcProto
 		request.setAsync(false);
 		request.setOneway(false);
 		protocol.setBody(request);
-		logger.info("服务消费者发送的数据===>>>{}", JsonUtils.toJSONString(protocol));
+		logger.info("服务消费者发送的数据===>>>{}", JsonUtil.toJSONString(protocol));
 		ctx.writeAndFlush(protocol);
 		logger.info("发送数据完毕...");
 	}
 
 	@Override
 	protected void channelRead0(ChannelHandlerContext ctx, RpcProtocol<RpcResponse> protocol) throws Exception {
-		logger.info("服务消费者接收到的数据===>>>{}", JsonUtils.toJSONString(protocol));
+		logger.info("服务消费者接收到的数据===>>>{}", JsonUtil.toJSONString(protocol));
 	}
 }

@@ -5,7 +5,7 @@ import java.util.stream.IntStream;
 /**
  * 序列化时针对消息头序列化类型的操作
  */
-public class SerializationUtils {
+public class SerializationUtil {
 
 	/**
 	 * 约定序列化类型最大长度为16

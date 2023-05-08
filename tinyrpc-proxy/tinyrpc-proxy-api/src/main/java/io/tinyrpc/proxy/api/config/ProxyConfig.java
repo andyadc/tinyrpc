@@ -11,6 +11,7 @@ import java.io.Serializable;
  * @param <T>
  */
 public class ProxyConfig<T> implements Serializable {
+
 	private static final long serialVersionUID = 7374626033168328842L;
 
 	/**
@@ -141,7 +142,7 @@ public class ProxyConfig<T> implements Serializable {
 		this.serializationType = serializationType;
 	}
 
-	public boolean getAsync() {
+	public boolean isAsync() {
 		return async;
 	}
 
@@ -149,7 +150,7 @@ public class ProxyConfig<T> implements Serializable {
 		this.async = async;
 	}
 
-	public boolean getOneway() {
+	public boolean isOneway() {
 		return oneway;
 	}
 
@@ -157,7 +158,7 @@ public class ProxyConfig<T> implements Serializable {
 		this.oneway = oneway;
 	}
 
-	public boolean getEnableResultCache() {
+	public boolean isEnableResultCache() {
 		return enableResultCache;
 	}
 

@@ -33,11 +33,15 @@ public class ProviderConnectionManager {
 	 */
 	public static void scanNotActiveChannel() {
 		Set<Channel> channelCache = ProviderChannelCache.getChannelCache();
-		if (channelCache == null || channelCache.isEmpty()) return;
+		if (channelCache == null || channelCache.isEmpty()) {
+			logger.info("scanNotActiveChannel - No available channel.");
+			return;
+		}
 		channelCache.forEach((channel) -> {
 			if (!channel.isOpen() || !channel.isActive()) {
 				channel.close();
 				ProviderChannelCache.remove(channel);
+				logger.info("Closed not active channel {}", channel.id().asLongText());
 			}
 		});
 	}
@@ -48,7 +52,7 @@ public class ProviderConnectionManager {
 	public static void broadcastPingMessageFromProvider() {
 		Set<Channel> channelCache = ProviderChannelCache.getChannelCache();
 		if (channelCache == null || channelCache.isEmpty()) {
-			logger.warn("No active channel.");
+			logger.warn("broadcastPingMessage - No available channel.");
 			return;
 		}
 		RpcHeader header = RpcHeaderFactory.getRequestHeader(RpcConstants.SERIALIZATION_PROTOSTUFF, RpcType.HEARTBEAT_FROM_PROVIDER.getType());

@@ -17,7 +17,9 @@ import java.util.concurrent.TimeUnit;
 public class ConcurrentThreadPool {
 
 	private static final Logger logger = LoggerFactory.getLogger(ConcurrentThreadPool.class);
+
 	private static final ThreadLocal<Instant> duration = new ThreadLocal<>();
+
 	/**
 	 * 线程池
 	 */
