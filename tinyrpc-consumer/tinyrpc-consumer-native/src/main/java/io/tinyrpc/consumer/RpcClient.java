@@ -64,32 +64,26 @@ public class RpcClient {
 	private final int heartbeatInterval;
 	//扫描空闲连接时间，默认60秒
 	private final int scanNotActiveChannelInterval;
-
-	//重试间隔时间
-	private int retryInterval = 1000;
-	//重试次数
-	private int retryTimes = 3;
-
-	// 是否开启结果缓存
-	private boolean enableResultCache;
-	// 缓存结果的时长，单位是毫秒
-	private int resultCacheExpire;
-
-	// 是否开启直连服务
-	private boolean enableDirectServer;
-	// 直连服务的地址
-	private String directServerUrl;
-
-	/**
-	 * 并发线程池
-	 */
-	private ConcurrentThreadPool concurrentThreadPool;
-
 	/**
 	 * 流控分析类型
 	 */
 	private final String flowType;
-
+	//重试间隔时间
+	private int retryInterval = 1000;
+	//重试次数
+	private int retryTimes = 3;
+	// 是否开启结果缓存
+	private boolean enableResultCache;
+	// 缓存结果的时长，单位是毫秒
+	private int resultCacheExpire;
+	// 是否开启直连服务
+	private boolean enableDirectServer;
+	// 直连服务的地址
+	private String directServerUrl;
+	/**
+	 * 并发线程池
+	 */
+	private ConcurrentThreadPool concurrentThreadPool;
 	/**
 	 * 是否开启数据缓冲
 	 */
@@ -99,6 +93,19 @@ public class RpcClient {
 	 */
 	private int bufferSize;
 
+	/**
+	 * 反射类型
+	 */
+	private String reflectType;
+	/**
+	 * 容错类Class名称
+	 */
+	private String fallbackClassName;
+	/**
+	 * 容错类
+	 */
+	private Class<?> fallbackClass;
+
 	public RpcClient(String registryAddress, String registryType, String registryLoadBalanceType,
 					 String proxy, String serviceVersion, String serviceGroup, String serializationType, long timeout,
 					 boolean async, boolean oneway,
@@ -107,7 +114,8 @@ public class RpcClient {
 					 boolean enableResultCache, int resultCacheExpire,
 					 boolean enableDirectServer, String directServerUrl,
 					 int corePoolSize, int maximumPoolSize, String flowType,
-					 boolean enableBuffer, int bufferSize) {
+					 boolean enableBuffer, int bufferSize,
+					 String reflectType, String fallbackClassName) {
 		this.serviceVersion = serviceVersion;
 		this.timeout = timeout;
 		this.serviceGroup = serviceGroup;
@@ -128,6 +136,12 @@ public class RpcClient {
 		this.flowType = flowType;
 		this.enableBuffer = enableBuffer;
 		this.bufferSize = bufferSize;
+		this.reflectType = reflectType;
+		this.fallbackClassName = fallbackClassName;
+	}
+
+	public void setFallbackClass(Class<?> fallbackClass) {
+		this.fallbackClass = fallbackClass;
 	}
 
 	private RegistryService getRegistryService(String registryAddress, String registryType, String registryLoadBalanceType) {
@@ -161,7 +175,8 @@ public class RpcClient {
 				.setBufferSize(bufferSize)
 				.buildNettyGroup()
 				.buildConnection(registryService),
-			async, oneway, enableResultCache, resultCacheExpire));
+			async, oneway, enableResultCache, resultCacheExpire,
+			reflectType, fallbackClassName, fallbackClass));
 		return proxyFactory.getProxy(interfaceClass);
 	}
 
@@ -181,7 +196,8 @@ public class RpcClient {
 				.setBufferSize(bufferSize)
 				.buildNettyGroup()
 				.buildConnection(registryService),
-			async, oneway, enableResultCache, resultCacheExpire);
+			async, oneway, enableResultCache, resultCacheExpire,
+			reflectType, fallbackClassName, fallbackClass);
 	}
 
 	public void shutdown() {

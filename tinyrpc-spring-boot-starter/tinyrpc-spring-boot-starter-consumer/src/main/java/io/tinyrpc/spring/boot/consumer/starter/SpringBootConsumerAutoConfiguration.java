@@ -73,10 +73,10 @@ public class SpringBootConsumerAutoConfiguration {
 			referenceBean.setTimeout(springBootConsumerConfig.getTimeout());
 		}
 		if (!referenceBean.isAsync()) {
-			referenceBean.setAsync(springBootConsumerConfig().getAsync());
+			referenceBean.setAsync(springBootConsumerConfig().isAsync());
 		}
 		if (!referenceBean.isOneway()) {
-			referenceBean.setOneway(springBootConsumerConfig().getOneway());
+			referenceBean.setOneway(springBootConsumerConfig().isOneway());
 		}
 		if (StringUtil.isEmpty(referenceBean.getProxy())
 			|| (RpcConstants.RPC_REFERENCE_DEFAULT_PROXY.equals(referenceBean.getProxy()) && !StringUtil.isEmpty(springBootConsumerConfig.getProxy()))) {
@@ -130,6 +130,15 @@ public class SpringBootConsumerAutoConfiguration {
 		if (referenceBean.getBufferSize() <= 0
 			|| (RpcConstants.DEFAULT_BUFFER_SIZE == referenceBean.getBufferSize() && springBootConsumerConfig.getBufferSize() > 0)) {
 			referenceBean.setBufferSize(springBootConsumerConfig.getBufferSize());
+		}
+
+		if (StringUtil.isEmpty(referenceBean.getReflectType())
+			|| (RpcConstants.DEFAULT_REFLECT_TYPE.equals(referenceBean.getReflectType()) && !StringUtil.isEmpty(springBootConsumerConfig.getReflectType()))) {
+			referenceBean.setReflectType(springBootConsumerConfig.getReflectType());
+		}
+		if (StringUtil.isEmpty(referenceBean.getFallbackClassName())
+			|| (RpcConstants.DEFAULT_FALLBACK_CLASS_NAME.equals(referenceBean.getFallbackClassName()) && !StringUtil.isEmpty(springBootConsumerConfig.getFallbackClassName()))) {
+			referenceBean.setFallbackClassName(springBootConsumerConfig.getFallbackClassName());
 		}
 
 		return referenceBean;

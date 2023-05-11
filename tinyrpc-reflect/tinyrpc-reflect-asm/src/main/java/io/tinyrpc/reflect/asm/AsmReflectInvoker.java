@@ -18,22 +18,33 @@ public class AsmReflectInvoker implements ReflectInvoker {
 
 	private static final Logger logger = LoggerFactory.getLogger(AsmReflectInvoker.class);
 
+	private final ThreadLocal<Boolean> exceptionThreadLocal = new ThreadLocal<>();
+
 	@Override
 	public Object invokeMethod(Object serviceBean, Class<?> serviceClass, String methodName, Class<?>[] parameterTypes, Object[] parameters) throws Throwable {
 		if (logger.isDebugEnabled()) {
 			logger.debug("-- asm reflect --");
 		}
-
-		Constructor<?> constructor = serviceClass.getConstructor();
-		Object[] constructorParam = new Object[]{};
-		Object instance = ReflectProxy.newProxyInstance(AsmReflectInvoker.class.getClassLoader(),
-			getInvocationHandler(serviceBean),
-			serviceClass,
-			constructor,
-			constructorParam);
-		Method method = serviceClass.getMethod(methodName, parameterTypes);
-		method.setAccessible(true);
-		return method.invoke(instance, parameters);
+		exceptionThreadLocal.set(Boolean.FALSE);
+		Object result;
+		try {
+			Constructor<?> constructor = serviceClass.getConstructor();
+			Object[] constructorParam = new Object[]{};
+			Object instance = ReflectProxy.newProxyInstance(AsmReflectInvoker.class.getClassLoader(),
+				getInvocationHandler(serviceBean),
+				serviceClass,
+				constructor,
+				constructorParam);
+			Method method = serviceClass.getMethod(methodName, parameterTypes);
+			method.setAccessible(true);
+			result = method.invoke(instance, parameters);
+			if (exceptionThreadLocal.get()) {
+				throw new RuntimeException("rpc provider throws exception...");
+			}
+		} finally {
+			exceptionThreadLocal.remove();
+		}
+		return result;
 	}
 
 	private InvocationHandler getInvocationHandler(Object obj) {
@@ -42,7 +53,12 @@ public class AsmReflectInvoker implements ReflectInvoker {
 				logger.info("--- proxy invoke method ---");
 			}
 			method.setAccessible(true);
-			return method.invoke(obj, args);
+			try {
+				return method.invoke(obj, args);
+			} catch (Exception e) {
+				exceptionThreadLocal.set(Boolean.TRUE);
+			}
+			return null;
 		};
 	}
 }

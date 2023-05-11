@@ -53,3 +53,7 @@ tinyrpc:
         enableBuffer: false
         # bufferSize
         bufferSize: 6
+        # enableBuffer
+        reflectType: jdk
+        # bufferSize
+        fallbackClassName:

@@ -41,7 +41,9 @@ public class ConsumerNativeDemoMain {
 			3,
 			"print",
 			true,
-			2
+			2,
+			"jdk",
+			"io.tinyrpc.demo.consumer.FallbackDemoServcie"
 		);
 	}
 
@@ -49,9 +51,9 @@ public class ConsumerNativeDemoMain {
 	public void testInterfaceRpc() {
 		DemoService demoService = rpcClient.create(DemoService.class);
 
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < 1; i++) {
 			long start = System.currentTimeMillis();
-			String result = demoService.hello("world");
+			String result = demoService.hello("java");
 			logger.info(">>> Request return: {}, timing: {}ms", result, (System.currentTimeMillis() - start));
 		}
 

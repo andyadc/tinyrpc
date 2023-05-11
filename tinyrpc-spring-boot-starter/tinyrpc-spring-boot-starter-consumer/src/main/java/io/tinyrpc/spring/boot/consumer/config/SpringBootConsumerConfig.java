@@ -103,6 +103,16 @@ public final class SpringBootConsumerConfig {
 	 */
 	private int bufferSize;
 
+	/**
+	 * 反射类型
+	 */
+	private String reflectType;
+
+	/**
+	 * 容错类Class名称
+	 */
+	private String fallbackClassName;
+
 	public SpringBootConsumerConfig() {
 	}
 
@@ -113,7 +123,8 @@ public final class SpringBootConsumerConfig {
 									final boolean enableResultCache, final int resultCacheExpire,
 									final boolean enableDirectServer, final String directServerUrl,
 									final int corePoolSize, final int maximumPoolSize, final String flowType,
-									final boolean enableBuffer, final int bufferSize) {
+									final boolean enableBuffer, final int bufferSize,
+									final String reflectType, final String fallbackClassName) {
 		this.registryAddress = registryAddress;
 		this.registryType = registryType;
 		this.loadBalanceType = loadBalanceType;
@@ -139,6 +150,8 @@ public final class SpringBootConsumerConfig {
 		this.flowType = flowType;
 		this.enableBuffer = enableBuffer;
 		this.bufferSize = bufferSize;
+		this.fallbackClassName = fallbackClassName;
+		this.reflectType = reflectType;
 	}
 
 	public String getRegistryAddress() {
@@ -205,7 +218,7 @@ public final class SpringBootConsumerConfig {
 		this.timeout = timeout;
 	}
 
-	public boolean getAsync() {
+	public boolean isAsync() {
 		return async;
 	}
 
@@ -213,7 +226,7 @@ public final class SpringBootConsumerConfig {
 		this.async = async;
 	}
 
-	public boolean getOneway() {
+	public boolean isOneway() {
 		return oneway;
 	}
 
@@ -323,5 +336,21 @@ public final class SpringBootConsumerConfig {
 
 	public void setBufferSize(int bufferSize) {
 		this.bufferSize = bufferSize;
+	}
+
+	public String getReflectType() {
+		return reflectType;
+	}
+
+	public void setReflectType(String reflectType) {
+		this.reflectType = reflectType;
+	}
+
+	public String getFallbackClassName() {
+		return fallbackClassName;
+	}
+
+	public void setFallbackClassName(String fallbackClassName) {
+		this.fallbackClassName = fallbackClassName;
 	}
 }

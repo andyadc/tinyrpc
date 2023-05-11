@@ -3,6 +3,8 @@ package io.tinyrpc.proxy.api.future;
 import io.tinyrpc.common.exception.RpcException;
 import io.tinyrpc.common.threadpool.ConcurrentThreadPool;
 import io.tinyrpc.protocol.RpcProtocol;
+import io.tinyrpc.protocol.enumeration.RpcStatus;
+import io.tinyrpc.protocol.header.RpcHeader;
 import io.tinyrpc.protocol.request.RpcRequest;
 import io.tinyrpc.protocol.response.RpcResponse;
 import io.tinyrpc.proxy.api.callback.AsyncRPCCallback;
@@ -51,27 +53,45 @@ public class RPCFuture extends CompletableFuture<Object> {
 	@Override
 	public Object get() throws InterruptedException, ExecutionException {
 		sync.acquire(-1);
-		if (this.responseRpcProtocol != null) {
-			return this.responseRpcProtocol.getBody().getResult();
-		} else {
-			return null;
-		}
+//		if (this.responseRpcProtocol != null) {
+//			return this.responseRpcProtocol.getBody().getResult();
+//		} else {
+//			return null;
+//		}
+		return this.getResult(responseRpcProtocol);
 	}
 
 	@Override
 	public Object get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
 		boolean success = sync.tryAcquireNanos(-1, unit.toNanos(timeout));
 		if (success) {
-			if (this.responseRpcProtocol != null) {
-				return this.responseRpcProtocol.getBody().getResult();
-			} else {
-				return null;
-			}
+//			if (this.responseRpcProtocol != null) {
+//				return this.responseRpcProtocol.getBody().getResult();
+//			} else {
+//				return null;
+//			}
+			return this.getResult(responseRpcProtocol);
 		} else {
 			throw new RpcException("Timeout exception. Request id: " + this.requestRpcProtocol.getHeader().getRequestId()
 				+ ". Request class name: " + this.requestRpcProtocol.getBody().getClassName()
 				+ ". Request method: " + this.requestRpcProtocol.getBody().getMethodName());
 		}
+	}
+
+	/**
+	 * 获取最终结果
+	 */
+	private Object getResult(RpcProtocol<RpcResponse> rpcResponseProtocol) {
+		if (rpcResponseProtocol == null) {
+			return null;
+		}
+		RpcHeader header = rpcResponseProtocol.getHeader();
+		// 服务提供者抛出了异常
+		RpcResponse rpcResponse = rpcResponseProtocol.getBody();
+		if ((byte) RpcStatus.FAIL.getCode() == header.getStatus()) {
+			throw new RpcException("rpc provider throws exception", new Throwable(rpcResponse.getError()));
+		}
+		return rpcResponse.getResult();
 	}
 
 	@Override
