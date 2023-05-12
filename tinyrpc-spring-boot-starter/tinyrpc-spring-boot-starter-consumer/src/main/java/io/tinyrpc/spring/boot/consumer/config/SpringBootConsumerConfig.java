@@ -113,6 +113,23 @@ public final class SpringBootConsumerConfig {
 	 */
 	private String fallbackClassName;
 
+	/**
+	 * 是否开启限流
+	 */
+	private boolean enableRateLimiter;
+	/**
+	 * 限流类型
+	 */
+	private String rateLimiterType;
+	/**
+	 * 在milliSeconds毫秒内最多能够通过的请求个数
+	 */
+	private int permits;
+	/**
+	 * 毫秒数
+	 */
+	private int milliSeconds;
+
 	public SpringBootConsumerConfig() {
 	}
 
@@ -124,7 +141,8 @@ public final class SpringBootConsumerConfig {
 									final boolean enableDirectServer, final String directServerUrl,
 									final int corePoolSize, final int maximumPoolSize, final String flowType,
 									final boolean enableBuffer, final int bufferSize,
-									final String reflectType, final String fallbackClassName) {
+									final String reflectType, final String fallbackClassName,
+									final boolean enableRateLimiter, final String rateLimiterType, final int permits, final int milliSeconds) {
 		this.registryAddress = registryAddress;
 		this.registryType = registryType;
 		this.loadBalanceType = loadBalanceType;
@@ -152,6 +170,10 @@ public final class SpringBootConsumerConfig {
 		this.bufferSize = bufferSize;
 		this.fallbackClassName = fallbackClassName;
 		this.reflectType = reflectType;
+		this.enableRateLimiter = enableRateLimiter;
+		this.rateLimiterType = rateLimiterType;
+		this.permits = permits;
+		this.milliSeconds = milliSeconds;
 	}
 
 	public String getRegistryAddress() {
@@ -352,5 +374,37 @@ public final class SpringBootConsumerConfig {
 
 	public void setFallbackClassName(String fallbackClassName) {
 		this.fallbackClassName = fallbackClassName;
+	}
+
+	public boolean isEnableRateLimiter() {
+		return enableRateLimiter;
+	}
+
+	public void setEnableRateLimiter(boolean enableRateLimiter) {
+		this.enableRateLimiter = enableRateLimiter;
+	}
+
+	public String getRateLimiterType() {
+		return rateLimiterType;
+	}
+
+	public void setRateLimiterType(String rateLimiterType) {
+		this.rateLimiterType = rateLimiterType;
+	}
+
+	public int getPermits() {
+		return permits;
+	}
+
+	public void setPermits(int permits) {
+		this.permits = permits;
+	}
+
+	public int getMilliSeconds() {
+		return milliSeconds;
+	}
+
+	public void setMilliSeconds(int milliSeconds) {
+		this.milliSeconds = milliSeconds;
 	}
 }

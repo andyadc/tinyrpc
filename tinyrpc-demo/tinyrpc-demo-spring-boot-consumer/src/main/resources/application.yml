@@ -57,3 +57,11 @@ tinyrpc:
         reflectType: jdk
         # bufferSize
         fallbackClassName:
+        # enableRateLimiter
+        enableRateLimiter: true
+        # rateLimiterType
+        rateLimiterType: counter
+        # permits
+        permits: 10
+        # milliSeconds
+        milliSeconds: 1000

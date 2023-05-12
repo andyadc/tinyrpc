@@ -138,6 +138,23 @@ public class RpcReferenceBean implements FactoryBean<Object> {
 	 */
 	private Class<?> fallbackClass;
 
+	/**
+	 * 是否开启限流
+	 */
+	private boolean enableRateLimiter;
+	/**
+	 * 限流类型
+	 */
+	private String rateLimiterType;
+	/**
+	 * 在milliSeconds毫秒内最多能够通过的请求个数
+	 */
+	private int permits;
+	/**
+	 * 毫秒数
+	 */
+	private int milliSeconds;
+
 	private RpcClient rpcClient;
 
 	@Override
@@ -163,7 +180,8 @@ public class RpcReferenceBean implements FactoryBean<Object> {
 			enableResultCache, resultCacheExpire,
 			enableDirectServer, directServerUrl,
 			corePoolSize, maximumPoolSize, flowType,
-			enableBuffer, bufferSize, reflectType, fallbackClassName);
+			enableBuffer, bufferSize, reflectType, fallbackClassName,
+			enableRateLimiter, rateLimiterType, permits, milliSeconds);
 		this.rpcClient.setFallbackClass(fallbackClass);
 		this.object = rpcClient.create(interfaceClass);
 	}
@@ -382,5 +400,37 @@ public class RpcReferenceBean implements FactoryBean<Object> {
 
 	public void setFallbackClass(Class<?> fallbackClass) {
 		this.fallbackClass = fallbackClass;
+	}
+
+	public boolean isEnableRateLimiter() {
+		return enableRateLimiter;
+	}
+
+	public void setEnableRateLimiter(boolean enableRateLimiter) {
+		this.enableRateLimiter = enableRateLimiter;
+	}
+
+	public String getRateLimiterType() {
+		return rateLimiterType;
+	}
+
+	public void setRateLimiterType(String rateLimiterType) {
+		this.rateLimiterType = rateLimiterType;
+	}
+
+	public int getPermits() {
+		return permits;
+	}
+
+	public void setPermits(int permits) {
+		this.permits = permits;
+	}
+
+	public int getMilliSeconds() {
+		return milliSeconds;
+	}
+
+	public void setMilliSeconds(int milliSeconds) {
+		this.milliSeconds = milliSeconds;
 	}
 }

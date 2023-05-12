@@ -105,6 +105,22 @@ public class RpcClient {
 	 * 容错类
 	 */
 	private Class<?> fallbackClass;
+	/**
+	 * 是否开启限流
+	 */
+	private boolean enableRateLimiter;
+	/**
+	 * 限流类型
+	 */
+	private String rateLimiterType;
+	/**
+	 * 在milliSeconds毫秒内最多能够通过的请求个数
+	 */
+	private int permits;
+	/**
+	 * 毫秒数
+	 */
+	private int milliSeconds;
 
 	public RpcClient(String registryAddress, String registryType, String registryLoadBalanceType,
 					 String proxy, String serviceVersion, String serviceGroup, String serializationType, long timeout,
@@ -115,7 +131,8 @@ public class RpcClient {
 					 boolean enableDirectServer, String directServerUrl,
 					 int corePoolSize, int maximumPoolSize, String flowType,
 					 boolean enableBuffer, int bufferSize,
-					 String reflectType, String fallbackClassName) {
+					 String reflectType, String fallbackClassName,
+					 boolean enableRateLimiter, String rateLimiterType, int permits, int milliSeconds) {
 		this.serviceVersion = serviceVersion;
 		this.timeout = timeout;
 		this.serviceGroup = serviceGroup;
@@ -138,6 +155,10 @@ public class RpcClient {
 		this.bufferSize = bufferSize;
 		this.reflectType = reflectType;
 		this.fallbackClassName = fallbackClassName;
+		this.enableRateLimiter = enableRateLimiter;
+		this.rateLimiterType = rateLimiterType;
+		this.permits = permits;
+		this.milliSeconds = milliSeconds;
 	}
 
 	public void setFallbackClass(Class<?> fallbackClass) {
@@ -176,7 +197,8 @@ public class RpcClient {
 				.buildNettyGroup()
 				.buildConnection(registryService),
 			async, oneway, enableResultCache, resultCacheExpire,
-			reflectType, fallbackClassName, fallbackClass));
+			reflectType, fallbackClassName, fallbackClass,
+			enableRateLimiter, rateLimiterType, permits, milliSeconds));
 		return proxyFactory.getProxy(interfaceClass);
 	}
 
@@ -197,7 +219,8 @@ public class RpcClient {
 				.buildNettyGroup()
 				.buildConnection(registryService),
 			async, oneway, enableResultCache, resultCacheExpire,
-			reflectType, fallbackClassName, fallbackClass);
+			reflectType, fallbackClassName, fallbackClass,
+			enableRateLimiter, rateLimiterType, permits, milliSeconds);
 	}
 
 	public void shutdown() {

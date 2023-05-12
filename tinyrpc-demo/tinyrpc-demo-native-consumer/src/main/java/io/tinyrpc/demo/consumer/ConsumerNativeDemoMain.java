@@ -43,7 +43,11 @@ public class ConsumerNativeDemoMain {
 			true,
 			2,
 			"jdk",
-			"io.tinyrpc.demo.consumer.FallbackDemoServcie"
+			"io.tinyrpc.demo.consumer.FallbackDemoServcie",
+			true,
+			"counter",
+			10,
+			1000
 		);
 	}
 

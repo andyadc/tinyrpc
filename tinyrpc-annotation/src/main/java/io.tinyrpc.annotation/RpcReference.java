@@ -7,6 +7,9 @@ import java.lang.annotation.Target;
 
 import static io.tinyrpc.constant.RpcConstants.*;
 
+/**
+ * 服务消费者，配置优先级：服务消费者字段上配置的@RpcReference注解属性 > yml文件 > @RpcReference默认注解属性
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface RpcReference {
@@ -140,4 +143,24 @@ public @interface RpcReference {
 	 * 反射类型
 	 */
 	String reflectType() default DEFAULT_REFLECT_TYPE;
+
+	/**
+	 * 是否开启限流
+	 */
+	boolean enableRateLimiter() default false;
+
+	/**
+	 * 限流类型
+	 */
+	String rateLimiterType() default DEFAULT_RATELIMITER_INVOKER;
+
+	/**
+	 * 在milliSeconds毫秒内最多能够通过的请求个数
+	 */
+	int permits() default DEFAULT_RATELIMITER_PERMITS;
+
+	/**
+	 * 毫秒数
+	 */
+	int milliSeconds() default DEFAULT_RATELIMITER_MILLI_SECONDS;
 }
