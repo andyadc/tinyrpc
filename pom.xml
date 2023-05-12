@@ -31,7 +31,8 @@
         <module>tinyrpc-connection</module>
 		<module>tinyrpc-disuse</module>
 		<module>tinyrpc-buffer</module>
-	</modules>
+        <module>tinyrpc-ratelimiter</module>
+    </modules>
 
 	<properties>
 		<jdk.version>1.8</jdk.version>

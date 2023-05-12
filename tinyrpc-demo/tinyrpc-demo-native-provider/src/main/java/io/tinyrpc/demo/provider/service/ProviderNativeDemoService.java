@@ -1,7 +1,6 @@
 package io.tinyrpc.demo.provider.service;
 
 import io.tinyrpc.annotation.RpcService;
-import io.tinyrpc.common.exception.RpcException;
 import io.tinyrpc.demo.api.DemoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,10 +19,6 @@ public class ProviderNativeDemoService implements DemoService {
 	@Override
 	public String hello(String message) {
 		logger.info("===>>> request: {}", message);
-		if ("java".equals(message)) {
-			throw new RpcException(" java exception");
-		}
-
 		return "hello " + message + " - " + System.currentTimeMillis();
 	}
 }

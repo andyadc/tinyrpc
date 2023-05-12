@@ -219,7 +219,7 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
 				: timeout > 0 ? rpcFuture.get(timeout, TimeUnit.MILLISECONDS)
 				: rpcFuture.get();
 		} catch (Throwable t) {
-			logger.error("@@@", t);
+			logger.error("invokeSendRequestMethod error", t);
 			// fallbackClass不为空，则执行容错处理
 			if (this.isFallbackClassEmpty(fallbackClass)) {
 				return null;

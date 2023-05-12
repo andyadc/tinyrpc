@@ -23,5 +23,9 @@
 		<constructor-arg name="flowType" value="${server.flowType}"/>
 		<constructor-arg name="maxConnections" value="${server.maxConnections}"/>
 		<constructor-arg name="disuseStrategyType" value="${server.disuseStrategyType}"/>
+		<constructor-arg name="enableRateLimiter" value="${server.enableRateLimiter}"/>
+		<constructor-arg name="rateLimiterType" value="${server.rateLimiterType}"/>
+		<constructor-arg name="permits" value="${server.permits}"/>
+		<constructor-arg name="milliSeconds" value="${server.milliSeconds}"/>
 	</bean>
 </beans>

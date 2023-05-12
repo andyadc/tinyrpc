@@ -33,3 +33,11 @@ tinyrpc:
         maxConnections: 10
         # disuseStrategyType
         disuseStrategyType:
+        # enableRateLimiter
+        enableRateLimiter: false
+        # rateLimiterType
+        rateLimiterType: counter
+        # permits
+        permits: 10
+        # milliSeconds
+        milliSeconds: 1000

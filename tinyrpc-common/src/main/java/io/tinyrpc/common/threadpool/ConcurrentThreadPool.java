@@ -9,10 +9,13 @@ import java.time.Instant;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ConcurrentThreadPool {
 
@@ -45,11 +48,17 @@ public class ConcurrentThreadPool {
 
 		BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(RpcConstants.DEFAULT_QUEUE_CAPACITY);
 		ThreadFactory threadFactory = new ThreadFactory() {
-			private int count = 0;
+			private final AtomicInteger count = new AtomicInteger(0);
 
 			@Override
 			public Thread newThread(Runnable r) {
-				return new Thread(r, RpcConstants.DEFAULT_THREADPOOL_NAME_PREFIX + "-" + (count++));
+				Thread thread = new Thread(r);
+				thread.setName(RpcConstants.DEFAULT_THREADPOOL_NAME_PREFIX + "-" + count.decrementAndGet());
+				thread.setUncaughtExceptionHandler((t, e) -> {
+					String threadName = t.getName();
+					logger.warn("ThreadPool error occurred! threadName: {}, error message: {}", threadName, e.getMessage(), e);
+				});
+				return thread;
 			}
 		};
 
@@ -70,6 +79,23 @@ public class ConcurrentThreadPool {
 			protected void afterExecute(Runnable r, Throwable t) {
 				super.afterExecute(r, t);
 				logger.info("Thread executed time in {}ms", Duration.between(duration.get(), Instant.now()).toMillis());
+				if (t != null) {
+					logger.warn("execute error", t);
+				}
+				// 打印出future异常
+				if (t == null && r instanceof Future<?>) {
+					try {
+						((Future<?>) r).get();
+					} catch (InterruptedException ie) {
+						t = ie;
+						Thread.currentThread().interrupt(); // ignore/reset
+					} catch (ExecutionException | CancellationException ee) {
+						t = ee;
+					}
+					if (t != null) {
+						logger.warn("execute future error", t);
+					}
+				}
 			}
 
 			@Override
