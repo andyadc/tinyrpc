@@ -2,6 +2,9 @@ package io.tinyrpc.constant;
 
 public final class RpcConstants {
 
+	// TODO delete
+	public static final boolean simple_flag = true;
+
 	/**
 	 * 消息头，固定32个字节
 	 */

@@ -27,7 +27,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 基础服务
@@ -173,7 +175,18 @@ public class BaseServer implements Server {
 	}
 
 	private void startHeartbeat() {
-		scheduledExecutorService = Executors.newScheduledThreadPool(2);
+		if (RpcConstants.simple_flag) {
+			return;
+		}
+		ThreadFactory threadFactory = new ThreadFactory() {
+			private final AtomicInteger count = new AtomicInteger(0);
+
+			@Override
+			public Thread newThread(Runnable r) {
+				return new Thread(r, "Heartbeat-schedule-" + count.incrementAndGet());
+			}
+		};
+		scheduledExecutorService = Executors.newScheduledThreadPool(2, threadFactory);
 
 		//扫描并处理所有不活跃的连接
 		scheduledExecutorService.scheduleAtFixedRate(() -> {

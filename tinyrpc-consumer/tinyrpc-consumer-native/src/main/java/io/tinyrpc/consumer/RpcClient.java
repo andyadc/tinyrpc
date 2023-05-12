@@ -201,6 +201,6 @@ public class RpcClient {
 	}
 
 	public void shutdown() {
-		RpcConsumer.getInstance(heartbeatInterval, scanNotActiveChannelInterval, retryInterval, retryTimes).close();
+		RpcConsumer.getInstance().close();
 	}
 }

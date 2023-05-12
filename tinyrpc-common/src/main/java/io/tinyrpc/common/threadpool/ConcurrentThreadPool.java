@@ -53,7 +53,7 @@ public class ConcurrentThreadPool {
 			@Override
 			public Thread newThread(Runnable r) {
 				Thread thread = new Thread(r);
-				thread.setName(RpcConstants.DEFAULT_THREADPOOL_NAME_PREFIX + "-" + count.decrementAndGet());
+				thread.setName(RpcConstants.DEFAULT_THREADPOOL_NAME_PREFIX + "-" + count.incrementAndGet());
 				thread.setUncaughtExceptionHandler((t, e) -> {
 					String threadName = t.getName();
 					logger.warn("ThreadPool error occurred! threadName: {}, error message: {}", threadName, e.getMessage(), e);
