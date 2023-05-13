@@ -57,5 +57,11 @@
 			<artifactId>tinyrpc-ratelimiter-guava</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>io.tinyrpc</groupId>
+			<artifactId>tinyrpc-circuitbreaker-counter</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
+
 </project>

@@ -165,6 +165,25 @@ public class SpringBootConsumerAutoConfiguration {
 			referenceBean.setRateLimiterFailStrategy(springBootConsumerConfig.getRateLimiterFailStrategy());
 		}
 
+		if (!referenceBean.isEnableCircuitBreaker()){
+			referenceBean.setEnableCircuitBreaker(springBootConsumerConfig.isEnableCircuitBreaker());
+		}
+
+		if (StringUtil.isEmpty(referenceBean.getCircuitBreakerType())
+			|| (RpcConstants.DEFAULT_CIRCUIT_BREAKER_INVOKER.equals(referenceBean.getCircuitBreakerType()) && !StringUtil.isEmpty(springBootConsumerConfig.getCircuitBreakerType()))){
+			referenceBean.setCircuitBreakerType(springBootConsumerConfig.getCircuitBreakerType());
+		}
+
+		if (referenceBean.getTotalFailure() <= 0
+			|| (RpcConstants.DEFAULT_CIRCUIT_BREAKER_TOTAL_FAILURE == referenceBean.getTotalFailure() && springBootConsumerConfig.getTotalFailure() > 0 )){
+			referenceBean.setTotalFailure(springBootConsumerConfig.getTotalFailure());
+		}
+
+		if (referenceBean.getCircuitBreakerMilliSeconds() <= 0
+			|| (RpcConstants.DEFAULT_CIRCUIT_BREAKER_MILLI_SECONDS == referenceBean.getCircuitBreakerMilliSeconds() && springBootConsumerConfig.getCircuitBreakerMilliSeconds() > 0)){
+			referenceBean.setCircuitBreakerMilliSeconds(springBootConsumerConfig.getCircuitBreakerMilliSeconds());
+		}
+
 		return referenceBean;
 	}
 }

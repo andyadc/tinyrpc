@@ -159,6 +159,15 @@ public class RpcReferenceBean implements FactoryBean<Object> {
 	 */
 	private String rateLimiterFailStrategy;
 
+	//是否开启熔断策略
+	private boolean enableCircuitBreaker;
+	//熔断规则标识
+	private String circuitBreakerType;
+	//在fusingMilliSeconds毫秒内触发熔断操作的上限值
+	private double totalFailure;
+	//熔断的毫秒时长
+	private int circuitBreakerMilliSeconds;
+
 	private RpcClient rpcClient;
 
 	@Override
@@ -186,7 +195,8 @@ public class RpcReferenceBean implements FactoryBean<Object> {
 			corePoolSize, maximumPoolSize, flowType,
 			enableBuffer, bufferSize, reflectType, fallbackClassName,
 			enableRateLimiter, rateLimiterType, permits, milliSeconds,
-			rateLimiterFailStrategy);
+			rateLimiterFailStrategy,
+			enableCircuitBreaker, circuitBreakerType, totalFailure, circuitBreakerMilliSeconds);
 		this.rpcClient.setFallbackClass(fallbackClass);
 		this.object = rpcClient.create(interfaceClass);
 	}
@@ -445,5 +455,37 @@ public class RpcReferenceBean implements FactoryBean<Object> {
 
 	public void setRateLimiterFailStrategy(String rateLimiterFailStrategy) {
 		this.rateLimiterFailStrategy = rateLimiterFailStrategy;
+	}
+
+	public boolean isEnableCircuitBreaker() {
+		return enableCircuitBreaker;
+	}
+
+	public void setEnableCircuitBreaker(boolean enableCircuitBreaker) {
+		this.enableCircuitBreaker = enableCircuitBreaker;
+	}
+
+	public String getCircuitBreakerType() {
+		return circuitBreakerType;
+	}
+
+	public void setCircuitBreakerType(String circuitBreakerType) {
+		this.circuitBreakerType = circuitBreakerType;
+	}
+
+	public double getTotalFailure() {
+		return totalFailure;
+	}
+
+	public void setTotalFailure(double totalFailure) {
+		this.totalFailure = totalFailure;
+	}
+
+	public int getCircuitBreakerMilliSeconds() {
+		return circuitBreakerMilliSeconds;
+	}
+
+	public void setCircuitBreakerMilliSeconds(int circuitBreakerMilliSeconds) {
+		this.circuitBreakerMilliSeconds = circuitBreakerMilliSeconds;
 	}
 }

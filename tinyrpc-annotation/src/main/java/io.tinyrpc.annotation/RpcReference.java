@@ -168,4 +168,23 @@ public @interface RpcReference {
 	 * 当限流失败时的处理策略
 	 */
 	String rateLimiterFailStrategy() default RATE_LIMILTER_FAIL_STRATEGY_DIRECT;
+
+	/**
+	 * 是否开启熔断策略
+	 */
+	boolean enableCircuitBreaker() default false;
+	/**
+	 * 熔断规则标识
+	 */
+	String circuitBreakerType() default DEFAULT_CIRCUIT_BREAKER_INVOKER;
+
+	/**
+	 * 在fusingMilliSeconds毫秒内触发熔断操作的上限值
+	 */
+	double totalFailure() default DEFAULT_CIRCUIT_BREAKER_TOTAL_FAILURE;
+
+	/**
+	 * 熔断的毫秒时长
+	 */
+	int circuitBreakerMilliSeconds() default DEFAULT_CIRCUIT_BREAKER_MILLI_SECONDS;
 }

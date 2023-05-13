@@ -127,6 +127,15 @@ public class RpcClient {
 	 */
 	private String rateLimiterFailStrategy;
 
+	//是否开启熔断策略
+	private boolean enableCircuitBreaker;
+	//熔断规则标识
+	private String circuitBreakerType;
+	//在fusingMilliSeconds毫秒内触发熔断操作的上限值
+	private double totalFailure;
+	//熔断的毫秒时长
+	private int circuitBreakerMilliSeconds;
+
 	public RpcClient(String registryAddress, String registryType, String registryLoadBalanceType,
 					 String proxy, String serviceVersion, String serviceGroup, String serializationType, long timeout,
 					 boolean async, boolean oneway,
@@ -138,7 +147,8 @@ public class RpcClient {
 					 boolean enableBuffer, int bufferSize,
 					 String reflectType, String fallbackClassName,
 					 boolean enableRateLimiter, String rateLimiterType, int permits, int milliSeconds,
-					 String rateLimiterFailStrategy) {
+					 String rateLimiterFailStrategy,
+					 boolean enableCircuitBreaker, String circuitBreakerType, double totalFailure, int circuitBreakerMilliSeconds) {
 		this.serviceVersion = serviceVersion;
 		this.timeout = timeout;
 		this.serviceGroup = serviceGroup;
@@ -166,6 +176,10 @@ public class RpcClient {
 		this.permits = permits;
 		this.milliSeconds = milliSeconds;
 		this.rateLimiterFailStrategy = rateLimiterFailStrategy;
+		this.enableCircuitBreaker = enableCircuitBreaker;
+		this.circuitBreakerType = circuitBreakerType;
+		this.totalFailure = totalFailure;
+		this.circuitBreakerMilliSeconds = circuitBreakerMilliSeconds;
 	}
 
 	public void setFallbackClass(Class<?> fallbackClass) {
@@ -206,7 +220,8 @@ public class RpcClient {
 			async, oneway, enableResultCache, resultCacheExpire,
 			reflectType, fallbackClassName, fallbackClass,
 			enableRateLimiter, rateLimiterType, permits, milliSeconds,
-			rateLimiterFailStrategy));
+			rateLimiterFailStrategy,
+			enableCircuitBreaker, circuitBreakerType, totalFailure, circuitBreakerMilliSeconds));
 		return proxyFactory.getProxy(interfaceClass);
 	}
 
@@ -229,7 +244,8 @@ public class RpcClient {
 			async, oneway, enableResultCache, resultCacheExpire,
 			reflectType, fallbackClassName, fallbackClass,
 			enableRateLimiter, rateLimiterType, permits, milliSeconds,
-			rateLimiterFailStrategy);
+			rateLimiterFailStrategy,
+			enableCircuitBreaker, circuitBreakerType, totalFailure, circuitBreakerMilliSeconds);
 	}
 
 	public void shutdown() {

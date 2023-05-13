@@ -144,7 +144,7 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 	}
 
 	/**
-	 * 初始化熔断SPI接口
+	 * 初始化熔断接口
 	 */
 	private void initCircuitBreaker(String circuitBreakerType, double totalFailure, int circuitBreakerMilliSeconds) {
 		if (enableCircuitBreaker) {
@@ -326,7 +326,7 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 	/**
 	 * 结合服务熔断请求方法
 	 */
-	private RpcProtocol<RpcResponse> handlerRequestMessageWithCircuitBreaker(RpcProtocol<RpcRequest> protocol, RpcHeader header) {
+	private RpcProtocol<RpcResponse> handleRequestMessageWithCircuitBreaker(RpcProtocol<RpcRequest> protocol, RpcHeader header) {
 		if (enableCircuitBreaker) {
 			return handleCircuitBreakerRequestMessage(protocol, header);
 		} else {
@@ -358,8 +358,7 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 	 * 带有限流模式提交请求信息
 	 */
 	private RpcProtocol<RpcResponse> handleRequestMessageWithCacheAndRateLimiter(RpcProtocol<RpcRequest> protocol, RpcHeader header) {
-		RpcProtocol<RpcResponse> responseRpcProtocol = null;
-		long start = System.currentTimeMillis();
+		RpcProtocol<RpcResponse> responseRpcProtocol;
 		if (enableRateLimiter) {
 			if (rateLimiterInvoker.tryAcquire()) {
 				logger.info(">>> pass RequestId: {}", header.getRequestId());
@@ -419,7 +418,7 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 		if (enableResultCache) {
 			return handleRequestMessageCache(protocol, header);
 		}
-		return handleCircuitBreakerRequestMessage(protocol, header);
+		return handleRequestMessageWithCircuitBreaker(protocol, header);
 	}
 
 	/**
@@ -431,7 +430,7 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 		RpcProtocol<RpcResponse> responseRpcProtocol = cacheResultManager.get(cacheKey);
 		if (responseRpcProtocol == null) {
 			logger.info("--- cache is null ---");
-			responseRpcProtocol = handleCircuitBreakerRequestMessage(protocol, header);
+			responseRpcProtocol = handleRequestMessageWithCircuitBreaker(protocol, header);
 			// 设置保存的时间
 			cacheKey.setCacheTimeStamp(System.currentTimeMillis());
 			cacheResultManager.put(cacheKey, responseRpcProtocol);

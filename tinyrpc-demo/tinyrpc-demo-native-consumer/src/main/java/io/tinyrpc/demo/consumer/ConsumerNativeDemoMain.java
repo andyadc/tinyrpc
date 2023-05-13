@@ -48,7 +48,11 @@ public class ConsumerNativeDemoMain {
 			"guava",
 			1,
 			5000,
-			"exception"
+			"exception",
+			true,
+			"counter",
+			1D,
+			10000
 		);
 	}
 

@@ -2,6 +2,8 @@ package io.tinyrpc.proxy.api.object;
 
 import io.tinyrpc.cache.result.CacheResultKey;
 import io.tinyrpc.cache.result.CacheResultManager;
+import io.tinyrpc.circuitbreaker.api.CircuitBreakerInvoker;
+import io.tinyrpc.common.exception.RpcException;
 import io.tinyrpc.common.utils.StringUtil;
 import io.tinyrpc.constant.RpcConstants;
 import io.tinyrpc.protocol.RpcProtocol;
@@ -103,6 +105,16 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
 	 */
 	private String rateLimiterFailStrategy;
 
+	/**
+	 * 是否开启熔断
+	 */
+	private boolean enableCircuitBreaker;
+
+	/**
+	 * 熔断SPI接口
+	 */
+	private CircuitBreakerInvoker circuitBreakerInvoker;
+
 	public ObjectProxy(Class<T> clazz) {
 		this.clazz = clazz;
 	}
@@ -113,7 +125,8 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
 					   boolean enableResultCache, int resultCacheExpire,
 					   String reflectType, String fallbackClassName, Class<?> fallbackClass,
 					   boolean enableRateLimiter, String rateLimiterType, int permits, int milliSeconds,
-					   String rateLimiterFailStrategy) {
+					   String rateLimiterFailStrategy,
+					   boolean enableCircuitBreaker, String circuitBreakerType, double totalFailure, int circuitBreakerMilliSeconds) {
 		this.clazz = clazz;
 		this.serviceVersion = serviceVersion;
 		this.timeout = timeout;
@@ -133,6 +146,19 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
 		this.enableRateLimiter = enableRateLimiter;
 		this.initRateLimiter(rateLimiterType, permits, milliSeconds);
 		this.rateLimiterFailStrategy = rateLimiterFailStrategy;
+		this.enableCircuitBreaker = enableCircuitBreaker;
+		this.initCircuitBreaker(circuitBreakerType, totalFailure, circuitBreakerMilliSeconds);
+	}
+
+	/**
+	 * 初始化熔断接口
+	 */
+	private void initCircuitBreaker(String circuitBreakerType, double totalFailure, int circuitBreakerMilliSeconds) {
+		if (enableCircuitBreaker) {
+			circuitBreakerType = StringUtil.isEmpty(circuitBreakerType) ? RpcConstants.DEFAULT_CIRCUIT_BREAKER_INVOKER : circuitBreakerType;
+			this.circuitBreakerInvoker = ExtensionLoader.getExtension(CircuitBreakerInvoker.class, circuitBreakerType);
+			this.circuitBreakerInvoker.init(totalFailure, circuitBreakerMilliSeconds);
+		}
 	}
 
 	/**
@@ -191,9 +217,41 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
 			case RpcConstants.RATE_LIMILTER_FAIL_STRATEGY_FALLBACK:
 				return this.getFallbackResult(method, args);
 			case RpcConstants.RATE_LIMILTER_FAIL_STRATEGY_DIRECT:
-				return this.invokeSendRequestMethod(method, args);
+				return this.invokeSendRequestMethodWithCircuitBreaker(method, args);
 		}
-		return this.invokeSendRequestMethod(method, args);
+		return this.invokeSendRequestMethodWithCircuitBreaker(method, args);
+	}
+
+	/**
+	 * 以熔断方式请求数据
+	 */
+	private Object invokeSendRequestMethodWithCircuitBreaker(Method method, Object[] args) throws Exception {
+		//开启了熔断
+		if (enableCircuitBreaker) {
+			return invokeCircuitBreakerSendRequestMethod(method, args);
+		} else {
+			return invokeSendRequestMethod(method, args);
+		}
+	}
+
+	/**
+	 * 熔断请求
+	 */
+	private Object invokeCircuitBreakerSendRequestMethod(Method method, Object[] args) throws Exception {
+		//触发了熔断规则，直接返回降级处理业务
+		if (circuitBreakerInvoker.invokeCircuitBreakerStrategy()) {
+			return this.getFallbackResult(method, args);
+		}
+		//请求计数器加1
+		circuitBreakerInvoker.incrementCount();
+		Object result;
+		try {
+			result = invokeSendRequestMethod(method, args);
+		} catch (Throwable e) {
+			circuitBreakerInvoker.incrementFailureCount();
+			throw new RpcException(e.getMessage());
+		}
+		return result;
 	}
 
 	@Override
@@ -261,7 +319,7 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
 		if (enableRateLimiter) {
 			if (rateLimiterInvoker.tryAcquire()) {
 				try {
-					result = invokeSendRequestMethod(method, args);
+					result = invokeSendRequestMethodWithCircuitBreaker(method, args);
 				} finally {
 					rateLimiterInvoker.release();
 				}
@@ -269,7 +327,7 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
 				result = this.invokeFailRateLimiterMethod(method, args);
 			}
 		} else {
-			result = invokeSendRequestMethod(method, args);
+			result = invokeSendRequestMethodWithCircuitBreaker(method, args);
 		}
 		return result;
 	}
