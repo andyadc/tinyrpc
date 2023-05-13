@@ -93,11 +93,17 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 	 */
 	private RateLimiterInvoker rateLimiterInvoker;
 
+	/**
+	 * 当限流失败时的处理策略
+	 */
+	private String rateLimiterFailStrategy;
+
 	public RpcProviderHandler(String reflectType, boolean enableResultCache, int resultCacheExpire,
 							  int corePoolSize, int maximumPoolSize,
 							  int maxConnections, String disuseStrategyType,
 							  boolean enableBuffer, int bufferSize,
 							  boolean enableRateLimiter, String rateLimiterType, int permits, int milliSeconds,
+							  String rateLimiterFailStrategy,
 							  Map<String, Object> handlerMap) {
 		this.handlerMap = handlerMap;
 		this.reflectInvoker = ExtensionLoader.getExtension(ReflectInvoker.class, reflectType);
@@ -117,6 +123,10 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 		}
 		this.enableRateLimiter = enableRateLimiter;
 		this.initRateLimiter(rateLimiterType, permits, milliSeconds);
+		if (StringUtil.isEmpty(rateLimiterFailStrategy)) {
+			rateLimiterFailStrategy = RpcConstants.RATE_LIMILTER_FAIL_STRATEGY_DIRECT;
+		}
+		this.rateLimiterFailStrategy = rateLimiterFailStrategy;
 	}
 
 	/**
@@ -304,12 +314,44 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 				}
 			} else {
 				logger.info(">>> reject RequestId: {}", header.getRequestId());
-				//TODO 执行各种策略
+				responseRpcProtocol = invokeFailRateLimiterMethod(protocol, header);
 			}
 		} else {
 			responseRpcProtocol = this.handleRequestMessageWithCache(protocol, header);
 		}
-		logger.info("@@@ {}", (System.currentTimeMillis() - start));
+		return responseRpcProtocol;
+	}
+
+	/**
+	 * 执行限流失败时的处理逻辑
+	 */
+	private RpcProtocol<RpcResponse> invokeFailRateLimiterMethod(RpcProtocol<RpcRequest> protocol, RpcHeader header) {
+		logger.info("execute {} fail rate limiter strategy...", rateLimiterFailStrategy);
+		switch (rateLimiterFailStrategy) {
+			case RpcConstants.RATE_LIMILTER_FAIL_STRATEGY_EXCEPTION:
+			case RpcConstants.RATE_LIMILTER_FAIL_STRATEGY_FALLBACK:
+				return this.handleFallbackMessage(protocol);
+			case RpcConstants.RATE_LIMILTER_FAIL_STRATEGY_DIRECT:
+				return this.handleRequestMessageWithCache(protocol, header);
+		}
+		return this.handleRequestMessageWithCache(protocol, header);
+	}
+
+	/**
+	 * 处理降级（容错）消息
+	 * 当rateLimiterFailStrategy的值为抛出异常和降级处理时，执行的逻辑，就是将消息头中的状态设置为失败的状态，并且将消息类型设置为响应类型的消息
+	 */
+	private RpcProtocol<RpcResponse> handleFallbackMessage(RpcProtocol<RpcRequest> protocol) {
+		RpcProtocol<RpcResponse> responseRpcProtocol = new RpcProtocol<>();
+		RpcHeader header = protocol.getHeader();
+		header.setStatus((byte) RpcStatus.FAIL.getCode());
+		header.setMsgType((byte) RpcType.RESPONSE.getType());
+		responseRpcProtocol.setHeader(header);
+
+		RpcResponse response = new RpcResponse();
+		response.setError("provider execute ratelimiter fallback strategy...");
+		responseRpcProtocol.setBody(response);
+
 		return responseRpcProtocol;
 	}
 

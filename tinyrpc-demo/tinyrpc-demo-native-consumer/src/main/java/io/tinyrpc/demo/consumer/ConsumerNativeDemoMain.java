@@ -55,7 +55,7 @@ public class ConsumerNativeDemoMain {
 	public void testInterfaceRpc() {
 		DemoService demoService = rpcClient.create(DemoService.class);
 
-		for (int i = 0; i < 1; i++) {
+		for (int i = 0; i < 5; i++) {
 			long start = System.currentTimeMillis();
 			String result = demoService.hello("java");
 			logger.info(">>> Request return: {}, timing: {}ms", result, (System.currentTimeMillis() - start));

@@ -24,9 +24,10 @@ public class ProviderNativeDemoMain {
 			false,
 			2,
 			true,
-			"counter",
-			10,
-			1000
+			"guava",
+			1,
+			5000,
+			"exception"
 		);
 
 		singleServer.startNettyServer();

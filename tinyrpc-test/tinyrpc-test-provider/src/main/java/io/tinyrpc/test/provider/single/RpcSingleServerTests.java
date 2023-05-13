@@ -28,7 +28,8 @@ public class RpcSingleServerTests {
 			true,
 			"counter",
 			10,
-			1000
+			1000,
+			"exception"
 		);
 
 		singleServer.startNettyServer();
