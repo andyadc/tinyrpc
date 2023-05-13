@@ -45,9 +45,10 @@ public class ConsumerNativeDemoMain {
 			"jdk",
 			"io.tinyrpc.demo.consumer.FallbackDemoServcie",
 			true,
-			"counter",
-			10,
-			1000
+			"guava",
+			1,
+			5000,
+			"exception"
 		);
 	}
 

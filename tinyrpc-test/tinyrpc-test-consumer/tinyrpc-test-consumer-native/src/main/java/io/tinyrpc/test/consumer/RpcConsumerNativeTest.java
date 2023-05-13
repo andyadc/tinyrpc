@@ -25,7 +25,18 @@ public class RpcConsumerNativeTest {
 			"jdk", "1.0.0", "g-1", "jdk",
 			3000, false, false,
 			30000, 60000, 1000, 3, false, 500,
-			false, "");
+			false, "", 2,
+			3,
+			"print",
+			true,
+			2,
+			"jdk",
+			"io.tinyrpc.demo.consumer.FallbackDemoServcie",
+			true,
+			"counter",
+			10,
+			1000,
+			"guava");
 
 		IAsyncObjectProxy testService = rpcClient.createAsync(TestService.class);
 		RPCFuture rpcFuture = testService.call("hello", "adc");
@@ -54,7 +65,18 @@ public class RpcConsumerNativeTest {
 			false,
 			5000,
 			false,
-			""
+			"", 2,
+			3,
+			"print",
+			true,
+			2,
+			"jdk",
+			"io.tinyrpc.demo.consumer.FallbackDemoServcie",
+			true,
+			"counter",
+			10,
+			1000,
+			"guava"
 		);
 	}
 

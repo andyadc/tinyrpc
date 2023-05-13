@@ -65,3 +65,6 @@ tinyrpc:
         permits: 10
         # milliSeconds
         milliSeconds: 1000
+        # rateLimiterFailStrategy
+        rateLimiterFailStrategy: exception
+

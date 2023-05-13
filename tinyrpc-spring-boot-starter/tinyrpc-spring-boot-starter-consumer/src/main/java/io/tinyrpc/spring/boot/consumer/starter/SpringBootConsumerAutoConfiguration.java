@@ -160,6 +160,11 @@ public class SpringBootConsumerAutoConfiguration {
 			referenceBean.setMilliSeconds(springBootConsumerConfig.getMilliSeconds());
 		}
 
+		if (StringUtil.isEmpty(referenceBean.getRateLimiterFailStrategy())
+			|| (RpcConstants.RATE_LIMILTER_FAIL_STRATEGY_DIRECT.equals(referenceBean.getRateLimiterFailStrategy()) && !StringUtil.isEmpty(springBootConsumerConfig.getRateLimiterFailStrategy()))) {
+			referenceBean.setRateLimiterFailStrategy(springBootConsumerConfig.getRateLimiterFailStrategy());
+		}
+
 		return referenceBean;
 	}
 }

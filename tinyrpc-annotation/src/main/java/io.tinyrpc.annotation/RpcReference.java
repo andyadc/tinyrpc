@@ -163,4 +163,9 @@ public @interface RpcReference {
 	 * 毫秒数
 	 */
 	int milliSeconds() default DEFAULT_RATELIMITER_MILLI_SECONDS;
+
+	/**
+	 * 当限流失败时的处理策略
+	 */
+	String rateLimiterFailStrategy() default RATE_LIMILTER_FAIL_STRATEGY_DIRECT;
 }
