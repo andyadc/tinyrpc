@@ -97,6 +97,15 @@ public final class SpringBootProviderConfig {
 	 */
 	private String rateLimiterFailStrategy;
 
+	//是否开启熔断策略
+	private boolean enableCircuitBreaker;
+	//熔断规则标识
+	private String circuitBreakerType;
+	//在fusingMilliSeconds毫秒内触发熔断操作的上限值
+	private double totalFailure;
+	//熔断的毫秒时长
+	private int circuitBreakerMilliSeconds;
+
 	public SpringBootProviderConfig() {
 	}
 
@@ -108,7 +117,8 @@ public final class SpringBootProviderConfig {
 									final int maxConnections, final String disuseStrategyType,
 									final boolean enableBuffer, final int bufferSize,
 									final boolean enableRateLimiter, final String rateLimiterType, final int permits, final int milliSeconds,
-									final String rateLimiterFailStrategy) {
+									final String rateLimiterFailStrategy,
+									final boolean enableCircuitBreaker, final String circuitBreakerType, final double totalFailure, final int circuitBreakerMilliSeconds) {
 		this.serverAddress = serverAddress;
 		this.registryAddress = registryAddress;
 		this.registryType = registryType;
@@ -132,6 +142,10 @@ public final class SpringBootProviderConfig {
 		this.permits = permits;
 		this.milliSeconds = milliSeconds;
 		this.rateLimiterFailStrategy = rateLimiterFailStrategy;
+		this.enableCircuitBreaker = enableCircuitBreaker;
+		this.circuitBreakerType = circuitBreakerType;
+		this.totalFailure = totalFailure;
+		this.circuitBreakerMilliSeconds = circuitBreakerMilliSeconds;
 	}
 
 	public String getServerAddress() {
@@ -300,5 +314,37 @@ public final class SpringBootProviderConfig {
 
 	public void setRateLimiterFailStrategy(String rateLimiterFailStrategy) {
 		this.rateLimiterFailStrategy = rateLimiterFailStrategy;
+	}
+
+	public boolean isEnableCircuitBreaker() {
+		return enableCircuitBreaker;
+	}
+
+	public void setEnableCircuitBreaker(boolean enableCircuitBreaker) {
+		this.enableCircuitBreaker = enableCircuitBreaker;
+	}
+
+	public String getCircuitBreakerType() {
+		return circuitBreakerType;
+	}
+
+	public void setCircuitBreakerType(String circuitBreakerType) {
+		this.circuitBreakerType = circuitBreakerType;
+	}
+
+	public double getTotalFailure() {
+		return totalFailure;
+	}
+
+	public void setTotalFailure(double totalFailure) {
+		this.totalFailure = totalFailure;
+	}
+
+	public int getCircuitBreakerMilliSeconds() {
+		return circuitBreakerMilliSeconds;
+	}
+
+	public void setCircuitBreakerMilliSeconds(int circuitBreakerMilliSeconds) {
+		this.circuitBreakerMilliSeconds = circuitBreakerMilliSeconds;
 	}
 }

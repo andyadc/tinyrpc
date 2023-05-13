@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xmlns="http://maven.apache.org/POM/4.0.0"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<parent>
+		<artifactId>tinyrpc</artifactId>
+		<groupId>io.tinyrpc</groupId>
+		<version>0.0.1</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>tinyrpc-circuitbreaker</artifactId>
+	<packaging>pom</packaging>
+
+	<description>
+		服务熔断一般是指调用方访问服务时通过断路器做代理进行访问，
+		断路器在一段时间内会持续观察服务返回的成功、失败的状态，
+		当失败的次数或者百分比超过设置的阈值时断路器打开，
+		请求就不能真正地访问到服务了，而是通过降级的方式直接返回本地方法或者缓存中的数据。
+
+		在逻辑上，是否会触发熔断操作，可以按照规则进行实现：
+		1.断路器默认处于“关闭”状态，当错误个数或错误率到达阈值，就会触发断路器“开启”。
+		2.断路器开启后进入熔断时间，到达熔断时间终点后重置熔断时间，进入“半开启”状态。
+		3.在半开启状态下，如果服务能力恢复，则断路器关闭熔断状态。进而进入正常的服务状态。
+		4.在半开启状态下，如果服务能力未能恢复，则断路器再次触发服务熔断，进入熔断时间。
+	</description>
+
+	<properties>
+		<maven.compiler.source>8</maven.compiler.source>
+		<maven.compiler.target>8</maven.compiler.target>
+	</properties>
+
+	<modules>
+		<module>tinyrpc-circuitbreaker-api</module>
+		<module>tinyrpc-circuitbreaker-counter</module>
+	</modules>
+
+</project>

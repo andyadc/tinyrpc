@@ -30,7 +30,8 @@ public class RpcSpringServer extends BaseServer implements ApplicationContextAwa
 						   int maxConnections, String disuseStrategyType,
 						   boolean enableBuffer, int bufferSize,
 						   boolean enableRateLimiter, String rateLimiterType, int permits, int milliSeconds,
-						   String rateLimiterFailStrategy) {
+						   String rateLimiterFailStrategy,
+						   boolean enableCircuitBreaker, String circuitBreakerType, double totalFailure, int circuitBreakerMilliSeconds) {
 		super(
 			serverAddress, registryAddress, registryType, registryLoadBalanceType,
 			reflectType,
@@ -39,7 +40,8 @@ public class RpcSpringServer extends BaseServer implements ApplicationContextAwa
 			corePoolSize, maximumPoolSize, flowType,
 			maxConnections, disuseStrategyType, enableBuffer, bufferSize,
 			enableRateLimiter, rateLimiterType, permits, milliSeconds,
-			rateLimiterFailStrategy
+			rateLimiterFailStrategy,
+			enableCircuitBreaker, circuitBreakerType, totalFailure, circuitBreakerMilliSeconds
 		);
 	}
 

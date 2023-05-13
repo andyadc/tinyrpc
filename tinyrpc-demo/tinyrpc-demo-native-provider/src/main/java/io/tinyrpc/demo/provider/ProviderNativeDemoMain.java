@@ -23,11 +23,15 @@ public class ProviderNativeDemoMain {
 			"strategy_default",
 			false,
 			2,
-			true,
+			false,
 			"guava",
 			1,
 			5000,
-			"exception"
+			"exception",
+			true,
+			"counter",
+			1D,
+			5000
 		);
 
 		singleServer.startNettyServer();

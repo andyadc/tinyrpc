@@ -11,6 +11,7 @@ import io.tinyrpc.buffer.cache.BufferCacheManager;
 import io.tinyrpc.buffer.object.BufferObject;
 import io.tinyrpc.cache.result.CacheResultKey;
 import io.tinyrpc.cache.result.CacheResultManager;
+import io.tinyrpc.circuitbreaker.api.CircuitBreakerInvoker;
 import io.tinyrpc.common.exception.RpcException;
 import io.tinyrpc.common.helper.RpcServiceHelper;
 import io.tinyrpc.common.threadpool.BufferCacheThreadPool;
@@ -98,12 +99,23 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 	 */
 	private String rateLimiterFailStrategy;
 
+	/**
+	 * 是否开启熔断
+	 */
+	private boolean enableCircuitBreaker;
+
+	/**
+	 * 熔断SPI接口
+	 */
+	private CircuitBreakerInvoker circuitBreakerInvoker;
+
 	public RpcProviderHandler(String reflectType, boolean enableResultCache, int resultCacheExpire,
 							  int corePoolSize, int maximumPoolSize,
 							  int maxConnections, String disuseStrategyType,
 							  boolean enableBuffer, int bufferSize,
 							  boolean enableRateLimiter, String rateLimiterType, int permits, int milliSeconds,
 							  String rateLimiterFailStrategy,
+							  boolean enableCircuitBreaker, String circuitBreakerType, double totalFailure, int circuitBreakerMilliSeconds,
 							  Map<String, Object> handlerMap) {
 		this.handlerMap = handlerMap;
 		this.reflectInvoker = ExtensionLoader.getExtension(ReflectInvoker.class, reflectType);
@@ -127,6 +139,19 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 			rateLimiterFailStrategy = RpcConstants.RATE_LIMILTER_FAIL_STRATEGY_DIRECT;
 		}
 		this.rateLimiterFailStrategy = rateLimiterFailStrategy;
+		this.enableCircuitBreaker = enableCircuitBreaker;
+		this.initCircuitBreaker(circuitBreakerType, totalFailure, circuitBreakerMilliSeconds);
+	}
+
+	/**
+	 * 初始化熔断SPI接口
+	 */
+	private void initCircuitBreaker(String circuitBreakerType, double totalFailure, int circuitBreakerMilliSeconds) {
+		if (enableCircuitBreaker) {
+			circuitBreakerType = StringUtil.isEmpty(circuitBreakerType) ? RpcConstants.DEFAULT_CIRCUIT_BREAKER_INVOKER : circuitBreakerType;
+			this.circuitBreakerInvoker = ExtensionLoader.getExtension(CircuitBreakerInvoker.class, circuitBreakerType);
+			this.circuitBreakerInvoker.init(totalFailure, circuitBreakerMilliSeconds);
+		}
 	}
 
 	/**
@@ -299,6 +324,37 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 	}
 
 	/**
+	 * 结合服务熔断请求方法
+	 */
+	private RpcProtocol<RpcResponse> handlerRequestMessageWithCircuitBreaker(RpcProtocol<RpcRequest> protocol, RpcHeader header) {
+		if (enableCircuitBreaker) {
+			return handleCircuitBreakerRequestMessage(protocol, header);
+		} else {
+			return handleRequestMessage(protocol, header);
+		}
+	}
+
+	/**
+	 * 开启熔断策略时调用的方法
+	 */
+	private RpcProtocol<RpcResponse> handleCircuitBreakerRequestMessage(RpcProtocol<RpcRequest> protocol, RpcHeader header) {
+		//如果触发了熔断的规则，则直接返回降级处理数据
+		if (circuitBreakerInvoker.invokeCircuitBreakerStrategy()) {
+			return handleFallbackMessage(protocol);
+		}
+		//请求计数加1
+		circuitBreakerInvoker.incrementCount();
+
+		//调用handlerRequestMessage()方法获取数据
+		RpcProtocol<RpcResponse> responseRpcProtocol = handleRequestMessage(protocol, header);
+		//如果是调用失败，则失败次数加1
+		if (responseRpcProtocol.getHeader().getStatus() == (byte) RpcStatus.FAIL.getCode()) {
+			circuitBreakerInvoker.incrementFailureCount();
+		}
+		return responseRpcProtocol;
+	}
+
+	/**
 	 * 带有限流模式提交请求信息
 	 */
 	private RpcProtocol<RpcResponse> handleRequestMessageWithCacheAndRateLimiter(RpcProtocol<RpcRequest> protocol, RpcHeader header) {
@@ -363,7 +419,7 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 		if (enableResultCache) {
 			return handleRequestMessageCache(protocol, header);
 		}
-		return handleRequestMessage(protocol, header);
+		return handleCircuitBreakerRequestMessage(protocol, header);
 	}
 
 	/**
@@ -375,7 +431,7 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 		RpcProtocol<RpcResponse> responseRpcProtocol = cacheResultManager.get(cacheKey);
 		if (responseRpcProtocol == null) {
 			logger.info("--- cache is null ---");
-			responseRpcProtocol = handleRequestMessage(protocol, header);
+			responseRpcProtocol = handleCircuitBreakerRequestMessage(protocol, header);
 			// 设置保存的时间
 			cacheKey.setCacheTimeStamp(System.currentTimeMillis());
 			cacheResultManager.put(cacheKey, responseRpcProtocol);

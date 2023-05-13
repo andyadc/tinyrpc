@@ -85,6 +85,15 @@ public class BaseServer implements Server {
 	 */
 	private String rateLimiterFailStrategy;
 
+	//是否开启熔断策略
+	private boolean enableCircuitBreaker;
+	//熔断规则标识
+	private String circuitBreakerType;
+	//在fusingMilliSeconds毫秒内触发熔断操作的上限值
+	private double totalFailure;
+	//熔断的毫秒时长
+	private int circuitBreakerMilliSeconds;
+
 	public BaseServer(String serverAddress, String registryAddress, String registryType, String registryLoadBalanceType, String reflectType,
 					  int heartbeatInterval, int scanNotActiveChannelInterval,
 					  boolean enableResultCache, int resultCacheExpire,
@@ -92,7 +101,8 @@ public class BaseServer implements Server {
 					  int maxConnections, String disuseStrategyType,
 					  boolean enableBuffer, int bufferSize,
 					  boolean enableRateLimiter, String rateLimiterType, int permits, int milliSeconds,
-					  String rateLimiterFailStrategy) {
+					  String rateLimiterFailStrategy,
+					  boolean enableCircuitBreaker, String circuitBreakerType, double totalFailure, int circuitBreakerMilliSeconds) {
 		if (!Strings.isNullOrEmpty(serverAddress)) {
 			String[] serverArray = serverAddress.split(":");
 			this.host = serverArray[0];
@@ -125,6 +135,10 @@ public class BaseServer implements Server {
 		this.permits = permits;
 		this.milliSeconds = milliSeconds;
 		this.rateLimiterFailStrategy = rateLimiterFailStrategy;
+		this.enableCircuitBreaker = enableCircuitBreaker;
+		this.circuitBreakerType = circuitBreakerType;
+		this.totalFailure = totalFailure;
+		this.circuitBreakerMilliSeconds = circuitBreakerMilliSeconds;
 	}
 
 	private RegistryService getRegistryService(String registryAddress, String registryType, String registryLoadBalanceType) {
@@ -164,6 +178,7 @@ public class BaseServer implements Server {
 									enableBuffer, bufferSize,
 									enableRateLimiter, rateLimiterType, permits, milliSeconds,
 									rateLimiterFailStrategy,
+									enableCircuitBreaker, circuitBreakerType, totalFailure, circuitBreakerMilliSeconds,
 									handlerMap));
 					}
 				})
