@@ -114,6 +114,7 @@ public class RpcConsumerPostProcessor implements ApplicationContextAware, BeanCl
 			builder.addPropertyValue("rateLimiterType", annotation.rateLimiterType());
 			builder.addPropertyValue("totalFailure", annotation.totalFailure());
 			builder.addPropertyValue("circuitBreakerMilliSeconds", annotation.circuitBreakerMilliSeconds());
+			builder.addPropertyValue("exceptionPostProcessorType", annotation.exceptionPostProcessorType());
 
 			BeanDefinition beanDefinition = builder.getBeanDefinition();
 			rpcRefBeanDefinitions.put(field.getName(), beanDefinition);

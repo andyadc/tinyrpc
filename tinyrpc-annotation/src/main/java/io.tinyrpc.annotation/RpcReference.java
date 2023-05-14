@@ -187,4 +187,9 @@ public @interface RpcReference {
 	 * 熔断的毫秒时长
 	 */
 	int circuitBreakerMilliSeconds() default DEFAULT_CIRCUIT_BREAKER_MILLI_SECONDS;
+
+	/**
+	 * 异常处理类型
+	 */
+	String exceptionPostProcessorType() default EXCEPTION_POST_PROCESSOR_PRINT;
 }

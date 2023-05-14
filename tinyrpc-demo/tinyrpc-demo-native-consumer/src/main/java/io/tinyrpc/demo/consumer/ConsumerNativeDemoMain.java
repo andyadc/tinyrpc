@@ -52,7 +52,8 @@ public class ConsumerNativeDemoMain {
 			false,
 			"counter",
 			1D,
-			10000
+			10000,
+			"print"
 		);
 	}
 

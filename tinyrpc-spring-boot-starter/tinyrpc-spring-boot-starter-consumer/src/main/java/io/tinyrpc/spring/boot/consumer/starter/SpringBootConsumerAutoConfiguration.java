@@ -40,7 +40,7 @@ public class SpringBootConsumerAutoConfiguration {
 		ApplicationContext context = RpcConsumerSpringContext.getInstance().getContext();
 		Map<String, RpcReferenceBean> rpcReferenceBeanMap = context.getBeansOfType(RpcReferenceBean.class);
 		Collection<RpcReferenceBean> rpcReferenceBeans = rpcReferenceBeanMap.values();
-		for (RpcReferenceBean rpcReferenceBean : rpcReferenceBeans){
+		for (RpcReferenceBean rpcReferenceBean : rpcReferenceBeans) {
 			this.getRpcReferenceBean(rpcReferenceBean, springBootConsumerConfig);
 			rpcReferenceBean.init();
 			rpcClientList.add(rpcReferenceBean.getRpcClient());
@@ -175,23 +175,28 @@ public class SpringBootConsumerAutoConfiguration {
 			referenceBean.setRateLimiterFailStrategy(springBootConsumerConfig.getRateLimiterFailStrategy());
 		}
 
-		if (!referenceBean.isEnableCircuitBreaker()){
+		if (!referenceBean.isEnableCircuitBreaker()) {
 			referenceBean.setEnableCircuitBreaker(springBootConsumerConfig.isEnableCircuitBreaker());
 		}
 
 		if (StringUtil.isEmpty(referenceBean.getCircuitBreakerType())
-			|| (RpcConstants.DEFAULT_CIRCUIT_BREAKER_INVOKER.equals(referenceBean.getCircuitBreakerType()) && !StringUtil.isEmpty(springBootConsumerConfig.getCircuitBreakerType()))){
+			|| (RpcConstants.DEFAULT_CIRCUIT_BREAKER_INVOKER.equals(referenceBean.getCircuitBreakerType()) && !StringUtil.isEmpty(springBootConsumerConfig.getCircuitBreakerType()))) {
 			referenceBean.setCircuitBreakerType(springBootConsumerConfig.getCircuitBreakerType());
 		}
 
 		if (referenceBean.getTotalFailure() <= 0
-			|| (RpcConstants.DEFAULT_CIRCUIT_BREAKER_TOTAL_FAILURE == referenceBean.getTotalFailure() && springBootConsumerConfig.getTotalFailure() > 0 )){
+			|| (RpcConstants.DEFAULT_CIRCUIT_BREAKER_TOTAL_FAILURE == referenceBean.getTotalFailure() && springBootConsumerConfig.getTotalFailure() > 0)) {
 			referenceBean.setTotalFailure(springBootConsumerConfig.getTotalFailure());
 		}
 
 		if (referenceBean.getCircuitBreakerMilliSeconds() <= 0
-			|| (RpcConstants.DEFAULT_CIRCUIT_BREAKER_MILLI_SECONDS == referenceBean.getCircuitBreakerMilliSeconds() && springBootConsumerConfig.getCircuitBreakerMilliSeconds() > 0)){
+			|| (RpcConstants.DEFAULT_CIRCUIT_BREAKER_MILLI_SECONDS == referenceBean.getCircuitBreakerMilliSeconds() && springBootConsumerConfig.getCircuitBreakerMilliSeconds() > 0)) {
 			referenceBean.setCircuitBreakerMilliSeconds(springBootConsumerConfig.getCircuitBreakerMilliSeconds());
+		}
+
+		if (StringUtil.isEmpty(referenceBean.getExceptionPostProcessorType())
+			|| (RpcConstants.EXCEPTION_POST_PROCESSOR_PRINT.equals(referenceBean.getExceptionPostProcessorType()) && !StringUtil.isEmpty(springBootConsumerConfig.getExceptionPostProcessorType()))) {
+			referenceBean.setExceptionPostProcessorType(springBootConsumerConfig.getExceptionPostProcessorType());
 		}
 
 		return referenceBean;
