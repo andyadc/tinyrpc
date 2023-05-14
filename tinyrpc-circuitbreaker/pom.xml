@@ -33,6 +33,7 @@
 	<modules>
 		<module>tinyrpc-circuitbreaker-api</module>
 		<module>tinyrpc-circuitbreaker-counter</module>
-	</modules>
+        <module>tinyrpc-circuitbreaker-percent</module>
+    </modules>
 
 </project>
