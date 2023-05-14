@@ -49,7 +49,7 @@ public class ConsumerNativeDemoMain {
 			1,
 			5000,
 			"exception",
-			true,
+			false,
 			"counter",
 			1D,
 			10000

@@ -42,7 +42,8 @@ public class SpringBootProviderAutoConfiguration {
 			springBootProviderConfig.isEnableCircuitBreaker(),
 			springBootProviderConfig.getCircuitBreakerType(),
 			springBootProviderConfig.getTotalFailure(),
-			springBootProviderConfig.getCircuitBreakerMilliSeconds()
+			springBootProviderConfig.getCircuitBreakerMilliSeconds(),
+			springBootProviderConfig.getExceptionPostProcessorType()
 		);
 	}
 }

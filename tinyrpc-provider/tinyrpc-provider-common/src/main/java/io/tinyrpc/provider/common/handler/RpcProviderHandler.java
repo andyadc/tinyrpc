@@ -20,6 +20,7 @@ import io.tinyrpc.common.utils.JsonUtil;
 import io.tinyrpc.common.utils.StringUtil;
 import io.tinyrpc.connection.manager.ConnectionManager;
 import io.tinyrpc.constant.RpcConstants;
+import io.tinyrpc.exception.processor.ExceptionPostProcessor;
 import io.tinyrpc.protocol.RpcProtocol;
 import io.tinyrpc.protocol.enumeration.RpcStatus;
 import io.tinyrpc.protocol.enumeration.RpcType;
@@ -109,6 +110,11 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 	 */
 	private CircuitBreakerInvoker circuitBreakerInvoker;
 
+	/**
+	 * 异常处理后置处理器
+	 */
+	private ExceptionPostProcessor exceptionPostProcessor;
+
 	public RpcProviderHandler(String reflectType, boolean enableResultCache, int resultCacheExpire,
 							  int corePoolSize, int maximumPoolSize,
 							  int maxConnections, String disuseStrategyType,
@@ -116,6 +122,7 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 							  boolean enableRateLimiter, String rateLimiterType, int permits, int milliSeconds,
 							  String rateLimiterFailStrategy,
 							  boolean enableCircuitBreaker, String circuitBreakerType, double totalFailure, int circuitBreakerMilliSeconds,
+							  String exceptionPostProcessorType,
 							  Map<String, Object> handlerMap) {
 		this.handlerMap = handlerMap;
 		this.reflectInvoker = ExtensionLoader.getExtension(ReflectInvoker.class, reflectType);
@@ -141,6 +148,10 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 		this.rateLimiterFailStrategy = rateLimiterFailStrategy;
 		this.enableCircuitBreaker = enableCircuitBreaker;
 		this.initCircuitBreaker(circuitBreakerType, totalFailure, circuitBreakerMilliSeconds);
+		if (StringUtil.isEmpty(exceptionPostProcessorType)){
+			exceptionPostProcessorType = RpcConstants.EXCEPTION_POST_PROCESSOR_PRINT;
+		}
+		this.exceptionPostProcessor = ExtensionLoader.getExtension(ExceptionPostProcessor.class, exceptionPostProcessorType);
 	}
 
 	/**
@@ -271,6 +282,7 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 			response.setError(t.toString());
 			header.setStatus((byte) RpcStatus.FAIL.getCode());
 			logger.error("RPC Server handle request error", t);
+			exceptionPostProcessor.postExceptionProcessor(t);
 		}
 
 		responseRpcProtocol.setHeader(header);
@@ -498,6 +510,7 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
 		logger.error("Server caught exception.", cause);
 
+		exceptionPostProcessor.postExceptionProcessor(cause);
 		Channel channel = ctx.channel();
 		ProviderChannelCache.remove(channel);
 		connectionManager.remove(channel);

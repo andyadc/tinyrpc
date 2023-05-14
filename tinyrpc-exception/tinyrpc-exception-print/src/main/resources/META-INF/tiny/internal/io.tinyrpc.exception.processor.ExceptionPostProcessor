@@ -1,0 +1,1 @@
+print=io.tinyrpc.exception.processor.print.PrintExceptionPostProcessor

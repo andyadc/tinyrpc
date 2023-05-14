@@ -399,4 +399,9 @@ public final class RpcConstants {
 	 * 默认熔断总次数或错误率
 	 */
 	public static final double DEFAULT_CIRCUIT_BREAKER_TOTAL_FAILURE = 10;
+
+	/**
+	 * 打印异常
+	 */
+	public static final String EXCEPTION_POST_PROCESSOR_PRINT = "print";
 }
