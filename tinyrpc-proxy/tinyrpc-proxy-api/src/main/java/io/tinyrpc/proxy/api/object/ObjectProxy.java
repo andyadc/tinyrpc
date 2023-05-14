@@ -247,8 +247,9 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
 		Object result;
 		try {
 			result = invokeSendRequestMethod(method, args);
+			circuitBreakerInvoker.markSuccess();
 		} catch (Throwable e) {
-			circuitBreakerInvoker.incrementFailureCount();
+			circuitBreakerInvoker.markFailed();
 			throw new RpcException(e.getMessage());
 		}
 		return result;

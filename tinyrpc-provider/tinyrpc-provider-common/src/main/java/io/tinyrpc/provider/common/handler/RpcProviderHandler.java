@@ -349,7 +349,9 @@ public class RpcProviderHandler extends SimpleChannelInboundHandler<RpcProtocol<
 		RpcProtocol<RpcResponse> responseRpcProtocol = handleRequestMessage(protocol, header);
 		//如果是调用失败，则失败次数加1
 		if (responseRpcProtocol.getHeader().getStatus() == (byte) RpcStatus.FAIL.getCode()) {
-			circuitBreakerInvoker.incrementFailureCount();
+			circuitBreakerInvoker.markFailed();
+		} else {
+			circuitBreakerInvoker.markSuccess();
 		}
 		return responseRpcProtocol;
 	}

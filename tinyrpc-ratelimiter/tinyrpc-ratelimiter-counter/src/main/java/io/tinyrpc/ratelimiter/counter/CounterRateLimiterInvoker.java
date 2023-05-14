@@ -1,6 +1,5 @@
 package io.tinyrpc.ratelimiter.counter;
 
-
 import io.tinyrpc.ratelimiter.base.AbstractRateLimiterInvoker;
 import io.tinyrpc.spi.annotation.SPIClass;
 import org.slf4j.Logger;
@@ -17,7 +16,6 @@ public class CounterRateLimiterInvoker extends AbstractRateLimiterInvoker {
 	private static final Logger logger = LoggerFactory.getLogger(CounterRateLimiterInvoker.class);
 
 	private final AtomicInteger currentCounter = new AtomicInteger(0);
-	private final ThreadLocal<Boolean> threadLocal = ThreadLocal.withInitial(() -> Boolean.FALSE);
 	private volatile long lastTimestamp = System.currentTimeMillis();
 
 	@Override
@@ -33,22 +31,11 @@ public class CounterRateLimiterInvoker extends AbstractRateLimiterInvoker {
 			return true;
 		}
 		//当前请求数小于配置的数量
-		if (currentCounter.incrementAndGet() <= permits) {
-			threadLocal.set(true);
-			return true;
-		}
-		return false;
+		return currentCounter.incrementAndGet() <= permits;
 	}
 
 	@Override
 	public void release() {
-		if (threadLocal.get()) {
-			try {
-				currentCounter.decrementAndGet();
-				logger.debug("release count={}", currentCounter.get());
-			} finally {
-				threadLocal.remove();
-			}
-		}
+		// ignore
 	}
 }

@@ -46,7 +46,7 @@ public class RpcConsumer implements Consumer {
 	private static final Logger logger = LoggerFactory.getLogger(RpcConsumer.class);
 
 	private static volatile RpcConsumer instance;
-	private final Bootstrap bootstrap;
+	private Bootstrap bootstrap;
 	private final EventLoopGroup eventLoopGroup;
 	private final String localIp;
 	// 当前重试次数
@@ -452,8 +452,14 @@ public class RpcConsumer implements Consumer {
 	}
 
 	public RpcConsumer buildNettyGroup() {
-		bootstrap.group(eventLoopGroup).channel(NioSocketChannel.class)
-			.handler(new RpcConsumerInitializer(heartbeatInterval, enableBuffer, bufferSize, concurrentThreadPool, flowPostProcessor));
+		try {
+			bootstrap.group(eventLoopGroup).channel(NioSocketChannel.class)
+				.handler(new RpcConsumerInitializer(heartbeatInterval, enableBuffer, bufferSize, concurrentThreadPool, flowPostProcessor));
+		} catch (IllegalStateException e) {
+			bootstrap = new Bootstrap();
+			bootstrap.group(eventLoopGroup).channel(NioSocketChannel.class)
+				.handler(new RpcConsumerInitializer(heartbeatInterval, enableBuffer, bufferSize, concurrentThreadPool, flowPostProcessor));
+		}
 		return this;
 	}
 

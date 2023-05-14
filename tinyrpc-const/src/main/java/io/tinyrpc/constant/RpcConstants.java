@@ -371,6 +371,26 @@ public final class RpcConstants {
 	public static final int CIRCUIT_BREAKER_STATUS_OPEN = 3;
 
 	/**
+	 * 初始化状态
+	 */
+	public static final int CIRCUIT_BREAKER_WAIT_STATUS_INIT = 0;
+
+	/**
+	 * 等待
+	 */
+	public static final int CIRCUIT_BREAKER_WAIT_STATUS_WAITINF = 1;
+
+	/**
+	 * 成功
+	 */
+	public static final int CIRCUIT_BREAKER_WAIT_STATUS_SUCCESS = 2;
+
+	/**
+	 * 失败
+	 */
+	public static final int CIRCUIT_BREAKER_WAIT_STATUS_FAILED = 3;
+
+	/**
 	 * 默认熔断时间值，毫秒
 	 */
 	public static final int DEFAULT_CIRCUIT_BREAKER_MILLI_SECONDS = 5000;
