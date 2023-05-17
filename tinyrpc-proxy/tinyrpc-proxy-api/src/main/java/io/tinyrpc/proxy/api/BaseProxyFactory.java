@@ -36,7 +36,8 @@ public abstract class BaseProxyFactory<T> implements ProxyFactory {
 			proxyConfig.isEnableCircuitBreaker(),
 			proxyConfig.getCircuitBreakerType(),
 			proxyConfig.getTotalFailure(),
-			proxyConfig.getCircuitBreakerMilliSeconds()
+			proxyConfig.getCircuitBreakerMilliSeconds(),
+			proxyConfig.getExceptionPostProcessorType()
 		);
 	}
 }

@@ -21,7 +21,7 @@ public class ConsumerNativeDemoMain {
 		rpcClient = new RpcClient(
 			"127.0.0.1:2181",
 			"zookeeper",
-			"enhanced_leastconnections",
+			"enhanced_zkconsistenthash",
 			"asm",
 			"1.0.0",
 			"adc",
@@ -49,10 +49,11 @@ public class ConsumerNativeDemoMain {
 			1,
 			5000,
 			"exception",
-			true,
+			false,
 			"counter",
 			1D,
-			10000
+			10000,
+			"print"
 		);
 	}
 

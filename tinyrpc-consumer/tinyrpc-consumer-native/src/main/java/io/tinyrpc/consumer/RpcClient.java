@@ -135,6 +135,10 @@ public class RpcClient {
 	private double totalFailure;
 	//熔断的毫秒时长
 	private int circuitBreakerMilliSeconds;
+	/**
+	 * 异常监控类型
+	 */
+	private String exceptionPostProcessorType;
 
 	public RpcClient(String registryAddress, String registryType, String registryLoadBalanceType,
 					 String proxy, String serviceVersion, String serviceGroup, String serializationType, long timeout,
@@ -148,7 +152,8 @@ public class RpcClient {
 					 String reflectType, String fallbackClassName,
 					 boolean enableRateLimiter, String rateLimiterType, int permits, int milliSeconds,
 					 String rateLimiterFailStrategy,
-					 boolean enableCircuitBreaker, String circuitBreakerType, double totalFailure, int circuitBreakerMilliSeconds) {
+					 boolean enableCircuitBreaker, String circuitBreakerType, double totalFailure, int circuitBreakerMilliSeconds,
+					 String exceptionPostProcessorType) {
 		this.serviceVersion = serviceVersion;
 		this.timeout = timeout;
 		this.serviceGroup = serviceGroup;
@@ -180,6 +185,7 @@ public class RpcClient {
 		this.circuitBreakerType = circuitBreakerType;
 		this.totalFailure = totalFailure;
 		this.circuitBreakerMilliSeconds = circuitBreakerMilliSeconds;
+		this.exceptionPostProcessorType = exceptionPostProcessorType;
 	}
 
 	public void setFallbackClass(Class<?> fallbackClass) {
@@ -213,6 +219,7 @@ public class RpcClient {
 				.setDirectServerUrl(directServerUrl)
 				.setConcurrentThreadPool(concurrentThreadPool)
 				.setFlowPostProcessor(flowType)
+				.setExceptionPostProcessor(exceptionPostProcessorType)
 				.setEnableBuffer(enableBuffer)
 				.setBufferSize(bufferSize)
 				.buildNettyGroup()
@@ -221,7 +228,8 @@ public class RpcClient {
 			reflectType, fallbackClassName, fallbackClass,
 			enableRateLimiter, rateLimiterType, permits, milliSeconds,
 			rateLimiterFailStrategy,
-			enableCircuitBreaker, circuitBreakerType, totalFailure, circuitBreakerMilliSeconds));
+			enableCircuitBreaker, circuitBreakerType, totalFailure, circuitBreakerMilliSeconds,
+			exceptionPostProcessorType));
 		return proxyFactory.getProxy(interfaceClass);
 	}
 
@@ -237,6 +245,7 @@ public class RpcClient {
 				.setDirectServerUrl(directServerUrl)
 				.setConcurrentThreadPool(concurrentThreadPool)
 				.setFlowPostProcessor(flowType)
+				.setExceptionPostProcessor(exceptionPostProcessorType)
 				.setEnableBuffer(enableBuffer)
 				.setBufferSize(bufferSize)
 				.buildNettyGroup()
@@ -245,7 +254,8 @@ public class RpcClient {
 			reflectType, fallbackClassName, fallbackClass,
 			enableRateLimiter, rateLimiterType, permits, milliSeconds,
 			rateLimiterFailStrategy,
-			enableCircuitBreaker, circuitBreakerType, totalFailure, circuitBreakerMilliSeconds);
+			enableCircuitBreaker, circuitBreakerType, totalFailure, circuitBreakerMilliSeconds,
+			exceptionPostProcessorType);
 	}
 
 	public void shutdown() {

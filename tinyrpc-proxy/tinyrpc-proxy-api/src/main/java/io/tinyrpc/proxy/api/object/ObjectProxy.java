@@ -6,6 +6,7 @@ import io.tinyrpc.circuitbreaker.api.CircuitBreakerInvoker;
 import io.tinyrpc.common.exception.RpcException;
 import io.tinyrpc.common.utils.StringUtil;
 import io.tinyrpc.constant.RpcConstants;
+import io.tinyrpc.exception.processor.ExceptionPostProcessor;
 import io.tinyrpc.protocol.RpcProtocol;
 import io.tinyrpc.protocol.enumeration.RpcType;
 import io.tinyrpc.protocol.header.RpcHeaderFactory;
@@ -115,6 +116,11 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
 	 */
 	private CircuitBreakerInvoker circuitBreakerInvoker;
 
+	/**
+	 * 异常处理后置处理器
+	 */
+	private ExceptionPostProcessor exceptionPostProcessor;
+
 	public ObjectProxy(Class<T> clazz) {
 		this.clazz = clazz;
 	}
@@ -126,7 +132,8 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
 					   String reflectType, String fallbackClassName, Class<?> fallbackClass,
 					   boolean enableRateLimiter, String rateLimiterType, int permits, int milliSeconds,
 					   String rateLimiterFailStrategy,
-					   boolean enableCircuitBreaker, String circuitBreakerType, double totalFailure, int circuitBreakerMilliSeconds) {
+					   boolean enableCircuitBreaker, String circuitBreakerType, double totalFailure, int circuitBreakerMilliSeconds,
+					   String exceptionPostProcessorType) {
 		this.clazz = clazz;
 		this.serviceVersion = serviceVersion;
 		this.timeout = timeout;
@@ -148,6 +155,7 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
 		this.rateLimiterFailStrategy = rateLimiterFailStrategy;
 		this.enableCircuitBreaker = enableCircuitBreaker;
 		this.initCircuitBreaker(circuitBreakerType, totalFailure, circuitBreakerMilliSeconds);
+		this.exceptionPostProcessor = ExtensionLoader.getExtension(ExceptionPostProcessor.class, exceptionPostProcessorType);
 	}
 
 	/**
@@ -183,6 +191,7 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
 				}
 			} catch (ClassNotFoundException e) {
 				logger.error(e.getMessage());
+				exceptionPostProcessor.postExceptionProcessor(e);
 			}
 		}
 		return fallbackClass;
@@ -203,6 +212,7 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
 			return reflectInvoker.invokeMethod(fallbackClass.newInstance(), fallbackClass, method.getName(), method.getParameterTypes(), args);
 		} catch (Throwable ex) {
 			logger.error(ex.getMessage());
+			exceptionPostProcessor.postExceptionProcessor(ex);
 		}
 		return null;
 	}
@@ -247,8 +257,10 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
 		Object result;
 		try {
 			result = invokeSendRequestMethod(method, args);
+			circuitBreakerInvoker.markSuccess();
 		} catch (Throwable e) {
-			circuitBreakerInvoker.incrementFailureCount();
+			circuitBreakerInvoker.markFailed();
+			exceptionPostProcessor.postExceptionProcessor(e);
 			throw new RpcException(e.getMessage());
 		}
 		return result;
@@ -303,6 +315,7 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
 		try {
 			return invokeSendRequestMethodWithRateLimiter(method, args);
 		} catch (Throwable e) {
+			exceptionPostProcessor.postExceptionProcessor(e);
 			//fallbackClass不为空，则执行容错处理
 			if (this.isFallbackClassEmpty(fallbackClass)) {
 				return null;
@@ -368,6 +381,7 @@ public class ObjectProxy<T> implements IAsyncObjectProxy, InvocationHandler {
 			rpcFuture = this.consumer.sendRequest(request, registryService);
 		} catch (Exception e) {
 			logger.error("async call error", e);
+			exceptionPostProcessor.postExceptionProcessor(e);
 		}
 		return rpcFuture;
 	}

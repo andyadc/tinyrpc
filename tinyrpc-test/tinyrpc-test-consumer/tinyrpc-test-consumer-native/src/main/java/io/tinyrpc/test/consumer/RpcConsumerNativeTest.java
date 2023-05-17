@@ -41,7 +41,8 @@ public class RpcConsumerNativeTest {
 			true,
 			"counter",
 			1D,
-			5000
+			5000,
+			"print"
 		);
 
 		IAsyncObjectProxy testService = rpcClient.createAsync(TestService.class);
@@ -86,7 +87,8 @@ public class RpcConsumerNativeTest {
 			true,
 			"counter",
 			1D,
-			5000
+			5000,
+			"print"
 		);
 	}
 

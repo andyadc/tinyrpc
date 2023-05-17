@@ -105,6 +105,8 @@ public final class SpringBootProviderConfig {
 	private double totalFailure;
 	//熔断的毫秒时长
 	private int circuitBreakerMilliSeconds;
+	//异常后置处理器标识
+	private String exceptionPostProcessorType;
 
 	public SpringBootProviderConfig() {
 	}
@@ -118,7 +120,8 @@ public final class SpringBootProviderConfig {
 									final boolean enableBuffer, final int bufferSize,
 									final boolean enableRateLimiter, final String rateLimiterType, final int permits, final int milliSeconds,
 									final String rateLimiterFailStrategy,
-									final boolean enableCircuitBreaker, final String circuitBreakerType, final double totalFailure, final int circuitBreakerMilliSeconds) {
+									final boolean enableCircuitBreaker, final String circuitBreakerType, final double totalFailure, final int circuitBreakerMilliSeconds,
+									final String exceptionPostProcessorType) {
 		this.serverAddress = serverAddress;
 		this.registryAddress = registryAddress;
 		this.registryType = registryType;
@@ -146,6 +149,7 @@ public final class SpringBootProviderConfig {
 		this.circuitBreakerType = circuitBreakerType;
 		this.totalFailure = totalFailure;
 		this.circuitBreakerMilliSeconds = circuitBreakerMilliSeconds;
+		this.exceptionPostProcessorType = exceptionPostProcessorType;
 	}
 
 	public String getServerAddress() {
@@ -346,5 +350,13 @@ public final class SpringBootProviderConfig {
 
 	public void setCircuitBreakerMilliSeconds(int circuitBreakerMilliSeconds) {
 		this.circuitBreakerMilliSeconds = circuitBreakerMilliSeconds;
+	}
+
+	public String getExceptionPostProcessorType() {
+		return exceptionPostProcessorType;
+	}
+
+	public void setExceptionPostProcessorType(String exceptionPostProcessorType) {
+		this.exceptionPostProcessorType = exceptionPostProcessorType;
 	}
 }

@@ -33,7 +33,8 @@
 		<module>tinyrpc-buffer</module>
         <module>tinyrpc-ratelimiter</module>
 		<module>tinyrpc-circuitbreaker</module>
-	</modules>
+        <module>tinyrpc-exception</module>
+    </modules>
 
 	<properties>
 		<jdk.version>1.8</jdk.version>

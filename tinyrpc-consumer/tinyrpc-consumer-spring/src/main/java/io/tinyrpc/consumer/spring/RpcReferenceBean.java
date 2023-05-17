@@ -167,6 +167,10 @@ public class RpcReferenceBean implements FactoryBean<Object> {
 	private double totalFailure;
 	//熔断的毫秒时长
 	private int circuitBreakerMilliSeconds;
+	/**
+	 * 异常监控类型
+	 */
+	private String exceptionPostProcessorType;
 
 	private RpcClient rpcClient;
 
@@ -196,7 +200,8 @@ public class RpcReferenceBean implements FactoryBean<Object> {
 			enableBuffer, bufferSize, reflectType, fallbackClassName,
 			enableRateLimiter, rateLimiterType, permits, milliSeconds,
 			rateLimiterFailStrategy,
-			enableCircuitBreaker, circuitBreakerType, totalFailure, circuitBreakerMilliSeconds);
+			enableCircuitBreaker, circuitBreakerType, totalFailure, circuitBreakerMilliSeconds,
+			exceptionPostProcessorType);
 		this.rpcClient.setFallbackClass(fallbackClass);
 		this.object = rpcClient.create(interfaceClass);
 	}
@@ -487,5 +492,13 @@ public class RpcReferenceBean implements FactoryBean<Object> {
 
 	public void setCircuitBreakerMilliSeconds(int circuitBreakerMilliSeconds) {
 		this.circuitBreakerMilliSeconds = circuitBreakerMilliSeconds;
+	}
+
+	public String getExceptionPostProcessorType() {
+		return exceptionPostProcessorType;
+	}
+
+	public void setExceptionPostProcessorType(String exceptionPostProcessorType) {
+		this.exceptionPostProcessorType = exceptionPostProcessorType;
 	}
 }

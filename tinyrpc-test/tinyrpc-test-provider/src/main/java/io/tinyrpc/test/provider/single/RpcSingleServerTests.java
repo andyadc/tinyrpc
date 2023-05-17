@@ -33,7 +33,8 @@ public class RpcSingleServerTests {
 			true,
 			"counter",
 			10D,
-			1000
+			1000,
+			"print"
 		);
 
 		singleServer.startNettyServer();

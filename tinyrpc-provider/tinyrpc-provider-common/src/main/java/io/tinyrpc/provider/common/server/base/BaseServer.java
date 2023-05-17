@@ -94,6 +94,9 @@ public class BaseServer implements Server {
 	//熔断的毫秒时长
 	private int circuitBreakerMilliSeconds;
 
+	//异常后置处理器标识
+	private String exceptionPostProcessorType;
+
 	public BaseServer(String serverAddress, String registryAddress, String registryType, String registryLoadBalanceType, String reflectType,
 					  int heartbeatInterval, int scanNotActiveChannelInterval,
 					  boolean enableResultCache, int resultCacheExpire,
@@ -102,7 +105,8 @@ public class BaseServer implements Server {
 					  boolean enableBuffer, int bufferSize,
 					  boolean enableRateLimiter, String rateLimiterType, int permits, int milliSeconds,
 					  String rateLimiterFailStrategy,
-					  boolean enableCircuitBreaker, String circuitBreakerType, double totalFailure, int circuitBreakerMilliSeconds) {
+					  boolean enableCircuitBreaker, String circuitBreakerType, double totalFailure, int circuitBreakerMilliSeconds,
+					  String exceptionPostProcessorType) {
 		if (!Strings.isNullOrEmpty(serverAddress)) {
 			String[] serverArray = serverAddress.split(":");
 			this.host = serverArray[0];
@@ -139,6 +143,7 @@ public class BaseServer implements Server {
 		this.circuitBreakerType = circuitBreakerType;
 		this.totalFailure = totalFailure;
 		this.circuitBreakerMilliSeconds = circuitBreakerMilliSeconds;
+		this.exceptionPostProcessorType = exceptionPostProcessorType;
 	}
 
 	private RegistryService getRegistryService(String registryAddress, String registryType, String registryLoadBalanceType) {
@@ -179,6 +184,7 @@ public class BaseServer implements Server {
 									enableRateLimiter, rateLimiterType, permits, milliSeconds,
 									rateLimiterFailStrategy,
 									enableCircuitBreaker, circuitBreakerType, totalFailure, circuitBreakerMilliSeconds,
+									exceptionPostProcessorType,
 									handlerMap));
 					}
 				})

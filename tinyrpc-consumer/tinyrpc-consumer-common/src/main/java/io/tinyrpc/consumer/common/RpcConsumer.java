@@ -17,6 +17,7 @@ import io.tinyrpc.consumer.common.handler.RpcConsumerHandler;
 import io.tinyrpc.consumer.common.helper.RpcConsumerHandlerHelper;
 import io.tinyrpc.consumer.common.initializer.RpcConsumerInitializer;
 import io.tinyrpc.consumer.common.manager.ConsumerConnectionManager;
+import io.tinyrpc.exception.processor.ExceptionPostProcessor;
 import io.tinyrpc.flow.processor.FlowPostProcessor;
 import io.tinyrpc.loadbalancer.context.ConnectionsContext;
 import io.tinyrpc.protocol.RpcProtocol;
@@ -46,7 +47,7 @@ public class RpcConsumer implements Consumer {
 	private static final Logger logger = LoggerFactory.getLogger(RpcConsumer.class);
 
 	private static volatile RpcConsumer instance;
-	private final Bootstrap bootstrap;
+	private Bootstrap bootstrap;
 	private final EventLoopGroup eventLoopGroup;
 	private final String localIp;
 	// 当前重试次数
@@ -71,6 +72,8 @@ public class RpcConsumer implements Consumer {
 
 	//流控分析后置处理器
 	private FlowPostProcessor flowPostProcessor;
+	//异常处理后置处理器
+	private ExceptionPostProcessor exceptionPostProcessor;
 
 	//是否开启数据缓冲
 	private boolean enableBuffer;
@@ -100,7 +103,7 @@ public class RpcConsumer implements Consumer {
 		bootstrap
 			.group(eventLoopGroup)
 			.channel(NioSocketChannel.class)
-			.handler(new RpcConsumerInitializer(heartbeatInterval, enableBuffer, bufferSize, concurrentThreadPool, flowPostProcessor));
+			.handler(new RpcConsumerInitializer(heartbeatInterval, enableBuffer, bufferSize, concurrentThreadPool, flowPostProcessor, exceptionPostProcessor));
 		//TODO 启动心跳，后续优化
 		this.startHeartbeat();
 	}
@@ -441,6 +444,14 @@ public class RpcConsumer implements Consumer {
 		return this;
 	}
 
+	public RpcConsumer setExceptionPostProcessor(String exceptionPostProcessorType) {
+		if (StringUtil.isEmpty(exceptionPostProcessorType)){
+			exceptionPostProcessorType = RpcConstants.EXCEPTION_POST_PROCESSOR_PRINT;
+		}
+		this.exceptionPostProcessor = ExtensionLoader.getExtension(ExceptionPostProcessor.class, exceptionPostProcessorType);
+		return this;
+	}
+
 	public RpcConsumer setEnableBuffer(boolean enableBuffer) {
 		this.enableBuffer = enableBuffer;
 		return this;
@@ -452,8 +463,14 @@ public class RpcConsumer implements Consumer {
 	}
 
 	public RpcConsumer buildNettyGroup() {
-		bootstrap.group(eventLoopGroup).channel(NioSocketChannel.class)
-			.handler(new RpcConsumerInitializer(heartbeatInterval, enableBuffer, bufferSize, concurrentThreadPool, flowPostProcessor));
+		try {
+			bootstrap.group(eventLoopGroup).channel(NioSocketChannel.class)
+				.handler(new RpcConsumerInitializer(heartbeatInterval, enableBuffer, bufferSize, concurrentThreadPool, flowPostProcessor,exceptionPostProcessor));
+		} catch (IllegalStateException e) {
+			bootstrap = new Bootstrap();
+			bootstrap.group(eventLoopGroup).channel(NioSocketChannel.class)
+				.handler(new RpcConsumerInitializer(heartbeatInterval, enableBuffer, bufferSize, concurrentThreadPool, flowPostProcessor,exceptionPostProcessor));
+		}
 		return this;
 	}
 

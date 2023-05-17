@@ -9,7 +9,7 @@ public class ProviderNativeDemoMain {
 			"127.0.0.1:27880",
 			"127.0.0.1:2181",
 			"zookeeper",
-			"enhanced_leastconnections",
+			"enhanced_zkconsistenthash",
 			"io.tinyrpc.demo",
 			"asm",
 			30000,
@@ -31,7 +31,8 @@ public class ProviderNativeDemoMain {
 			false,
 			"counter",
 			1D,
-			5000
+			5000,
+			"print"
 		);
 
 		singleServer.startNettyServer();

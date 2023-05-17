@@ -96,17 +96,19 @@ public class ClassScanner {
 			//如果前半部分和定义的包名相同
 			if (name.startsWith(packageDirName)) {
 				int idx = name.lastIndexOf('/');
+				String currentPackageDir = "";
 				//如果以"/"结尾 是一个包
 				if (idx != -1) {
 					//获取包名 把"/"替换成"."
-					packageName = name.substring(0, idx).replace('/', '.');
+					currentPackageDir = name.substring(0, idx);
+					packageName = currentPackageDir.replace('/', '.');
 				}
 				//如果可以迭代下去 并且是一个包
-				if ((idx != -1) || recursive) {
+				if ((idx != -1 && currentPackageDir.equals(packageDirName)) || recursive) {
 					//如果是一个.class文件 而且不是目录
 					if (name.endsWith(CLASS_FILE_SUFFIX) && !entry.isDirectory()) {
 						//去掉后面的".class" 获取真正的类名
-						String className = name.substring(packageName.length() + 1, name.length() - 6);
+						String className = name.substring(packageName.length() + 1, name.length() - CLASS_FILE_SUFFIX.length());
 						classNameList.add(packageName + '.' + className);
 					}
 				}

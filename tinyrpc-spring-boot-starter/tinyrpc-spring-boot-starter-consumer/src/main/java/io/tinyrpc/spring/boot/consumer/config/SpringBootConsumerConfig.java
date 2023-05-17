@@ -142,6 +142,10 @@ public final class SpringBootConsumerConfig {
 	private double totalFailure;
 	//熔断的毫秒时长
 	private int circuitBreakerMilliSeconds;
+	/**
+	 * 异常监控类型
+	 */
+	private String exceptionPostProcessorType;
 
 	public SpringBootConsumerConfig() {
 	}
@@ -157,7 +161,8 @@ public final class SpringBootConsumerConfig {
 									final String reflectType, final String fallbackClassName,
 									final boolean enableRateLimiter, final String rateLimiterType, final int permits, final int milliSeconds,
 									final String rateLimiterFailStrategy,
-									final boolean enableCircuitBreaker, final String circuitBreakerType, final double totalFailure, final int circuitBreakerMilliSeconds) {
+									final boolean enableCircuitBreaker, final String circuitBreakerType, final double totalFailure, final int circuitBreakerMilliSeconds,
+									final String exceptionPostProcessorType) {
 		this.registryAddress = registryAddress;
 		this.registryType = registryType;
 		this.loadBalanceType = loadBalanceType;
@@ -194,6 +199,7 @@ public final class SpringBootConsumerConfig {
 		this.circuitBreakerType = circuitBreakerType;
 		this.totalFailure = totalFailure;
 		this.circuitBreakerMilliSeconds = circuitBreakerMilliSeconds;
+		this.exceptionPostProcessorType = exceptionPostProcessorType;
 	}
 
 	public String getRegistryAddress() {
@@ -466,5 +472,13 @@ public final class SpringBootConsumerConfig {
 
 	public void setCircuitBreakerMilliSeconds(int circuitBreakerMilliSeconds) {
 		this.circuitBreakerMilliSeconds = circuitBreakerMilliSeconds;
+	}
+
+	public String getExceptionPostProcessorType() {
+		return exceptionPostProcessorType;
+	}
+
+	public void setExceptionPostProcessorType(String exceptionPostProcessorType) {
+		this.exceptionPostProcessorType = exceptionPostProcessorType;
 	}
 }

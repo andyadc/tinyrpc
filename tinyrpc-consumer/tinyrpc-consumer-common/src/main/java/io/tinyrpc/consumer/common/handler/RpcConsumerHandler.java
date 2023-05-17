@@ -13,6 +13,7 @@ import io.tinyrpc.common.utils.JsonUtil;
 import io.tinyrpc.constant.RpcConstants;
 import io.tinyrpc.consumer.common.cache.ConsumerChannelCache;
 import io.tinyrpc.consumer.common.context.RpcContext;
+import io.tinyrpc.exception.processor.ExceptionPostProcessor;
 import io.tinyrpc.protocol.RpcProtocol;
 import io.tinyrpc.protocol.enumeration.RpcStatus;
 import io.tinyrpc.protocol.enumeration.RpcType;
@@ -46,8 +47,15 @@ public class RpcConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<
 	// 缓冲区管理器
 	private BufferCacheManager<RpcProtocol<RpcResponse>> bufferCacheManager;
 
-	public RpcConsumerHandler(boolean enableBuffer, int bufferSize, ConcurrentThreadPool concurrentThreadPool) {
+	/**
+	 * 异常后置处理器
+	 */
+	private ExceptionPostProcessor exceptionPostProcessor;
+
+	public RpcConsumerHandler(boolean enableBuffer, int bufferSize,
+							  ConcurrentThreadPool concurrentThreadPool, ExceptionPostProcessor exceptionPostProcessor) {
 		this.concurrentThreadPool = concurrentThreadPool;
+		this.exceptionPostProcessor = exceptionPostProcessor;
 		this.enableBuffer = enableBuffer;
 		if (enableBuffer) {
 			this.bufferCacheManager = BufferCacheManager.getInstance(bufferSize);
@@ -235,5 +243,11 @@ public class RpcConsumerHandler extends SimpleChannelInboundHandler<RpcProtocol<
 		long requestId = header.getRequestId();
 		pendingRPC.put(requestId, rpcFuture);
 		return rpcFuture;
+	}
+
+	@Override
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+		exceptionPostProcessor.postExceptionProcessor(cause);
+		super.exceptionCaught(ctx, cause);
 	}
 }
