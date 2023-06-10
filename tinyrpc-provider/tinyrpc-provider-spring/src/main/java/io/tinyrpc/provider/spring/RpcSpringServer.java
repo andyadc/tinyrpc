@@ -2,6 +2,7 @@ package io.tinyrpc.provider.spring;
 
 import io.tinyrpc.annotation.RpcService;
 import io.tinyrpc.common.helper.RpcServiceHelper;
+import io.tinyrpc.common.threadpool.AsyncStartProviderThreadPool;
 import io.tinyrpc.constant.RpcConstants;
 import io.tinyrpc.protocol.meta.ServiceMeta;
 import io.tinyrpc.provider.common.server.base.BaseServer;
@@ -70,7 +71,8 @@ public class RpcSpringServer extends BaseServer implements ApplicationContextAwa
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		logger.info("Starting RPC server...");
-		this.startNettyServer();
+//		this.startNettyServer();
+		AsyncStartProviderThreadPool.submit(this::startNettyServer);
 	}
 
 	private int getWeight(int weight) {
