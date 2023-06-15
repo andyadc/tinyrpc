@@ -67,7 +67,7 @@ public class RpcDecoder extends ByteToMessageDecoder implements RpcCodec {
 		header.setSerializationType(serializationType);
 		header.setMsgLen(dataLength);
 
-		Serialization serialization = getJdkSerialization(serializationType);
+		Serialization serialization = getSerialization(serializationType);
 		switch (msgTypeEnum) {
 			case REQUEST:
 				// TODO 新增CASE
