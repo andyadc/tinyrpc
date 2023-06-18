@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.util.CharsetUtil;
-import io.tinyrpc.common.utils.SerializationUtil;
+import io.tinyrpc.common.utils.RpcUtil;
 import io.tinyrpc.constant.RpcConstants;
 import io.tinyrpc.flow.processor.FlowPostProcessor;
 import io.tinyrpc.protocol.RpcProtocol;
@@ -42,8 +42,8 @@ public class RpcDecoder extends ByteToMessageDecoder implements RpcCodec {
 		byte status = byteBuf.readByte();
 		long requestId = byteBuf.readLong();
 
-		ByteBuf serializationTypeByteBuf = byteBuf.readBytes(SerializationUtil.MAX_SERIALIZATION_TYPE_COUNR);
-		String serializationType = SerializationUtil.subString(serializationTypeByteBuf.toString(CharsetUtil.UTF_8));
+		ByteBuf serializationTypeByteBuf = byteBuf.readBytes(RpcUtil.MAX_SERIALIZATION_TYPE_COUNR);
+		String serializationType = RpcUtil.subString(serializationTypeByteBuf.toString(CharsetUtil.UTF_8));
 
 		int dataLength = byteBuf.readInt();
 		if (byteBuf.readableBytes() < dataLength) {

@@ -35,7 +35,6 @@ public class ClassScanner {
 	 *
 	 * @param packageName 指定的包名
 	 * @return 指定包下所有的完整类名的List集合
-	 * @throws Exception error
 	 */
 	public static List<String> getClassNameList(String packageName) throws Exception {
 		//第一个class类的集合
@@ -75,7 +74,6 @@ public class ClassScanner {
 	 * @param packageDirName 当前包名的前面部分的名称
 	 * @param url            包的url地址
 	 * @return 处理后的包名，以供下次调用使用
-	 * @throws IOException error
 	 */
 	private static String findAndAddClassesInPackageByJar(String packageName, List<String> classNameList, boolean recursive, String packageDirName, URL url) throws IOException {
 		//如果是jar包文件

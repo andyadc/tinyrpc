@@ -3,7 +3,7 @@ package io.tinyrpc.codec;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
-import io.tinyrpc.common.utils.SerializationUtil;
+import io.tinyrpc.common.utils.RpcUtil;
 import io.tinyrpc.flow.processor.FlowPostProcessor;
 import io.tinyrpc.protocol.RpcProtocol;
 import io.tinyrpc.protocol.header.RpcHeader;
@@ -31,7 +31,7 @@ public class RpcEncoder extends MessageToByteEncoder<RpcProtocol<Object>> implem
 		byteBuf.writeLong(header.getRequestId());
 
 		String serializationType = header.getSerializationType();
-		byteBuf.writeBytes(SerializationUtil.paddingString(serializationType).getBytes(StandardCharsets.UTF_8));
+		byteBuf.writeBytes(RpcUtil.paddingString(serializationType).getBytes(StandardCharsets.UTF_8));
 
 		Serialization serialization = getSerialization(serializationType);
 		byte[] data = serialization.serialize(msg.getBody());
