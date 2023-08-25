@@ -1,9 +1,9 @@
 package io.tinyrpc.provider.common.scanner;
 
 import io.tinyrpc.annotation.RpcService;
-import io.tinyrpc.constant.RpcConstants;
 import io.tinyrpc.common.helper.RpcServiceHelper;
 import io.tinyrpc.common.scanner.ClassScanner;
+import io.tinyrpc.constant.RpcConstants;
 import io.tinyrpc.protocol.meta.ServiceMeta;
 import io.tinyrpc.registry.api.RegistryService;
 import org.slf4j.Logger;
@@ -38,7 +38,7 @@ public class RpcServiceScanner extends ClassScanner {
 				if (rpcService != null) {
 					//优先使用interfaceClass, interfaceClass的name为空，再使用interfaceClassName
 					//handlerMap中的 Key先简单存储为serviceName+version+group，后续根据实际情况处理key
-					String serviceName = getServiceName(rpcService);
+					String serviceName = RpcServiceHelper.getServiceName(rpcService);
 					String key = RpcServiceHelper.buildServiceKey(serviceName, rpcService.version(), rpcService.group());
 					handlerMap.put(key, clazz.newInstance());
 
@@ -61,21 +61,5 @@ public class RpcServiceScanner extends ClassScanner {
 			weight = RpcConstants.SERVICE_WEIGHT_MAX;
 		}
 		return weight;
-	}
-
-	/**
-	 * 获取serviceName
-	 */
-	private static String getServiceName(RpcService rpcService) {
-		//优先使用interfaceClass
-		Class<?> clazz = rpcService.interfaceClass();
-		if (clazz == void.class) {
-			return rpcService.interfaceClassName();
-		}
-		String serviceName = clazz.getName();
-		if (serviceName.trim().isEmpty()) {
-			serviceName = rpcService.interfaceClassName();
-		}
-		return serviceName;
 	}
 }

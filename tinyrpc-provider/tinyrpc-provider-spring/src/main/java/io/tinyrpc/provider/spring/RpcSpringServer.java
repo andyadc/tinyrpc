@@ -54,7 +54,7 @@ public class RpcSpringServer extends BaseServer implements ApplicationContextAwa
 		if (serviceBeanMap.size() > 0) {
 			for (Object serviceBean : serviceBeanMap.values()) {
 				RpcService rpcService = serviceBean.getClass().getAnnotation(RpcService.class);
-				ServiceMeta serviceMeta = new ServiceMeta(this.getServiceName(rpcService), rpcService.version(), rpcService.group(), host, port, getWeight(rpcService.weight()));
+				ServiceMeta serviceMeta = new ServiceMeta(RpcServiceHelper.getServiceName(rpcService), rpcService.version(), rpcService.group(), host, port, getWeight(rpcService.weight()));
 				handlerMap.put(RpcServiceHelper.buildServiceKey(serviceMeta.getServiceName(), serviceMeta.getServiceVersion(), serviceMeta.getServiceGroup()), serviceBean);
 
 				try {
@@ -72,6 +72,7 @@ public class RpcSpringServer extends BaseServer implements ApplicationContextAwa
 	public void afterPropertiesSet() throws Exception {
 		logger.info("Starting RPC server...");
 //		this.startNettyServer();
+		// SpringBoot整合服务提供者时启动服务卡住Spring线程
 		AsyncStartProviderThreadPool.submit(this::startNettyServer);
 	}
 
@@ -83,21 +84,5 @@ public class RpcSpringServer extends BaseServer implements ApplicationContextAwa
 			weight = RpcConstants.SERVICE_WEIGHT_MAX;
 		}
 		return weight;
-	}
-
-	/**
-	 * 获取serviceName
-	 */
-	private String getServiceName(RpcService rpcService) {
-		// 优先使用interfaceClass
-		Class<?> clazz = rpcService.interfaceClass();
-		if (clazz == void.class) {
-			return rpcService.interfaceClassName();
-		}
-		String serviceName = clazz.getName();
-		if (serviceName.trim().isEmpty()) {
-			serviceName = rpcService.interfaceClassName();
-		}
-		return serviceName;
 	}
 }
