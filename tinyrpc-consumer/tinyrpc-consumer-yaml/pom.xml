@@ -3,13 +3,13 @@
 		 xmlns="http://maven.apache.org/POM/4.0.0"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<parent>
-		<artifactId>tinyrpc</artifactId>
+		<artifactId>tinyrpc-consumer</artifactId>
 		<groupId>io.tinyrpc</groupId>
 		<version>0.0.1</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>tinyrpc-common</artifactId>
+	<artifactId>tinyrpc-consumer-yaml</artifactId>
 
 	<properties>
 		<maven.compiler.source>8</maven.compiler.source>
@@ -24,20 +24,9 @@
 		</dependency>
 		<dependency>
 			<groupId>io.tinyrpc</groupId>
-			<artifactId>tinyrpc-annotation</artifactId>
+			<artifactId>tinyrpc-common</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.alibaba.fastjson2</groupId>
-			<artifactId>fastjson2</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.yaml</groupId>
-			<artifactId>snakeyaml</artifactId>
-		</dependency>
 	</dependencies>
+
 </project>
