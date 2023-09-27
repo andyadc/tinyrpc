@@ -1,8 +1,11 @@
 package io.tinyrpc.consumer.spring;
 
 import io.tinyrpc.annotation.RpcReference;
+import io.tinyrpc.common.utils.StringUtil;
 import io.tinyrpc.constant.RpcConstants;
 import io.tinyrpc.consumer.spring.context.RpcConsumerSpringContext;
+import io.tinyrpc.consumer.yaml.config.ConsumerYamlConfig;
+import io.tinyrpc.consumer.yaml.factory.ConsumerYamlConfigFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -40,6 +43,9 @@ public class RpcConsumerPostProcessor implements ApplicationContextAware, BeanCl
 
 	private ApplicationContext context;
 	private ClassLoader classLoader;
+
+	//获取配置文件的数据
+	private final ConsumerYamlConfig consumerYamlConfig = ConsumerYamlConfigFactory.getConcumerYamlConfig();
 
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -119,5 +125,12 @@ public class RpcConsumerPostProcessor implements ApplicationContextAware, BeanCl
 			BeanDefinition beanDefinition = builder.getBeanDefinition();
 			rpcRefBeanDefinitions.put(field.getName(), beanDefinition);
 		}
+	}
+
+	private String getVersion(String version) {
+		if (StringUtil.isBlank(version) || (RpcConstants.RPC_COMMON_DEFAULT_VERSION.equals(version) && StringUtil.isNotBlank(consumerYamlConfig.getVersion()))) {
+			version = consumerYamlConfig.getVersion();
+		}
+		return version;
 	}
 }

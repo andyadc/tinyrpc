@@ -1,7 +1,9 @@
 package io.tinyrpc.consumer.yaml.factory;
 
+import com.alibaba.fastjson2.JSON;
 import io.tinyrpc.common.exception.RpcException;
 import io.tinyrpc.constant.RpcConstants;
+import io.tinyrpc.consumer.yaml.config.ConsumerYamlConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
@@ -44,5 +46,12 @@ public class ConsumerYamlConfigFactory {
 				}
 			}
 		}
+	}
+
+	public static ConsumerYamlConfig getConcumerYamlConfig() {
+		if (propMap == null) {
+			return new ConsumerYamlConfig();
+		}
+		return JSON.parseObject(JSON.toJSONString(propMap), ConsumerYamlConfig.class);
 	}
 }
