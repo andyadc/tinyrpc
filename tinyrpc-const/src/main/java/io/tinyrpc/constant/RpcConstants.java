@@ -404,4 +404,24 @@ public final class RpcConstants {
 	 * 打印异常
 	 */
 	public static final String EXCEPTION_POST_PROCESSOR_PRINT = "print";
+
+	/**
+	 * bhrpc配置文件
+	 */
+	public static final String CONSUMER_YML_FILE_NAME = "tinyrpc-consumer.yml";
+
+	/**
+	 * tinyrpc
+	 */
+	public static final String TINYRPC = "tinyrpc";
+
+	/**
+	 * andyadc
+	 */
+	public static final String ANDYADC = "andyadc";
+
+	/**
+	 * consumer
+	 */
+	public static final String CONSUMER = "consumer";
 }

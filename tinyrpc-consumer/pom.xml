@@ -15,6 +15,7 @@
 	<modules>
 		<module>tinyrpc-consumer-common</module>
 		<module>tinyrpc-consumer-native</module>
-        <module>tinyrpc-consumer-spring</module>
+		<module>tinyrpc-consumer-spring</module>
+		<module>tinyrpc-consumer-yaml</module>
 	</modules>
 </project>
